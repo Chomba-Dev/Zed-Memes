@@ -1,0 +1,440 @@
+/* ===================================================================
+   ZedMemes Theme Color Palette & CSS Variables
+   ================================================================== */
+
+/* =======================
+   LIGHT THEME COLORS
+   ======================= */
+:root {
+  /* === Primary Brand Colors === */
+  --zedmemes-primary: #377dff;
+  --zedmemes-primary-light: #4c84ff;
+  --zedmemes-primary-dark: #2968e8;
+  --zedmemes-primary-rgb: 55, 125, 255;
+  
+  /* === Secondary Colors === */
+  --zedmemes-secondary: #6c757d;
+  --zedmemes-secondary-light: #8490a3;
+  --zedmemes-secondary-dark: #5a6169;
+  
+  /* === Status Colors === */
+  --zedmemes-success: #28a745;
+  --zedmemes-success-light: #00ff88;
+  --zedmemes-success-dark: #00cc6a;
+  --zedmemes-info: #17a2b8;
+  --zedmemes-warning: #ffc107;
+  --zedmemes-danger: #dc3545;
+  
+  /* === Neutral Colors - Light Theme === */
+  --zedmemes-white: #ffffff;
+  --zedmemes-light: #f8f9fa;
+  --zedmemes-light-gray: #f9fafc;
+  --zedmemes-gray-100: #f9fafc;
+  --zedmemes-gray-200: #e9ecef;
+  --zedmemes-gray-300: #dee2e6;
+  --zedmemes-gray-400: #ced4da;
+  --zedmemes-gray-500: #adb5bd;
+  --zedmemes-gray-600: #6c757d;
+  --zedmemes-gray-700: #495057;
+  --zedmemes-gray-800: #343a40;
+  --zedmemes-gray-900: #1e2022;
+  --zedmemes-dark: #132144;
+  --zedmemes-black: #000000;
+  
+  /* === Background Colors === */
+  --zedmemes-bg-primary: #ffffff;
+  --zedmemes-bg-secondary: #f8f9fa;
+  --zedmemes-bg-tertiary: #f9fafc;
+  --zedmemes-bg-overlay: rgba(0, 0, 0, 0.5);
+  
+  /* === Text Colors === */
+  --zedmemes-text-primary: #1e2022;
+  --zedmemes-text-secondary: #6c757d;
+  --zedmemes-text-muted: #adb5bd;
+  --zedmemes-text-white: #ffffff;
+  
+  /* === Border Colors === */
+  --zedmemes-border-light: #e9ecef;
+  --zedmemes-border-medium: #dee2e6;
+  --zedmemes-border-dark: #ced4da;
+  
+  /* === Navigation Colors === */
+  --zedmemes-navbar-primary-bg: #343a40;
+  --zedmemes-navbar-secondary-bg: #ffffff;
+  --zedmemes-navbar-text: #ffffff;
+  --zedmemes-navbar-text-secondary: #495057;
+  --zedmemes-navbar-hover: rgba(255, 255, 255, 0.1);
+  --zedmemes-navbar-border: rgba(255, 255, 255, 0.2);
+  
+  /* === Card Colors === */
+  --zedmemes-card-bg: #ffffff;
+  --zedmemes-card-border: #e9ecef;
+  --zedmemes-card-shadow: rgba(0, 0, 0, 0.1);
+  --zedmemes-card-hover-shadow: rgba(0, 0, 0, 0.15);
+  
+  /* === Meme Feed Colors === */
+  --zedmemes-meme-card-bg: #080707;
+  --zedmemes-meme-overlay: rgba(0, 0, 0, 0.7);
+  --zedmemes-meme-action-bg: rgba(255, 255, 255, 0.1);
+  --zedmemes-meme-action-border: rgba(255, 255, 255, 0.2);
+  --zedmemes-meme-action-hover: rgba(255, 255, 255, 0.2);
+  --zedmemes-meme-details-bg: #ffffff;
+  --zedmemes-meme-stats-text: #666666;
+  
+  /* === Interactive Elements === */
+  --zedmemes-btn-primary: #377dff;
+  --zedmemes-btn-primary-hover: #2968e8;
+  --zedmemes-btn-secondary: #6c757d;
+  --zedmemes-btn-ghost: rgba(255, 255, 255, 0.1);
+  --zedmemes-btn-ghost-hover: rgba(255, 255, 255, 0.2);
+  
+  /* === Form Elements === */
+  --zedmemes-input-bg: #ffffff;
+  --zedmemes-input-border: #ced4da;
+  --zedmemes-input-focus: #377dff;
+  --zedmemes-input-placeholder: rgba(108, 117, 125, 0.7);
+  
+  /* === Shadows === */
+  --zedmemes-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --zedmemes-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  --zedmemes-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  --zedmemes-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* =======================
+   DARK THEME COLORS
+   ======================= */
+[data-hs-appearance="dark"] {
+  /* === Primary Brand Colors (Same as light) === */
+  --zedmemes-primary: #377dff;
+  --zedmemes-primary-light: #4c84ff;
+  --zedmemes-primary-dark: #2968e8;
+  --zedmemes-primary-rgb: 55, 125, 255;
+  
+  /* === Secondary Colors === */
+  --zedmemes-secondary: #8490a3;
+  --zedmemes-secondary-light: #9ca6b7;
+  --zedmemes-secondary-dark: #6c7a8f;
+  
+  /* === Status Colors === */
+  --zedmemes-success: #28a745;
+  --zedmemes-success-light: #00ff88;
+  --zedmemes-success-dark: #00cc6a;
+  --zedmemes-info: #17a2b8;
+  --zedmemes-warning: #ffc107;
+  --zedmemes-danger: #dc3545;
+  
+  /* === Neutral Colors - Dark Theme === */
+  --zedmemes-white: #1e2022;
+  --zedmemes-light: #2a2d31;
+  --zedmemes-light-gray: #242628;
+  --zedmemes-gray-100: #242628;
+  --zedmemes-gray-200: #2a2d31;
+  --zedmemes-gray-300: #343a40;
+  --zedmemes-gray-400: #495057;
+  --zedmemes-gray-500: #6c757d;
+  --zedmemes-gray-600: #8490a3;
+  --zedmemes-gray-700: #adb5bd;
+  --zedmemes-gray-800: #ced4da;
+  --zedmemes-gray-900: #f8f9fa;
+  --zedmemes-dark: #ffffff;
+  --zedmemes-black: #ffffff;
+  
+  /* === Background Colors === */
+  --zedmemes-bg-primary: #1e2022;
+  --zedmemes-bg-secondary: #242628;
+  --zedmemes-bg-tertiary: #2a2d31;
+  --zedmemes-bg-overlay: rgba(0, 0, 0, 0.8);
+  
+  /* === Text Colors === */
+  --zedmemes-text-primary: #ffffff;
+  --zedmemes-text-secondary: #adb5bd;
+  --zedmemes-text-muted: #6c757d;
+  --zedmemes-text-white: #ffffff;
+  
+  /* === Border Colors === */
+  --zedmemes-border-light: #343a40;
+  --zedmemes-border-medium: #495057;
+  --zedmemes-border-dark: #6c757d;
+  
+  /* === Navigation Colors === */
+  --zedmemes-navbar-primary-bg: #1a1d20;
+  --zedmemes-navbar-secondary-bg: #242628;
+  --zedmemes-navbar-text: #ffffff;
+  --zedmemes-navbar-text-secondary: #adb5bd;
+  --zedmemes-navbar-hover: rgba(255, 255, 255, 0.1);
+  --zedmemes-navbar-border: rgba(255, 255, 255, 0.2);
+  
+  /* === Card Colors === */
+  --zedmemes-card-bg: #242628;
+  --zedmemes-card-border: #343a40;
+  --zedmemes-card-shadow: rgba(0, 0, 0, 0.3);
+  --zedmemes-card-hover-shadow: rgba(0, 0, 0, 0.5);
+  
+  /* === Meme Feed Colors === */
+  --zedmemes-meme-card-bg: #080707;
+  --zedmemes-meme-overlay: rgba(0, 0, 0, 0.8);
+  --zedmemes-meme-action-bg: rgba(255, 255, 255, 0.1);
+  --zedmemes-meme-action-border: rgba(255, 255, 255, 0.2);
+  --zedmemes-meme-action-hover: rgba(255, 255, 255, 0.2);
+  --zedmemes-meme-details-bg: #242628;
+  --zedmemes-meme-stats-text: #8490a3;
+  
+  /* === Interactive Elements === */
+  --zedmemes-btn-primary: #377dff;
+  --zedmemes-btn-primary-hover: #4c84ff;
+  --zedmemes-btn-secondary: #8490a3;
+  --zedmemes-btn-ghost: rgba(255, 255, 255, 0.1);
+  --zedmemes-btn-ghost-hover: rgba(255, 255, 255, 0.2);
+  
+  /* === Form Elements === */
+  --zedmemes-input-bg: #2a2d31;
+  --zedmemes-input-border: #495057;
+  --zedmemes-input-focus: #377dff;
+  --zedmemes-input-placeholder: rgba(173, 181, 189, 0.7);
+  
+  /* === Shadows === */
+  --zedmemes-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+  --zedmemes-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.4);
+  --zedmemes-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+  --zedmemes-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* =======================
+   COMPONENT STYLES USING THEME VARIABLES
+   ======================= */
+
+/* === Primary Navbar (Dark Background) === */
+.navbar-dark {
+  background-color: var(--zedmemes-navbar-primary-bg) !important;
+  border-bottom: 1px solid var(--zedmemes-navbar-border);
+}
+
+.navbar-dark .navbar-brand-logo {
+  filter: brightness(0) invert(1);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: var(--zedmemes-navbar-text) !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  background-color: var(--zedmemes-navbar-hover);
+}
+
+.navbar-dark .input-group-hover-light:hover {
+  background-color: var(--zedmemes-navbar-hover);
+}
+
+.navbar-dark .input-group-hover-light input {
+  background-color: transparent;
+  border-color: var(--zedmemes-navbar-border);
+  color: var(--zedmemes-navbar-text);
+}
+
+.navbar-dark .input-group-hover-light input::placeholder {
+  color: rgba(var(--zedmemes-primary-rgb), 0.7);
+}
+
+.navbar-dark .input-group-text {
+  background-color: transparent;
+  border-color: var(--zedmemes-navbar-border);
+  color: rgba(var(--zedmemes-primary-rgb), 0.7);
+}
+
+/* === Secondary Navbar (Light Background) === */
+.navbar-light {
+  background-color: var(--zedmemes-navbar-secondary-bg) !important;
+  border-bottom: 1px solid var(--zedmemes-border-light);
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: var(--zedmemes-navbar-text-secondary) !important;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+  color: var(--zedmemes-primary) !important;
+}
+
+.navbar-light .navbar-nav .nav-link.active {
+  color: var(--zedmemes-primary) !important;
+}
+
+/* === Meme Feed Cards === */
+.dribbble-shot {
+  background: var(--zedmemes-meme-card-bg);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: var(--zedmemes-shadow);
+}
+
+.dribbble-shot:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--zedmemes-shadow-hover);
+}
+
+.shot-thumbnail-overlay {
+  background: var(--zedmemes-meme-overlay);
+}
+
+.shot-action .btn2 {
+  background: var(--zedmemes-meme-action-bg);
+  border: 1px solid var(--zedmemes-meme-action-border);
+  color: var(--zedmemes-text-white);
+}
+
+.shot-action .btn2:hover {
+  background: var(--zedmemes-meme-action-hover);
+  transform: scale(1.1);
+}
+
+.shot-details-container {
+  background: var(--zedmemes-meme-details-bg);
+  color: var(--zedmemes-text-primary);
+}
+
+.shot-statistic {
+  color: var(--zedmemes-meme-stats-text);
+}
+
+/* === Cards === */
+.card {
+  background-color: var(--zedmemes-card-bg);
+  border: 1px solid var(--zedmemes-card-border);
+  box-shadow: var(--zedmemes-shadow-sm);
+}
+
+.card-hover-shadow:hover {
+  box-shadow: var(--zedmemes-card-hover-shadow);
+}
+
+/* === Buttons === */
+.btn-primary {
+  background-color: var(--zedmemes-btn-primary);
+  border-color: var(--zedmemes-btn-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--zedmemes-btn-primary-hover);
+  border-color: var(--zedmemes-btn-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--zedmemes-btn-secondary);
+  border-color: var(--zedmemes-btn-secondary);
+}
+
+.btn-ghost-light {
+  background-color: var(--zedmemes-btn-ghost);
+  border-color: var(--zedmemes-btn-ghost);
+  color: var(--zedmemes-text-white);
+}
+
+.btn-ghost-light:hover {
+  background-color: var(--zedmemes-btn-ghost-hover);
+}
+
+/* === Form Elements === */
+.form-control {
+  background-color: var(--zedmemes-input-bg);
+  border: 1px solid var(--zedmemes-input-border);
+  color: var(--zedmemes-text-primary);
+}
+
+.form-control:focus {
+  border-color: var(--zedmemes-input-focus);
+  box-shadow: 0 0 0 0.2rem rgba(var(--zedmemes-primary-rgb), 0.25);
+}
+
+.form-control::placeholder {
+  color: var(--zedmemes-input-placeholder);
+}
+
+/* === Dropdown Menus === */
+.dropdown-menu {
+  background-color: var(--zedmemes-card-bg);
+  border: 1px solid var(--zedmemes-card-border);
+  box-shadow: var(--zedmemes-shadow);
+}
+
+.dropdown-item {
+  color: var(--zedmemes-text-primary);
+}
+
+.dropdown-item:hover {
+  background-color: var(--zedmemes-bg-secondary);
+  color: var(--zedmemes-text-primary);
+}
+
+/* === Badges === */
+.badge {
+  background-color: var(--zedmemes-secondary);
+  color: var(--zedmemes-text-white);
+}
+
+.badge.bg-primary {
+  background-color: var(--zedmemes-primary) !important;
+}
+
+.badge.bg-success {
+  background-color: var(--zedmemes-success) !important;
+}
+
+.badge.bg-info {
+  background-color: var(--zedmemes-info) !important;
+}
+
+.badge.bg-warning {
+  background-color: var(--zedmemes-warning) !important;
+}
+
+.badge.bg-danger {
+  background-color: var(--zedmemes-danger) !important;
+}
+
+/* === Growth Badge === */
+.growth-badge {
+  background: linear-gradient(45deg, var(--zedmemes-success-light), var(--zedmemes-success-dark));
+  color: var(--zedmemes-black);
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .navbar-dark .py-2 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  .navbar-brand-logo {
+    height: 1.5rem;
+  }
+  
+  .dribbble-shot {
+    height: 220px;
+  }
+}
+
+/* === Utility Classes === */
+.text-primary-theme {
+  color: var(--zedmemes-primary) !important;
+}
+
+.text-secondary-theme {
+  color: var(--zedmemes-secondary) !important;
+}
+
+.bg-primary-theme {
+  background-color: var(--zedmemes-primary) !important;
+}
+
+.bg-secondary-theme {
+  background-color: var(--zedmemes-secondary) !important;
+}
+
+.border-primary-theme {
+  border-color: var(--zedmemes-primary) !important;
+}
+
+.border-secondary-theme {
+  border-color: var(--zedmemes-secondary) !important;
+}
