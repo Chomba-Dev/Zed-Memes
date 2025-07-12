@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required Meta Tags Always Come First -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Title -->
+  <title>ZedMemes | Best Meme Collection</title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="./favicon.ico">
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Semantic UI CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Custom Theme CSS -->
+  <link rel="stylesheet" href="./zedmemes-theme-colors.css">
+  
+  <style>
+    /* Custom spacing and layout adjustments */
+    .main-content {
+      margin-top: 1rem;
+      padding-top: 1rem;
+    }
+    
+    .navbar-brand-logo {
+      height: 2rem;
+    }
+    
+    .search-container {
+      margin-left: 2rem;
+    }
+    
+    .search-container .ui.input {
+      width: 300px;
+    }
+    
+    /* Custom meme card styling */
+    .meme-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .meme-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .meme-image {
+      filter: grayscale(100%);
+      transition: filter 0.3s ease;
+    }
+    
+    .meme-card:hover .meme-image {
+      filter: grayscale(0%);
+    }
+    
+    .meme-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+    
+    .meme-card:hover .meme-overlay {
+      opacity: 1;
+    }
+    
+    .meme-image-container {
+      position: relative;
+      overflow: hidden;
+    }
+  </style>
+
+  <script>
+    window.hs_config = {
+      "autopath":".",
+      "deleteLine":"hs-builder:delete",
+      "deleteLine:build":"hs-builder:build-delete",
+      "deleteLine:dist":"hs-builder:dist-delete",
+      "previewMode":false,
+      "startPath":"/index.html",
+      "vars":{
+        "themeFont":"https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap",
+        "version":"?v=1.0"
+      },
+      "layoutBuilder":{
+        "extend":{"switcherSupport":true},
+        "header":{"layoutMode":"default","containerMode":"container-fluid"},
+        "sidebarLayout":"default"
+      },
+      "themeAppearance":{
+        "layoutSkin":"default",
+        "sidebarSkin":"default",
+        "styles":{
+          "colors":{
+            "primary":"#377dff",
+            "transparent":"transparent",
+            "white":"#fff",
+            "dark":"132144",
+            "gray":{"100":"#f9fafc","900":"#1e2022"}
+          },
+          "font":"Inter"
+        }
+      },
+      "languageDirection":{"lang":"en"}
+    };
+  </script>
+</head>
+
+<body class="zedmemes-app">
+  <!-- ========== HEADER ========== -->
+  <div class="ui inverted attached menu top-navbar">
+    <div class="ui container">
+      <!-- Logo -->
+      <a class="item brand-logo" href="./index.html">
+        <img class="ui image navbar-brand-logo" src="./assets/svg/logos/logo.svg" alt="ZedMemes Logo">
+      </a>
+      
+      <!-- Search -->
+      <div class="item search-container">
+        <div class="ui action input">
+          <input type="text" placeholder="Search memes..." class="search-field">
+          <div class="ui icon button">
+            <i class="search icon"></i>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Menu -->
+      <div class="right menu">
+        <!-- Notifications -->
+        <div class="ui dropdown item">
+          <i class="bell icon"></i>
+          <div class="floating ui red circular label">3</div>
+        </div>
+        
+        <!-- Theme Switcher -->
+        <div class="ui dropdown item theme-switcher" id="selectThemeDropdown">
+          <i class="moon icon"></i>
+          <div class="menu">
+            <div class="item" data-value="auto">
+              <i class="moon icon"></i>
+              Auto (system default)
+            </div>
+            <div class="item" data-value="default">
+              <i class="sun icon"></i>
+              Default (light mode)
+            </div>
+            <div class="item" data-value="dark">
+              <i class="moon icon"></i>
+              Dark
+            </div>
+          </div>
+        </div>
+        
+        <!-- User Account -->
+        <div class="ui dropdown item user-account">
+          <div class="ui circular label grey">A</div>
+          <div class="menu">
+            <div class="header">
+              <div class="ui header tiny">Admin User</div>
+              <div class="ui sub header">amoskays@gmail.com</div>
+            </div>
+            <div class="divider"></div>
+            <a class="item" href="#"><i class="user icon"></i> Profile & account</a>
+            <a class="item" href="#"><i class="settings icon"></i> Settings</a>
+            <div class="divider"></div>
+            <a class="item" href="#"><i class="sign out icon"></i> Sign out</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary Navigation -->
+  <div class="ui attached menu secondary-navbar">
+    <div class="ui container">
+      <a class="item active" href="./index.html">
+        <i class="home icon"></i>Home
+      </a>
+      
+      <a class="item" href="./trending.html">
+        <i class="chart line icon"></i>Trending
+      </a>
+      
+      <a class="item" href="./your-likes.html">
+        <i class="heart icon"></i>Your Likes
+      </a>
+      
+      <a class="item" href="./your-uploads.html">
+        <i class="upload icon"></i>Your Uploads
+      </a>
+      
+      <!-- Categories Dropdown -->
+      <div class="ui dropdown item categories-dropdown">
+        <i class="folder icon"></i>Categories
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <a class="item" href="./category-funny.html">😂 Funny</a>
+          <a class="item" href="./category-wholesome.html">🥰 Wholesome</a>
+          <a class="item" href="./category-dank.html">🔥 Dank Memes</a>
+          <a class="item" href="./category-relatable.html">😅 Relatable</a>
+          <div class="divider"></div>
+          <a class="item" href="./category-all.html">📋 All Categories</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ========== END HEADER ========== -->
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <main id="content" role="main" class="ui main container main-content">
+    <!-- Content -->
+    <div class="ui container content-container">
+      <!-- Meme Grid -->
+      <div class="ui four column doubling stackable grid" id="cardsGrid">
+        <!-- Cards will be generated here by JavaScript -->
+      </div>
+      <!-- End Meme Grid -->
+    </div>
+    <!-- End Content -->
+  </main>
+  <!-- ========== END MAIN CONTENT ========== -->
+
+  <!-- Semantic UI JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+  <!-- Custom JS -->
+  <script src="./assets/js/theme-custom.js"></script>
+
+  <!-- JS Plugins Init. -->
+  <script>
+    // Sample data for cards
+    const cardData = [
+      {
+        image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        title: "Team Collaboration",
+        likes: 53,
+        views: "2.2k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Modern Workspace",
+        likes: 87,
+        views: "3.4k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Business Meeting",
+        likes: 42,
+        views: "1.8k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Tech Innovation",
+        likes: 96,
+        views: "4.1k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Digital Strategy",
+        likes: 71,
+        views: "2.9k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Creative Process",
+        likes: 38,
+        views: "1.5k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Data Analytics",
+        likes: 124,
+        views: "5.2k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Startup Culture",
+        likes: 67,
+        views: "2.7k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Remote Work",
+        likes: 89,
+        views: "3.6k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Office Design",
+        likes: 55,
+        views: "2.1k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Product Launch",
+        likes: 103,
+        views: "4.5k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Brand Strategy",
+        likes: 76,
+        views: "3.1k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Marketing Campaign",
+        likes: 91,
+        views: "3.8k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Growth Hacking",
+        likes: 62,
+        views: "2.4k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1553028826-f4804a6dba3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "User Experience",
+        likes: 84,
+        views: "3.3k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Digital Transformation",
+        likes: 118,
+        views: "4.9k"
+      }
+    ];
+
+    // Function to create a single card
+    function createCard(data, index) {
+      return `
+        <div class="column">
+          <div class="ui card meme-card">
+            <div class="image meme-image-container">
+              <img src="${data.image}" alt="${data.title}" class="meme-image">
+              <div class="meme-overlay">
+                <div class="overlay-content">
+                  <div class="ui buttons">
+                    <button class="ui circular icon button" title="Download">
+                      <i class="download icon"></i>
+                    </button>
+                    <button class="ui circular icon button" title="Share">
+                      <i class="share icon"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="header">
+                <div class="ui mini circular image">
+                  <div class="ui circular label grey">ZM</div>
+                </div>
+                <span class="username">ZedMemes</span>
+                <div class="meta">
+                  <span class="right floated">
+                    <i class="heart icon"></i>
+                    ${data.likes}
+                  </span>
+                  <span class="right floated">
+                    <i class="eye icon"></i>
+                    ${data.views}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Function to generate all cards
+    function generateCardsGrid() {
+      const cardsGrid = document.getElementById('cardsGrid');
+      let cardsHTML = '';
+      
+      // Loop through cardData and create cards
+      for (let i = 0; i < cardData.length; i++) {
+        cardsHTML += createCard(cardData[i], i);
+      }
+      
+      cardsGrid.innerHTML = cardsHTML;
+    }
+
+    window.onload = function () {
+      // Generate cards grid first
+      generateCardsGrid();
+
+      // Initialize Semantic UI components
+      $('.ui.dropdown').dropdown();
+      $('.ui.search').search();
+      
+      // Initialize theme switcher
+      initializeThemeSwitcher();
+    }
+
+    // Initialize jQuery document ready
+    $(document).ready(function() {
+      // Initialize Semantic UI dropdowns
+      $('.ui.dropdown').dropdown();
+      
+      // Initialize search functionality
+      $('.ui.search').search({
+        type: 'category',
+        source: [
+          {
+            category: 'Popular',
+            results: [
+              { title: 'Funny Memes', url: './category-funny.html' },
+              { title: 'Wholesome', url: './category-wholesome.html' },
+              { title: 'Dank Memes', url: './category-dank.html' }
+            ]
+          },
+          {
+            category: 'Gaming',
+            results: [
+              { title: 'Gaming Memes', url: './gaming-general.html' },
+              { title: 'FPS Games', url: './gaming-fps.html' },
+              { title: 'RPG Games', url: './gaming-rpg.html' }
+            ]
+          }
+        ]
+      });
+    });
+
+    // THEME SWITCHER INITIALIZATION FOR SEMANTIC UI
+    // =======================================================
+    function initializeThemeSwitcher() {
+      const $dropdownBtn = document.getElementById('selectThemeDropdown');
+      const $variants = document.querySelectorAll('.theme-switcher .menu .item[data-value]');
+
+      // Function to set active style in the dropdown menu and set icon for dropdown trigger
+      const setActiveStyle = function () {
+        $variants.forEach($item => {
+          if ($item.getAttribute('data-value') === (localStorage.getItem('theme') || 'auto')) {
+            $dropdownBtn.innerHTML = `<i class="${$item.querySelector('i').className}" />`;
+            $item.classList.add('active');
+          } else {
+            $item.classList.remove('active');
+          }
+        });
+      }
+
+      // Add a click event to all items of the dropdown to set the style
+      $variants.forEach(function ($item) {
+        $item.addEventListener('click', function () {
+          const theme = $item.getAttribute('data-value');
+          localStorage.setItem('theme', theme);
+          applyTheme(theme);
+          setActiveStyle();
+        });
+      });
+
+      // Apply theme function
+      function applyTheme(theme) {
+        const body = document.body;
+        body.classList.remove('light-theme', 'dark-theme');
+        
+        if (theme === 'dark') {
+          body.classList.add('dark-theme');
+          body.setAttribute('data-hs-appearance', 'dark');
+        } else if (theme === 'default') {
+          body.classList.add('light-theme');
+          body.setAttribute('data-hs-appearance', 'default');
+        } else {
+          // Auto mode - detect system preference
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (prefersDark) {
+            body.classList.add('dark-theme');
+            body.setAttribute('data-hs-appearance', 'dark');
+          } else {
+            body.classList.add('light-theme');
+            body.setAttribute('data-hs-appearance', 'default');
+          }
+        }
+      }
+
+      // Call the setActiveStyle on load page
+      setActiveStyle();
+      
+      // Apply saved theme
+      const savedTheme = localStorage.getItem('theme') || 'auto';
+      applyTheme(savedTheme);
+    }
+  </script>
+</body>
+</html>
