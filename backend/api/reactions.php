@@ -76,7 +76,7 @@ function handleAddReaction($db, $authHandler) {
     
     try {
         // Check if meme exists
-        $stmt = $db->prepare("SELECT id FROM memes WHERE id = ?");
+        $stmt = $db->prepare("SELECT meme_id FROM memes WHERE meme_id = ?");
         $stmt->execute([$memeId]);
         if (!$stmt->fetch()) {
             sendResponse(false, 'Meme not found');
@@ -84,7 +84,7 @@ function handleAddReaction($db, $authHandler) {
         
         // Check if user already has a reaction
         $stmt = $db->prepare("
-            SELECT id, reaction_type 
+            SELECT reaction_id, reaction_type 
             FROM reactions 
             WHERE meme_id = ? AND user_id = ?
         ");
@@ -95,14 +95,14 @@ function handleAddReaction($db, $authHandler) {
             // Update existing reaction
             if ($existingReaction['reaction_type'] === $reactionType) {
                 // Remove reaction if clicking the same type
-                $stmt = $db->prepare("DELETE FROM reactions WHERE id = ?");
-                $stmt->execute([$existingReaction['id']]);
+                $stmt = $db->prepare("DELETE FROM reactions WHERE reaction_id = ?");
+                $stmt->execute([$existingReaction['reaction_id']]);
             } else {
                 // Change reaction type
                 $stmt = $db->prepare("
                     UPDATE reactions 
                     SET reaction_type = ?, updated_at = NOW() 
-                    WHERE id = ?
+                    WHERE reaction_id = ?
                 ");
                 $stmt->execute([$reactionType, $existingReaction['id']]);
             }

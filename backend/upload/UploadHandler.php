@@ -245,7 +245,7 @@ class UploadHandler {
             $stmt = $this->db->prepare("
                 SELECT image_path, user_id 
                 FROM memes 
-                WHERE id = ?
+                WHERE meme_id = ?
             ");
             $stmt->execute([$memeId]);
             $meme = $stmt->fetch();
@@ -270,7 +270,7 @@ class UploadHandler {
             $stmt->execute([$memeId]);
             
             // Delete meme
-            $stmt = $this->db->prepare("DELETE FROM memes WHERE id = ?");
+            $stmt = $this->db->prepare("DELETE FROM memes WHERE meme_id = ?");
             $stmt->execute([$memeId]);
             
             $this->db->commit();

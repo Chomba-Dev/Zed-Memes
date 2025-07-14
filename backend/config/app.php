@@ -17,7 +17,7 @@ define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
 // JWT settings
-define('JWT_SECRET', 'your-secret-key-change-this-in-production');
+define('JWT_SECRET', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
 define('JWT_EXPIRY', 24 * 60 * 60); // 24 hours in seconds
 
 // Upload settings

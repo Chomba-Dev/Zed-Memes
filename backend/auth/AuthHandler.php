@@ -8,7 +8,7 @@ require_once '../config/database.php';
 
 class AuthHandler {
     private $db;
-    private $jwtSecret = 'your-secret-key-change-this-in-production';
+    private $jwtSecret = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
     
     public function __construct() {
         $this->db = getDB();
@@ -20,14 +20,14 @@ class AuthHandler {
     public function register($username, $email, $password) {
         try {
             // Check if username already exists
-            $stmt = $this->db->prepare("SELECT id FROM users WHERE username = ?");
+            $stmt = $this->db->prepare("SELECT user_id FROM users WHERE username = ?");
             $stmt->execute([$username]);
             if ($stmt->fetch()) {
                 return ['success' => false, 'message' => 'Username already exists'];
             }
             
             // Check if email already exists
-            $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt = $this->db->prepare("SELECT user_id FROM users WHERE email = ?");
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
                 return ['success' => false, 'message' => 'Email already registered'];
@@ -74,7 +74,7 @@ class AuthHandler {
         try {
             // Get user by email
             $stmt = $this->db->prepare("
-                SELECT id, username, email, password 
+                SELECT user_id, username, email, password 
                 FROM users 
                 WHERE email = ?
             ");
@@ -91,7 +91,7 @@ class AuthHandler {
             }
             
             // Generate token
-            $token = $this->generateToken($user['id'], $user['username'], $user['email']);
+            $token = $this->generateToken($user['user_id'], $user['username'], $user['email']);
             
             return [
                 'success' => true,
@@ -99,7 +99,7 @@ class AuthHandler {
                 'data' => [
                     'token' => $token,
                     'user' => [
-                        'id' => $user['id'],
+                        'user_id' => $user['user_id'],
                         'username' => $user['username'],
                         'email' => $user['email']
                     ]
@@ -130,9 +130,9 @@ class AuthHandler {
             
             // Get user from database
             $stmt = $this->db->prepare("
-                SELECT id, username, email 
+                SELECT user_id, username, email 
                 FROM users 
-                WHERE id = ?
+                WHERE user_id = ?
             ");
             $stmt->execute([$payload['user_id']]);
             $user = $stmt->fetch();
@@ -145,7 +145,7 @@ class AuthHandler {
                 'success' => true,
                 'message' => 'Token valid',
                 'data' => [
-                    'user_id' => $user['id'],
+                    'user_id' => $user['user_id'],
                     'username' => $user['username'],
                     'email' => $user['email']
                 ]
@@ -224,7 +224,7 @@ class AuthHandler {
             $stmt = $this->db->prepare("
                 UPDATE users 
                 SET password = ?, updated_at = NOW() 
-                WHERE id = ?
+                WHERE user_id = ?
             ");
             $stmt->execute([$hashedPassword, $userId]);
             
@@ -256,7 +256,7 @@ class AuthHandler {
             $stmt->execute([$userId]);
             
             // Delete user
-            $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
+            $stmt = $this->db->prepare("DELETE FROM users WHERE user_id = ?");
             $stmt->execute([$userId]);
             
             $this->db->commit();
@@ -268,6 +268,59 @@ class AuthHandler {
             error_log("Account deletion error: " . $e->getMessage());
             return ['success' => false, 'message' => 'Account deletion failed'];
         }
+    }
+
+    /**
+     * Get user profile
+     */
+    public function getProfile($userId) {
+        try {
+            $stmt = $this->db->prepare("SELECT user_id, username, email, profile_picture, bio, is_verified, is_admin, created_at, updated_at FROM users WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch();
+            if (!$user) {
+                return ['success' => false, 'message' => 'User not found'];
+            }
+            return ['success' => true, 'data' => $user];
+        } catch (Exception $e) {
+            error_log("Get profile error: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Failed to get profile'];
+        }
+    }
+
+    /**
+     * Update user profile (username, email, bio, profile_picture)
+     */
+    public function updateProfile($userId, $fields) {
+        try {
+            $allowed = ['username', 'email', 'bio', 'profile_picture'];
+            $set = [];
+            $params = [];
+            foreach ($fields as $key => $value) {
+                if (in_array($key, $allowed)) {
+                    $set[] = "$key = ?";
+                    $params[] = $value;
+                }
+            }
+            if (empty($set)) {
+                return ['success' => false, 'message' => 'No valid fields to update'];
+            }
+            $params[] = $userId;
+            $sql = "UPDATE users SET " . implode(", ", $set) . ", updated_at = NOW() WHERE user_id = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return ['success' => true, 'message' => 'Profile updated successfully'];
+        } catch (Exception $e) {
+            error_log("Update profile error: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Failed to update profile'];
+        }
+    }
+
+    /**
+     * Delete user profile (alias for deleteAccount)
+     */
+    public function deleteProfile($userId) {
+        return $this->deleteAccount($userId);
     }
 }
 ?> 

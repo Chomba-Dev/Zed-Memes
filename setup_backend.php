@@ -350,7 +350,7 @@ Header always set X-XSS-Protection "1; mode=block"
 
 # Cache control for static assets
 <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg)$">
-    ExpiresActive On
+    // ExpiresActive On
     ExpiresDefault "access plus 1 month"
 </FilesMatch>';
 

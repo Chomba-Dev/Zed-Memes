@@ -22,7 +22,7 @@ try {
     $authHandler = new AuthHandler();
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $action = $_POST['action'] ?? '';
+        $action = $_GET['action'] ?? '';
         
         switch ($action) {
             case 'register':
@@ -33,6 +33,15 @@ try {
                 break;
             case 'verify_token':
                 handleVerifyToken($authHandler);
+                break;
+            case 'profile':
+                handleGetProfile($authHandler);
+                break;
+            case 'edit_profile':
+                handleEditProfile($authHandler);
+                break;
+            case 'delete_profile':
+                handleDeleteProfile($authHandler);
                 break;
             default:
                 sendResponse(false, 'Invalid action');
@@ -49,15 +58,17 @@ try {
  * Handle user registration
  */
 function handleRegister($authHandler) {
-    $username = trim($_POST['username'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $confirmPassword = $_POST['confirm_password'] ?? '';
+    $json = json_decode(file_get_contents("php://input"), true);
+    $username = $json['username'];
+    $email = $json['email'];
+    $password = $json['password'];
+    $confirmPassword = $json['confirm_password'];
     
     // Validate input
-    if (empty($username) || empty($email) || empty($password)) {
-        sendResponse(false, 'All fields are required');
-    }
+    if (empty($username)) sendResponse(false, 'username is required');
+    if (empty($email)) sendResponse(false, 'email is required');
+    if (empty($password)) sendResponse(false, 'password is required');
+    if (empty($confirmPassword)) sendResponse(false, 'confirm password is required');
     
     if (strlen($username) < 3) {
         sendResponse(false, 'Username must be at least 3 characters long');
@@ -98,8 +109,9 @@ function handleRegister($authHandler) {
  * Handle user login
  */
 function handleLogin($authHandler) {
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $json = json_decode(file_get_contents("php://input"), true);
+    $email = $json['email'];
+    $password = $json['password'];
     
     // Validate input
     if (empty($email) || empty($password)) {
@@ -148,6 +160,80 @@ function handleVerifyToken($authHandler) {
     } catch (Exception $e) {
         error_log("Token verification error: " . $e->getMessage());
         sendResponse(false, 'Token verification failed');
+    }
+}
+
+/**
+ * Handle get user profile
+ */
+function handleGetProfile($authHandler) {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        sendResponse(false, 'No token provided');
+    }
+    $token = $matches[1];
+    $user = $authHandler->getCurrentUser($token);
+    if (!$user) {
+        sendResponse(false, 'Invalid or expired token');
+    }
+    $result = $authHandler->getProfile($user['user_id']);
+    if ($result['success']) {
+        sendResponse(true, 'Profile fetched', $result['data']);
+    } else {
+        sendResponse(false, $result['message']);
+    }
+}
+
+/**
+ * Handle edit user profile
+ */
+function handleEditProfile($authHandler) {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        sendResponse(false, 'No token provided');
+    }
+    $token = $matches[1];
+    $user = $authHandler->getCurrentUser($token);
+    if (!$user) {
+        sendResponse(false, 'Invalid or expired token');
+    }
+    $json = json_decode(file_get_contents("php://input"), true);
+    if (!$json) {
+        sendResponse(false, 'No data provided');
+    }
+    $fields = array_intersect_key($json, array_flip(['username', 'email', 'bio', 'profile_picture']));
+    if (empty($fields)) {
+        sendResponse(false, 'No valid fields to update');
+    }
+    $result = $authHandler->updateProfile($user['user_id'], $fields);
+    if ($result['success']) {
+        sendResponse(true, $result['message']);
+    } else {
+        sendResponse(false, $result['message']);
+    }
+}
+
+/**
+ * Handle delete user profile
+ */
+function handleDeleteProfile($authHandler) {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        sendResponse(false, 'No token provided');
+    }
+    $token = $matches[1];
+    $user = $authHandler->getCurrentUser($token);
+    if (!$user) {
+        sendResponse(false, 'Invalid or expired token');
+    }
+    $result = $authHandler->deleteProfile($user['user_id']);
+    if ($result['success']) {
+        sendResponse(true, $result['message']);
+    } else {
+        sendResponse(false, $result['message']);
     }
 }
 

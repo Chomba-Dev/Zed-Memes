@@ -68,7 +68,7 @@ function handleGetComments($db, $authHandler) {
     
     try {
         // Check if meme exists
-        $stmt = $db->prepare("SELECT id FROM memes WHERE id = ?");
+        $stmt = $db->prepare("SELECT meme_id FROM memes WHERE meme_id = ?");
         $stmt->execute([$memeId]);
         if (!$stmt->fetch()) {
             sendResponse(false, 'Meme not found');
@@ -77,13 +77,13 @@ function handleGetComments($db, $authHandler) {
         // Get comments with user info
         $sql = "
             SELECT 
-                c.id,
+                c.comment_id,
                 c.comment_text,
                 c.created_at,
                 u.username,
-                u.id as user_id
+                u.user_id as user_id
             FROM comments c
-            LEFT JOIN users u ON c.user_id = u.id
+            LEFT JOIN users u ON c.user_id = u.user_id
             WHERE c.meme_id = ?
             ORDER BY c.created_at DESC
             LIMIT ? OFFSET ?
@@ -151,7 +151,7 @@ function handleAddComment($db, $authHandler) {
     
     try {
         // Check if meme exists
-        $stmt = $db->prepare("SELECT id FROM memes WHERE id = ?");
+        $stmt = $db->prepare("SELECT meme_id FROM memes WHERE meme_id = ?");
         $stmt->execute([$memeId]);
         if (!$stmt->fetch()) {
             sendResponse(false, 'Meme not found');
@@ -173,14 +173,14 @@ function handleAddComment($db, $authHandler) {
         // Get the newly created comment
         $commentStmt = $db->prepare("
             SELECT 
-                c.id,
+                c.comment_id,
                 c.comment_text,
                 c.created_at,
                 u.username,
-                u.id as user_id
+                u.user_id as user_id
             FROM comments c
-            LEFT JOIN users u ON c.user_id = u.id
-            WHERE c.id = ?
+            LEFT JOIN users u ON c.user_id = u.user_id
+            WHERE c.comment_id = ?
         ");
         $commentStmt->execute([$commentId]);
         $comment = $commentStmt->fetch();
@@ -225,9 +225,9 @@ function handleDeleteComment($db, $authHandler) {
     try {
         // Get comment info
         $stmt = $db->prepare("
-            SELECT c.id, c.meme_id, c.user_id 
+            SELECT c.comment_id, c.meme_id, c.user_id 
             FROM comments c 
-            WHERE c.id = ?
+            WHERE c.comment_id = ?
         ");
         $stmt->execute([$commentId]);
         $comment = $stmt->fetch();
@@ -243,7 +243,7 @@ function handleDeleteComment($db, $authHandler) {
         }
         
         // Delete comment
-        $stmt = $db->prepare("DELETE FROM comments WHERE id = ?");
+        $stmt = $db->prepare("DELETE FROM comments WHERE comment_id = ?");
         $stmt->execute([$commentId]);
         
         // Get updated comment count

@@ -252,7 +252,7 @@ INSERT INTO meme_tags (meme_id, tag_id) VALUES
 (5, 8); -- Coffee meme -> food
 
 -- Create views for common queries
-CREATE VIEW meme_stats AS
+CREATE OR REPLACE VIEW meme_stats AS
 SELECT 
     m.meme_id,
     m.title,
@@ -266,7 +266,7 @@ LEFT JOIN comments c ON m.meme_id = c.meme_id
 JOIN users u ON m.user_id = u.user_id
 GROUP BY m.meme_id, m.title, m.views, u.username;
 
-CREATE VIEW user_stats AS
+CREATE OR REPLACE VIEW user_stats AS
 SELECT 
     u.user_id,
     u.username,
@@ -283,9 +283,12 @@ LEFT JOIN user_follows f ON u.user_id = f.follower_id
 LEFT JOIN user_follows f2 ON u.user_id = f2.following_id
 GROUP BY u.user_id, u.username;
 
--- Create stored procedures for common operations
-DELIMITER //
+-- Drop and create stored procedures for common operations
+DROP PROCEDURE IF EXISTS GetMemeWithStats;
 
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS GetMemeWithStats $$
 CREATE PROCEDURE GetMemeWithStats(IN meme_id_param INT)
 BEGIN
     SELECT 
@@ -302,44 +305,40 @@ BEGIN
     LEFT JOIN tags t ON mt.tag_id = t.tag_id
     WHERE m.meme_id = meme_id_param
     GROUP BY m.meme_id, m.title, m.description, m.image_path, m.category, m.user_id, m.views, m.created_at, u.username;
-END //
+END $$
 
+DROP PROCEDURE IF EXISTS GetUserFeed $$
 CREATE PROCEDURE GetUserFeed(IN user_id_param INT, IN page_param INT, IN limit_param INT)
 BEGIN
-    DECLARE offset_val INT;
-    SET offset_val = (page_param - 1) * limit_param;
-    
-    SELECT 
-        m.*,
-        u.username as author_name,
-        COUNT(DISTINCT r.reaction_id) as reaction_count,
-        COUNT(DISTINCT c.comment_id) as comment_count,
-        EXISTS(SELECT 1 FROM user_favorites uf WHERE uf.user_id = user_id_param AND uf.meme_id = m.meme_id) as is_favorited
-    FROM memes m
-    JOIN users u ON m.user_id = u.user_id
-    LEFT JOIN reactions r ON m.meme_id = r.meme_id
-    LEFT JOIN comments c ON m.meme_id = c.comment_id
-    WHERE m.user_id IN (
-        SELECT following_id FROM user_follows WHERE follower_id = user_id_param
-    ) OR m.user_id = user_id_param
-    GROUP BY m.meme_id, m.title, m.description, m.image_path, m.category, m.user_id, m.views, m.created_at, u.username
-    ORDER BY m.created_at DESC
-    LIMIT limit_param OFFSET offset_val;
-END //
+    SET @offset_val = (page_param - 1) * limit_param;
+    SET @sql = CONCAT(
+        'SELECT m.*, u.username as author_name, ',
+        'COUNT(DISTINCT r.reaction_id) as reaction_count, ',
+        'COUNT(DISTINCT c.comment_id) as comment_count, ',
+        'EXISTS(SELECT 1 FROM user_favorites uf WHERE uf.user_id = ? AND uf.meme_id = m.meme_id) as is_favorited ',
+        'FROM memes m ',
+        'JOIN users u ON m.user_id = u.user_id ',
+        'LEFT JOIN reactions r ON m.meme_id = r.meme_id ',
+        'LEFT JOIN comments c ON m.meme_id = c.meme_id ',
+        'WHERE m.user_id IN (SELECT following_id FROM user_follows WHERE follower_id = ?) OR m.user_id = ? ',
+        'GROUP BY m.meme_id, m.title, m.description, m.image_path, m.category, m.user_id, m.views, m.created_at, u.username ',
+        'ORDER BY m.created_at DESC ',
+        'LIMIT ? OFFSET ?'
+    );
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt USING user_id_param, user_id_param, user_id_param, limit_param, @offset_val;
+    DEALLOCATE PREPARE stmt;
+END $$
 
+DROP PROCEDURE IF EXISTS CleanupOldRateLimits $$
 CREATE PROCEDURE CleanupOldRateLimits()
 BEGIN
     DELETE FROM api_rate_limits 
     WHERE window_start < DATE_SUB(NOW(), INTERVAL 1 HOUR);
-END //
+END $$
 
-DELIMITER ;
-
--- Create events for maintenance
-CREATE EVENT IF NOT EXISTS cleanup_rate_limits
+DROP EVENT IF EXISTS cleanup_rate_limits $$
+CREATE EVENT cleanup_rate_limits
 ON SCHEDULE EVERY 1 HOUR
-DO CALL CleanupOldRateLimits();
-
--- Grant permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT, UPDATE, DELETE ON zed_memes.* TO 'zed_memes_user'@'localhost';
--- FLUSH PRIVILEGES; 
+DO CALL CleanupOldRateLimits() $$
+DELIMITER ;

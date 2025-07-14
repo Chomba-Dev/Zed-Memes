@@ -24,7 +24,7 @@ try {
     
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $action = $_GET['action'] ?? '';
-        
+        echo "action $action";
         switch ($action) {
             case 'get_memes':
                 handleGetMemes($db, $authHandler);
@@ -63,26 +63,26 @@ function handleGetMemes($db, $authHandler) {
     try {
         $sql = "
             SELECT 
-                m.id,
+                m.meme_id,
                 m.title,
                 m.description,
                 m.image_path,
                 m.category,
                 m.created_at,
                 u.username as author,
-                u.id as user_id,
-                COUNT(DISTINCT r.id) as likes,
-                COUNT(DISTINCT c.id) as comments_count,
+                u.user_id as user_id,
+                COUNT(DISTINCT r.reaction_id) as likes,
+                COUNT(DISTINCT c.comment_id) as comments_count,
                 (
                     SELECT COUNT(*) 
                     FROM reactions r2 
-                    WHERE r2.meme_id = m.id AND r2.reaction_type = 'dislike'
+                    WHERE r2.meme_id = m.meme_id AND r2.reaction_type = 'dislike'
                 ) as dislikes
             FROM memes m
-            LEFT JOIN users u ON m.user_id = u.id
-            LEFT JOIN reactions r ON m.id = r.meme_id AND r.reaction_type = 'like'
-            LEFT JOIN comments c ON m.id = c.meme_id
-            GROUP BY m.id
+            LEFT JOIN users u ON m.user_id = u.user_id
+            LEFT JOIN reactions r ON m.meme_id = r.meme_id AND r.reaction_type = 'like'
+            LEFT JOIN comments c ON m.meme_id = c.meme_id
+            GROUP BY m.meme_id
             ORDER BY m.created_at DESC
             LIMIT ? OFFSET ?
         ";
@@ -148,24 +148,24 @@ function handleGetMemeDetail($db, $authHandler) {
         // Get meme details
         $sql = "
             SELECT 
-                m.id,
+                m.meme_id,
                 m.title,
                 m.description,
                 m.image_path,
                 m.category,
                 m.created_at,
                 u.username as author,
-                u.id as user_id,
-                COUNT(DISTINCT r_like.id) as likes,
-                COUNT(DISTINCT r_dislike.id) as dislikes,
-                COUNT(DISTINCT c.id) as comments_count
+                u.user_id as user_id,
+                COUNT(DISTINCT r_like.reaction_id) as likes,
+                COUNT(DISTINCT r_dislike.reaction_id) as dislikes,
+                COUNT(DISTINCT c.comment_id) as comments_count
             FROM memes m
-            LEFT JOIN users u ON m.user_id = u.id
-            LEFT JOIN reactions r_like ON m.id = r_like.meme_id AND r_like.reaction_type = 'like'
-            LEFT JOIN reactions r_dislike ON m.id = r_dislike.meme_id AND r_dislike.reaction_type = 'dislike'
-            LEFT JOIN comments c ON m.id = c.meme_id
-            WHERE m.id = ?
-            GROUP BY m.id
+            LEFT JOIN users u ON m.user_id = u.user_id
+            LEFT JOIN reactions r_like ON m.meme_id = r_like.meme_id AND r_like.reaction_type = 'like'
+            LEFT JOIN reactions r_dislike ON m.meme_id = r_dislike.meme_id AND r_dislike.reaction_type = 'dislike'
+            LEFT JOIN comments c ON m.meme_id = c.meme_id
+            WHERE m.meme_id = ?
+            GROUP BY m.meme_id
         ";
         
         $stmt = $db->prepare($sql);
@@ -195,24 +195,24 @@ function handleGetTrending($db, $authHandler) {
     try {
         $sql = "
             SELECT 
-                m.id,
+                m.meme_id,
                 m.title,
                 m.description,
                 m.image_path,
                 m.category,
                 m.created_at,
                 u.username as author,
-                u.id as user_id,
-                COUNT(DISTINCT r_like.id) as likes,
-                COUNT(DISTINCT r_dislike.id) as dislikes,
-                COUNT(DISTINCT c.id) as comments_count
+                u.user_id as user_id,
+                COUNT(DISTINCT r_like.reaction_id) as likes,
+                COUNT(DISTINCT r_dislike.reaction_id) as dislikes,
+                COUNT(DISTINCT c.comment_id) as comments_count
             FROM memes m
-            LEFT JOIN users u ON m.user_id = u.id
-            LEFT JOIN reactions r_like ON m.id = r_like.meme_id AND r_like.reaction_type = 'like'
-            LEFT JOIN reactions r_dislike ON m.id = r_dislike.meme_id AND r_dislike.reaction_type = 'dislike'
-            LEFT JOIN comments c ON m.id = c.meme_id
+            LEFT JOIN users u ON m.user_id = u.user_id
+            LEFT JOIN reactions r_like ON m.meme_id = r_like.meme_id AND r_like.reaction_type = 'like'
+            LEFT JOIN reactions r_dislike ON m.meme_id = r_dislike.meme_id AND r_dislike.reaction_type = 'dislike'
+            LEFT JOIN comments c ON m.meme_id = c.meme_id
             WHERE m.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-            GROUP BY m.id
+            GROUP BY m.meme_id
             ORDER BY likes DESC, comments_count DESC
             LIMIT ?
         ";
@@ -248,30 +248,30 @@ function handleSearchMemes($db, $authHandler) {
         
         $sql = "
             SELECT 
-                m.id,
+                m.meme_id,
                 m.title,
                 m.description,
                 m.image_path,
                 m.category,
                 m.created_at,
                 u.username as author,
-                u.id as user_id,
-                COUNT(DISTINCT r_like.id) as likes,
-                COUNT(DISTINCT r_dislike.id) as dislikes,
-                COUNT(DISTINCT c.id) as comments_count
+                u.user_id as user_id,
+                COUNT(DISTINCT r_like.reaction_id) as likes,
+                COUNT(DISTINCT r_dislike.reaction_id) as dislikes,
+                COUNT(DISTINCT c.comment_id) as comments_count
             FROM memes m
-            LEFT JOIN users u ON m.user_id = u.id
-            LEFT JOIN reactions r_like ON m.id = r_like.meme_id AND r_like.reaction_type = 'like'
-            LEFT JOIN reactions r_dislike ON m.id = r_dislike.meme_id AND r_dislike.reaction_type = 'dislike'
-            LEFT JOIN comments c ON m.id = c.meme_id
-            WHERE m.title LIKE ? OR m.description LIKE ?
-            GROUP BY m.id
+            LEFT JOIN users u ON m.user_id = u.user_id
+            LEFT JOIN reactions r_like ON m.meme_id = r_like.meme_id AND r_like.reaction_type = 'like'
+            LEFT JOIN reactions r_dislike ON m.meme_id = r_dislike.meme_id AND r_dislike.reaction_type = 'dislike'
+            LEFT JOIN comments c ON m.meme_id = c.meme_id
+            WHERE m.title LIKE ? OR m.description LIKE ? OR m.category LIKE ? OR u.username LIKE ?
+            GROUP BY m.meme_id
             ORDER BY m.created_at DESC
             LIMIT 20
         ";
         
         $stmt = $db->prepare($sql);
-        $stmt->execute([$searchTerm, $searchTerm]);
+        $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
         $memes = $stmt->fetchAll();
         
         sendResponse(true, 'Search completed successfully', $memes);
@@ -300,24 +300,24 @@ function handleFilterMemes($db, $authHandler) {
     try {
         $sql = "
             SELECT 
-                m.id,
+                m.meme_id,
                 m.title,
                 m.description,
                 m.image_path,
                 m.category,
                 m.created_at,
                 u.username as author,
-                u.id as user_id,
-                COUNT(DISTINCT r_like.id) as likes,
-                COUNT(DISTINCT r_dislike.id) as dislikes,
-                COUNT(DISTINCT c.id) as comments_count
+                u.user_id as user_id,
+                COUNT(DISTINCT r_like.reaction_id) as likes,
+                COUNT(DISTINCT r_dislike.reaction_id) as dislikes,
+                COUNT(DISTINCT c.comment_id) as comments_count
             FROM memes m
-            LEFT JOIN users u ON m.user_id = u.id
-            LEFT JOIN reactions r_like ON m.id = r_like.meme_id AND r_like.reaction_type = 'like'
-            LEFT JOIN reactions r_dislike ON m.id = r_dislike.meme_id AND r_dislike.reaction_type = 'dislike'
-            LEFT JOIN comments c ON m.id = c.meme_id
+            LEFT JOIN users u ON m.user_id = u.user_id
+            LEFT JOIN reactions r_like ON m.meme_id = r_like.meme_id AND r_like.reaction_type = 'like'
+            LEFT JOIN reactions r_dislike ON m.meme_id = r_dislike.meme_id AND r_dislike.reaction_type = 'dislike'
+            LEFT JOIN comments c ON m.meme_id = c.meme_id
             WHERE m.category = ?
-            GROUP BY m.id
+            GROUP BY m.meme_id
             ORDER BY m.created_at DESC
             LIMIT 20
         ";
