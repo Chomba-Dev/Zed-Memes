@@ -424,3 +424,71 @@ h5 {
     display: none !important;
   }
 }
+
+/* Mobile Navigation Override - Force white background */
+@media (max-width: 768px) {
+  /* Ensure mobile nav breaks out of any parent background */
+  .navbar-light .main-nav {
+    position: fixed !important; /* Use fixed positioning to break out completely */
+    top: 120px !important; /* Position below both navbars */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important; /* Full viewport width */
+    background-color: #ffffff !important; /* Force pure white */
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+    border-radius: 0 !important; /* Remove border radius for full-width look */
+    z-index: 1000 !important;
+  }
+
+  .navbar-light .main-nav.active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+  }
+
+  /* Ensure nav items have no background inheritance */
+  .navbar-light .main-nav .nav-item {
+    background-color: transparent !important;
+    width: 100% !important;
+  }
+
+  /* Force white background for nav links */
+  .navbar-light .main-nav .nav-link {
+    background-color: transparent !important;
+    color: #1f2937 !important; /* Dark text for contrast */
+  }
+
+  .navbar-light .main-nav .nav-link:hover {
+    background-color: #f3f4f6 !important; /* Light gray on hover */
+    color: #6366f1 !important; /* Blue on hover */
+  }
+
+  .navbar-light .main-nav .nav-link.active {
+    background-color: rgba(99, 102, 241, 0.1) !important; /* Light blue for active */
+    color: #6366f1 !important; /* Blue text for active */
+  }
+
+  /* Add backdrop overlay when mobile menu is open */
+  .main-nav.active::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+    opacity: 0;
+    animation: fadeInBackdrop 0.3s ease forwards;
+  }
+
+  @keyframes fadeInBackdrop {
+    to {
+      opacity: 1;
+    }
+  }
+}
