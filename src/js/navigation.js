@@ -11,6 +11,9 @@ class Navigation {
    * Initialize all navigation components
    */
   init() {
+    // Add debugging first
+    this.initDropdownDebugging();
+    
     this.initMobileToggle();
     this.initThemeDropdown();
     this.initProfileDropdown();
@@ -166,6 +169,14 @@ class Navigation {
   }
 
   /**
+   * Close all mega menus (placeholder for future mega menu functionality)
+   */
+  closeAllMegaMenus() {
+    // Placeholder for mega menu functionality
+    console.log('Closing mega menus...');
+  }
+
+  /**
    * Click Outside Handler
    */
   initClickOutside() {
@@ -178,22 +189,30 @@ class Navigation {
       const themeParent = themeToggle.closest('.dropdown');
       const profileParent = profileToggle.closest('.dropdown');
       
-      // Close theme dropdown if clicked outside
-      if (themeParent && !themeParent.contains(e.target)) {
-        themeParent.classList.remove('active');
+      let clickedInsideDropdown = false;
+      
+      // Check if clicked inside any dropdown
+      if (themeParent && themeParent.contains(e.target)) {
+        clickedInsideDropdown = true;
+      }
+      if (profileParent && profileParent.contains(e.target)) {
+        clickedInsideDropdown = true;
       }
       
-      // Close profile dropdown if clicked outside
-      if (profileParent && !profileParent.contains(e.target)) {
-        profileParent.classList.remove('active');
+      // If clicked outside all dropdowns, close them all
+      if (!clickedInsideDropdown) {
+        this.closeAllDropdowns();
       }
     });
 
     // Prevent dropdown menus from closing when clicking inside them
-    const dropdownMenus = document.querySelectorAll('.dropdown-menu, .hs-sub-menu');
+    const dropdownMenus = document.querySelectorAll('.dropdown-menu');
     dropdownMenus.forEach(menu => {
       menu.addEventListener('click', (e) => {
-        e.stopPropagation();
+        // Only stop propagation for the menu container, not the items
+        if (e.target === menu) {
+          e.stopPropagation();
+        }
       });
     });
   }
@@ -226,24 +245,39 @@ class Navigation {
    */
   initThemeDropdown() {
     const themeToggle = document.getElementById('themeToggle');
-    if (!themeToggle) return;
+    if (!themeToggle) {
+      console.error('Theme toggle element not found!');
+      return;
+    }
     
     const themeParent = themeToggle.closest('.dropdown');
+    if (!themeParent) {
+      console.error('Theme dropdown parent not found!');
+      return;
+    }
+    
     const themeIcon = themeToggle.querySelector('i');
+    console.log('Theme dropdown initialized successfully');
 
     themeToggle.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       
-      // Close other dropdowns
-      this.closeAllDropdowns();
-      this.closeAllMegaMenus();
+      console.log('Theme toggle clicked!');
       
+      // Close other dropdowns first
+      this.closeOtherDropdowns(themeParent);
+      
+      // Toggle this dropdown
+      const isActive = themeParent.classList.contains('active');
       themeParent.classList.toggle('active');
+      
+      console.log('Theme dropdown is now:', isActive ? 'closed' : 'open');
     });
 
     // Theme selection functionality
     const themeItems = themeParent.querySelectorAll('.dropdown-item');
+    console.log('Found theme items:', themeItems.length);
 
     themeItems.forEach(item => {
       item.addEventListener('click', (e) => {
@@ -251,8 +285,12 @@ class Navigation {
         const value = item.getAttribute('data-value');
         const icon = item.getAttribute('data-icon');
         
+        console.log('Theme selected:', value);
+        
         // Update the button icon
-        themeIcon.className = icon;
+        if (themeIcon && icon) {
+          themeIcon.className = icon;
+        }
         
         // Apply theme
         this.applyTheme(value);
@@ -294,19 +332,106 @@ class Navigation {
    */
   initProfileDropdown() {
     const profileToggle = document.getElementById('accountNavbarDropdown');
-    if (!profileToggle) return;
+    if (!profileToggle) {
+      console.error('Profile toggle element not found!');
+      return;
+    }
     
     const profileParent = profileToggle.closest('.dropdown');
+    if (!profileParent) {
+      console.error('Profile dropdown parent not found!');
+      return;
+    }
+    
+    console.log('Profile dropdown initialized successfully');
 
     profileToggle.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       
-      // Close other dropdowns
-      this.closeAllDropdowns();
-      this.closeAllMegaMenus();
+      console.log('Profile toggle clicked!');
       
+      // Close other dropdowns first
+      this.closeOtherDropdowns(profileParent);
+      
+      // Toggle this dropdown
+      const isActive = profileParent.classList.contains('active');
       profileParent.classList.toggle('active');
+      
+      console.log('Profile dropdown is now:', isActive ? 'closed' : 'open');
+    });
+
+    // Add click handlers for profile menu items
+    const profileItems = profileParent.querySelectorAll('.dropdown-item');
+    console.log('Found profile items:', profileItems.length);
+    
+    profileItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const text = item.textContent.trim();
+        console.log('Profile menu item clicked:', text);
+        
+        // Handle different menu items
+        switch(text) {
+          case 'Profile & account':
+            console.log('Opening profile...');
+            break;
+          case 'Settings':
+            console.log('Opening settings...');
+            break;
+          case 'Sign out':
+            console.log('Signing out...');
+            break;
+        }
+        
+        // Close dropdown
+        profileParent.classList.remove('active');
+      });
+    });
+  }
+
+  /**
+   * Close other dropdowns except the specified one
+   */
+  closeOtherDropdowns(exceptDropdown = null) {
+    const allDropdowns = document.querySelectorAll('.dropdown.active');
+    allDropdowns.forEach(dropdown => {
+      if (dropdown !== exceptDropdown) {
+        dropdown.classList.remove('active');
+      }
+    });
+  }
+
+  /**
+   * Enhanced dropdown debugging and initialization
+   */
+  initDropdownDebugging() {
+    console.log('Initializing dropdown debugging...');
+    
+    // Check if elements exist
+    const themeToggle = document.getElementById('themeToggle');
+    const profileToggle = document.getElementById('accountNavbarDropdown');
+    
+    console.log('Theme toggle element:', themeToggle);
+    console.log('Profile toggle element:', profileToggle);
+    
+    if (!themeToggle) {
+      console.error('Theme toggle not found!');
+    }
+    
+    if (!profileToggle) {
+      console.error('Profile toggle not found!');
+    }
+    
+    // Add debugging to see if clicks are being detected
+    document.addEventListener('click', (e) => {
+      console.log('Click detected on:', e.target);
+      if (e.target.closest('#themeToggle')) {
+        console.log('Theme toggle clicked!');
+      }
+      if (e.target.closest('#accountNavbarDropdown')) {
+        console.log('Profile toggle clicked!');
+      }
     });
   }
 }
