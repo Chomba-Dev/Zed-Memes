@@ -1,0 +1,164 @@
+/* Empty State Component */
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+  color: #6c757d;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #343a40;
+  font-weight: 600;
+}
+
+.empty-state p {
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.empty-state .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Empty State Variations */
+.empty-state.compact {
+  padding: 2rem 1rem;
+}
+
+.empty-state.compact i {
+  font-size: 2.5rem;
+}
+
+.empty-state.compact h3 {
+  font-size: 1.2rem;
+}
+
+.empty-state.compact p {
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Empty State with Animation */
+.empty-state.animated i {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Empty State with Background Pattern */
+.empty-state.pattern {
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-state.pattern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.empty-state.pattern > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Empty State Types */
+.empty-state.error {
+  border: 1px solid #fee2e2;
+  background: #fef2f2;
+}
+
+.empty-state.error i {
+  color: #dc2626;
+}
+
+.empty-state.warning {
+  border: 1px solid #fef3c7;
+  background: #fffbeb;
+}
+
+.empty-state.warning i {
+  color: #d97706;
+}
+
+.empty-state.info {
+  border: 1px solid #dbeafe;
+  background: #eff6ff;
+}
+
+.empty-state.info i {
+  color: #2563eb;
+}
+
+.empty-state.success {
+  border: 1px solid #dcfce7;
+  background: #f0fdf4;
+}
+
+.empty-state.success i {
+  color: #16a34a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .empty-state {
+    padding: 3rem 1.5rem;
+  }
+  
+  .empty-state i {
+    font-size: 3rem;
+  }
+  
+  .empty-state h3 {
+    font-size: 1.3rem;
+  }
+  
+  .empty-state p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+  
+  .empty-state i {
+    font-size: 2.5rem;
+  }
+  
+  .empty-state h3 {
+    font-size: 1.1rem;
+  }
+}

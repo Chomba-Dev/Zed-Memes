@@ -1,0 +1,219 @@
+/* Meme Card Styles */
+
+.meme-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.meme-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.meme-card.trending {
+  border: 2px solid #ff6b35;
+}
+
+.meme-card.liked {
+  border: 2px solid #e91e63;
+}
+
+.meme-card.saved {
+  border: 2px solid #2196f3;
+}
+
+/* Image Container */
+.meme-image-container {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.meme-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.meme-card:hover .meme-image {
+  transform: scale(1.05);
+}
+
+.meme-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6c757d;
+}
+
+.meme-placeholder i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.meme-placeholder p {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Content */
+.meme-content {
+  padding: 1rem;
+}
+
+.meme-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+
+.meme-title h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #343a40;
+  line-height: 1.3;
+}
+
+.meme-category {
+  background: #e9ecef;
+  color: #6c757d;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Actions */
+.meme-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.meme-actions .btn-action {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
+}
+
+.meme-like-btn {
+  color: #6c757d;
+}
+
+.meme-like-btn.liked {
+  color: #e91e63;
+  background: rgba(233, 30, 99, 0.1);
+  border-color: #e91e63;
+}
+
+.meme-like-btn.liked i {
+  color: #e91e63;
+}
+
+.meme-save-btn.saved {
+  color: #2196f3;
+  background: rgba(33, 150, 243, 0.1);
+  border-color: #2196f3;
+}
+
+.like-count {
+  font-weight: 500;
+}
+
+/* Menu Dropdown */
+.meme-menu {
+  position: relative;
+  margin-left: auto;
+}
+
+.meme-menu .dropdown-menu {
+  right: 0;
+  left: auto;
+  min-width: 150px;
+}
+
+.meme-menu .dropdown-item {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.meme-menu .dropdown-item i {
+  margin-right: 0.5rem;
+  width: 1rem;
+}
+
+/* Loading State */
+.meme-card.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.meme-card.loading .meme-placeholder::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.meme-card.error .meme-placeholder {
+  color: #dc3545;
+}
+
+.meme-card.error .meme-placeholder i {
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .meme-image-container {
+    height: 200px;
+  }
+  
+  .meme-content {
+    padding: 0.75rem;
+  }
+  
+  .meme-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .meme-actions {
+    gap: 0.25rem;
+  }
+  
+  .meme-actions .btn-action {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.8rem;
+  }
+}

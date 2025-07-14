@@ -1,0 +1,217 @@
+/* Meme Grid Styles */
+
+.meme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.meme-grid[data-grid-type="large"] {
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.meme-grid[data-grid-type="compact"] {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.meme-grid[data-grid-type="masonry"] {
+  columns: 280px;
+  column-gap: 1.5rem;
+  display: block;
+}
+
+.meme-grid[data-grid-type="masonry"] .meme-card {
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+}
+
+/* Loading State */
+.meme-grid.loading {
+  position: relative;
+  min-height: 300px;
+}
+
+.meme-grid.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Empty State */
+.meme-grid-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+}
+
+.meme-grid-empty i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.meme-grid-empty h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #343a40;
+}
+
+.meme-grid-empty p {
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Grid Controls */
+.meme-grid-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.grid-view-toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.grid-view-btn {
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6c757d;
+}
+
+.grid-view-btn:hover {
+  background: #e9ecef;
+  color: #343a40;
+}
+
+.grid-view-btn.active {
+  background: #6366f1;
+  color: white;
+  border-color: #6366f1;
+}
+
+.grid-sort-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: white;
+  color: #343a40;
+  cursor: pointer;
+}
+
+.grid-sort-select:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+/* Load More */
+.meme-grid-load-more {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.load-more-btn {
+  padding: 0.75rem 2rem;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.load-more-btn:hover {
+  background: #5856eb;
+}
+
+.load-more-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Infinite Scroll Indicator */
+.infinite-scroll-indicator {
+  text-align: center;
+  padding: 2rem 0;
+  color: #6c757d;
+}
+
+.infinite-scroll-indicator.loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .meme-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  
+  .meme-grid[data-grid-type="large"] {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+  
+  .meme-grid[data-grid-type="masonry"] {
+    columns: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .meme-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .meme-grid[data-grid-type="large"],
+  .meme-grid[data-grid-type="compact"] {
+    grid-template-columns: 1fr;
+  }
+  
+  .meme-grid[data-grid-type="masonry"] {
+    columns: 1;
+    column-gap: 0;
+  }
+  
+  .meme-grid-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .grid-view-toggle {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .meme-grid {
+    grid-template-columns: 1fr;
+  }
+}

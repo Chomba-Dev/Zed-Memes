@@ -1,0 +1,55 @@
+<!-- Meme Card Component -->
+<div class="meme-card" data-meme-id="">
+  <div class="meme-image-container">
+    <div class="meme-placeholder">
+      <i class="bi-image"></i>
+      <p>Loading...</p>
+    </div>
+    <!-- For actual images -->
+    <!--
+    <img class="meme-image" src="" alt="" loading="lazy">
+    -->
+  </div>
+  
+  <div class="meme-content">
+    <div class="meme-title">
+      <h4>Meme Title</h4>
+      <span class="meme-category">Category</span>
+    </div>
+    
+    <div class="meme-actions">
+      <button class="btn-action meme-like-btn" data-action="like">
+        <i class="bi-heart"></i>
+        <span class="like-count">0</span>
+      </button>
+      
+      <button class="btn-action meme-share-btn" data-action="share">
+        <i class="bi-share"></i>
+        Share
+      </button>
+      
+      <button class="btn-action meme-save-btn" data-action="save">
+        <i class="bi-bookmark"></i>
+        Save
+      </button>
+      
+      <div class="meme-menu dropdown">
+        <button class="btn-action dropdown-toggle" data-action="menu">
+          <i class="bi-three-dots"></i>
+        </button>
+        
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" data-action="report">
+            <i class="bi-flag"></i> Report
+          </a>
+          <a class="dropdown-item" href="#" data-action="download">
+            <i class="bi-download"></i> Download
+          </a>
+          <a class="dropdown-item" href="#" data-action="copy-link">
+            <i class="bi-link"></i> Copy Link
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
