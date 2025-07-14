@@ -8,6 +8,10 @@
 .navbar-light {
   background-color: #f8f9fa;
   padding: 0.75rem 0;
+  position: sticky;
+  top: 70px; /* Position below the dark navbar */
+  z-index: 1010;
+  width: 100%;
 }
 
 .navbar-light .navbar-content {
@@ -171,7 +175,8 @@
 /* Responsive - Mobile Navigation with Pure White Background */
 @media (max-width: 768px) {
   .navbar-light {
-    position: relative;
+    position: relative; /* Remove sticky positioning on mobile */
+    top: auto; /* Reset top position */
     z-index: 1000;
     background-color: #f8f9fa; /* Keep the navbar container gray */
   }
@@ -304,6 +309,16 @@
   .hs-sub-menu .dropdown-item:hover {
     background-color: #ffffff !important;
     color: #6366f1 !important;
+  }
+}
+
+/* Tablet and Desktop - Sticky positioning */
+@media (min-width: 769px) {
+  .navbar-light {
+    position: sticky !important;
+    top: 70px !important; /* Position below the dark navbar */
+    z-index: 1010 !important;
+    width: 100%;
   }
 }
 

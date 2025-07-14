@@ -3,6 +3,10 @@
 .navbar-dark {
   background-color: #132144 !important;
   padding: 0.5rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  width: 100%;
 }
 
 .navbar-dark .navbar-content {
@@ -352,6 +356,7 @@ h5 {
   .navbar-dark {
     position: relative;
     z-index: 1001;
+    top: auto; /* Remove sticky positioning on mobile */
   }
 
   .search-container {
@@ -415,6 +420,16 @@ h5 {
     to {
       opacity: 1;
     }
+  }
+}
+
+/* Tablet and Desktop - Sticky positioning */
+@media (min-width: 769px) {
+  .navbar-dark {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1020 !important;
+    width: 100%;
   }
 }
 

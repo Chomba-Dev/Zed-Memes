@@ -1,5 +1,31 @@
 /* Layout Components */
 
+/* Header Sticky Positioning */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  width: 100%;
+}
+
+/* Only apply sticky positioning on tablet and desktop */
+@media (min-width: 769px) {
+  .header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1030 !important;
+  }
+}
+
+/* On mobile, use relative positioning */
+@media (max-width: 768px) {
+  .header {
+    position: relative !important;
+    top: auto !important;
+    z-index: 1030 !important;
+  }
+}
+
 .main-content {
   margin-top: 120px; /* Space for fixed header */
   min-height: calc(100vh - 120px);
