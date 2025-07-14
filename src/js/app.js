@@ -61,9 +61,6 @@ class ZedMemesApp {
     // Handle search functionality
     this.setupSearch();
     
-    // Handle category quick navigation
-    this.setupCategoryQuickNav();
-    
     // Handle window events
     this.setupWindowEvents();
   }
@@ -106,40 +103,6 @@ class ZedMemesApp {
     // TODO: Implement search functionality
     // For now, just show a toast
     this.showToast(`Searching for "${query}"...`);
-  }
-
-  /**
-   * Setup category quick navigation
-   */
-  setupCategoryQuickNav() {
-    const categoryLinks = document.querySelectorAll('.category-quick-link');
-    
-    categoryLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const category = link.getAttribute('data-category');
-        
-        if (category === 'all') {
-          // Switch to categories section
-          this.navigation.switchContent('categories');
-        } else {
-          // Switch to categories section and show specific category
-          this.navigation.switchContent('categories');
-          setTimeout(() => {
-            this.showCategoryContent(category);
-          }, 200);
-        }
-      });
-    });
-  }
-
-  /**
-   * Show category content
-   * @param {string} categoryId - Category ID to show
-   */
-  showCategoryContent(categoryId) {
-    // This function is exposed globally for backward compatibility
-    window.showCategoryContent(categoryId);
   }
 
   /**
@@ -220,12 +183,6 @@ class ZedMemesApp {
             this.navigation.switchContent('uploads');
           }
           break;
-        case '5':
-          if (e.ctrlKey || e.metaKey) {
-            e.preventDefault();
-            this.navigation.switchContent('categories');
-          }
-          break;
         case '/':
           e.preventDefault();
           const searchInput = document.getElementById('searchInput');
@@ -273,135 +230,8 @@ window.switchContent = function(sectionName) {
 };
 
 window.showCategoryContent = function(categoryId) {
-  const contentArea = document.getElementById('category-content-area');
-  if (!contentArea) return;
-
-  // Category content data
-  const categories = {
-    'funny': {
-      title: '😂 Funny Memes',
-      description: 'The funniest memes that will make you laugh out loud',
-      stats: [
-        { label: 'Total Memes', value: '12,345' },
-        { label: 'Daily Posts', value: '234' },
-        { label: 'Likes Today', value: '45.6k' }
-      ]
-    },
-    'wholesome': {
-      title: '🥰 Wholesome Memes',
-      description: 'Feel-good memes that warm your heart',
-      stats: [
-        { label: 'Total Memes', value: '8,756' },
-        { label: 'Daily Posts', value: '123' },
-        { label: 'Likes Today', value: '23.4k' }
-      ]
-    },
-    'dank': {
-      title: '🔥 Dank Memes',
-      description: 'The spiciest and most savage memes',
-      stats: [
-        { label: 'Total Memes', value: '15,234' },
-        { label: 'Daily Posts', value: '456' },
-        { label: 'Likes Today', value: '67.8k' }
-      ]
-    },
-    'gaming': {
-      title: '🎮 Gaming Memes',
-      description: 'Memes about gaming culture and experiences',
-      stats: [
-        { label: 'Total Memes', value: '9,456' },
-        { label: 'Daily Posts', value: '189' },
-        { label: 'Likes Today', value: '34.2k' }
-      ]
-    },
-    'all': {
-      title: '📋 All Categories',
-      description: 'Browse all available meme categories',
-      stats: [
-        { label: 'Total Categories', value: '25' },
-        { label: 'Total Memes', value: '156k' },
-        { label: 'Active Users', value: '89.3k' }
-      ]
-    }
-  };
-
-  const category = categories[categoryId] || {
-    title: '🎯 ' + categoryId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-    description: 'Explore this exciting meme category',
-    stats: [
-      { label: 'Total Memes', value: '1,234' },
-      { label: 'Daily Posts', value: '56' },
-      { label: 'Likes Today', value: '12.3k' }
-    ]
-  };
-
-  // Create content HTML
-  const contentHTML = `
-    <div class="category-display active">
-      <div class="category-header">
-        <h2>${category.title}</h2>
-        <p>${category.description}</p>
-      </div>
-      
-      <div class="category-stats">
-        ${category.stats.map(stat => `
-          <div class="category-stat">
-            <h4>${stat.value}</h4>
-            <p>${stat.label}</p>
-          </div>
-        `).join('')}
-      </div>
-      
-      <div class="meme-grid" data-grid-type="default">
-        <!-- Sample meme cards -->
-        <div class="meme-card">
-          <div class="meme-image-container">
-            <div class="meme-placeholder">
-              <i class="bi-image"></i>
-              <p>Sample Meme 1</p>
-            </div>
-          </div>
-          <div class="meme-content">
-            <div class="meme-title">
-              <h4>Sample Meme 1</h4>
-              <span class="meme-category">${categoryId}</span>
-            </div>
-            <div class="meme-actions">
-              <button class="btn-action meme-like-btn"><i class="bi-heart"></i> 234</button>
-              <button class="btn-action meme-share-btn"><i class="bi-share"></i> Share</button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="meme-card">
-          <div class="meme-image-container">
-            <div class="meme-placeholder">
-              <i class="bi-image"></i>
-              <p>Sample Meme 2</p>
-            </div>
-          </div>
-          <div class="meme-content">
-            <div class="meme-title">
-              <h4>Sample Meme 2</h4>
-              <span class="meme-category">${categoryId}</span>
-            </div>
-            <div class="meme-actions">
-              <button class="btn-action meme-like-btn"><i class="bi-heart"></i> 456</button>
-              <button class="btn-action meme-share-btn"><i class="bi-share"></i> Share</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  // Update content with fade effect
-  contentArea.style.opacity = '0';
-  
-  setTimeout(() => {
-    contentArea.innerHTML = contentHTML;
-    contentArea.style.opacity = '1';
-  }, 150);
+  // Categories feature has been removed
+  console.log('Categories feature has been removed');
 };
 
 // Initialize the app

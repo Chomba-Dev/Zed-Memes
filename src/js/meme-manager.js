@@ -93,9 +93,6 @@ class MemeManager {
       case 'uploads':
         this.loadUserUploads();
         break;
-      case 'categories':
-        this.loadCategoryMemes();
-        break;
     }
   }
 
@@ -151,34 +148,21 @@ class MemeManager {
   }
 
   /**
-   * Load category memes
-   */
-  loadCategoryMemes() {
-    const grid = document.querySelector('#categories-content .meme-grid');
-    if (!grid) return;
-    
-    this.renderMemeGrid(grid, this.generateSampleMemes(8));
-  }
-
-  /**
    * Generate sample memes for demo
    * @param {number} count - Number of memes to generate
    * @param {string} type - Type of memes
    * @returns {Array} Sample memes array
    */
   generateSampleMemes(count = 12, type = 'default') {
-    const categories = ['funny', 'wholesome', 'dank', 'gaming', 'relatable'];
     const memes = [];
     
     for (let i = 1; i <= count; i++) {
       const id = `meme-${type}-${i}`;
-      const category = categories[Math.floor(Math.random() * categories.length)];
       const likes = Math.floor(Math.random() * 2000) + 50;
       
       memes.push({
         id,
         title: `${type === 'trending' ? 'Trending' : 'Sample'} Meme ${i}`,
-        category,
         likes,
         image: null, // Will use placeholder
         isLiked: this.likedMemes.has(id),
@@ -239,7 +223,6 @@ class MemeManager {
       <div class="meme-content">
         <div class="meme-title">
           <h4>${meme.title}</h4>
-          <span class="meme-category">${meme.category}</span>
         </div>
         
         <div class="meme-actions">

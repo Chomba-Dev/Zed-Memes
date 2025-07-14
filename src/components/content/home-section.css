@@ -62,73 +62,6 @@
   text-align: center;
 }
 
-/* Categories Quick Nav */
-.home-categories {
-  margin-bottom: 4rem;
-}
-
-.home-categories h2 {
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
-  color: #343a40;
-  text-align: center;
-}
-
-.category-quick-nav {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-}
-
-.category-quick-link {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 12px;
-  text-decoration: none;
-  color: #343a40;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.category-quick-link::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-
-.category-quick-link:hover::before {
-  transform: scaleX(1);
-}
-
-.category-quick-link:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  color: #6366f1;
-}
-
-.category-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  display: block;
-}
-
-.category-quick-link span {
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
 /* Welcome Message for New Users */
 .home-welcome {
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
@@ -210,10 +143,6 @@
     padding: 1rem;
   }
   
-  .category-icon {
-    font-size: 2rem;
-  }
-  
   .home-welcome {
     padding: 2rem 1.5rem;
   }
@@ -224,11 +153,5 @@
   
   .home-welcome p {
     font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .category-quick-nav {
-    grid-template-columns: 1fr;
   }
 }
