@@ -104,7 +104,7 @@ class MemeManager {
     if (!grid) return;
     
     this.currentFilter = 'featured';
-    this.renderMemeGrid(grid, this.generateSampleMemes(6));
+    this.renderMemeGrid(grid, this.generateSampleMemes(20));
   }
 
   /**
@@ -115,7 +115,7 @@ class MemeManager {
     if (!grid) return;
     
     this.currentFilter = 'trending';
-    this.renderMemeGrid(grid, this.generateSampleMemes(12, 'trending'));
+    this.renderMemeGrid(grid, this.generateSampleMemes(20, 'trending'));
   }
 
   /**
@@ -125,15 +125,9 @@ class MemeManager {
     const grid = document.querySelector('#likes-content .meme-grid');
     if (!grid) return;
     
-    const likedMemesData = this.memes.filter(meme => 
-      this.likedMemes.has(meme.id)
-    );
-    
-    if (likedMemesData.length === 0) {
-      this.showEmptyState(grid, 'No liked memes yet', 'Start exploring and heart your favorite memes!');
-    } else {
-      this.renderMemeGrid(grid, likedMemesData);
-    }
+    // Show the same grid for likes section
+    this.currentFilter = 'liked';
+    this.renderMemeGrid(grid, this.generateSampleMemes(20, 'liked'));
   }
 
   /**
@@ -143,8 +137,9 @@ class MemeManager {
     const grid = document.querySelector('#uploads-content .meme-grid');
     if (!grid) return;
     
-    // For demo purposes, show empty state
-    this.showEmptyState(grid, 'No uploads yet', 'Share your first meme and become a creator!');
+    // Show the same grid for uploads section
+    this.currentFilter = 'uploads';
+    this.renderMemeGrid(grid, this.generateSampleMemes(20, 'uploads'));
   }
 
   /**
@@ -154,17 +149,135 @@ class MemeManager {
    * @returns {Array} Sample memes array
    */
   generateSampleMemes(count = 12, type = 'default') {
+    const cardData = [
+      {
+        image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        title: "Team Collaboration",
+        likes: 53,
+        views: "2.2k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Modern Workspace",
+        likes: 87,
+        views: "3.4k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Business Meeting",
+        likes: 42,
+        views: "1.8k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Tech Innovation",
+        likes: 96,
+        views: "4.1k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Digital Strategy",
+        likes: 71,
+        views: "2.9k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Creative Process",
+        likes: 38,
+        views: "1.5k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Data Analytics",
+        likes: 124,
+        views: "5.2k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Startup Culture",
+        likes: 67,
+        views: "2.7k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Remote Work",
+        likes: 89,
+        views: "3.6k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Office Design",
+        likes: 55,
+        views: "2.1k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Product Launch",
+        likes: 103,
+        views: "4.5k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Brand Strategy",
+        likes: 76,
+        views: "3.1k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Marketing Campaign",
+        likes: 91,
+        views: "3.8k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Growth Hacking",
+        likes: 62,
+        views: "2.4k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1553028826-f4804a6dba3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "User Experience",
+        likes: 84,
+        views: "3.3k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Digital Transformation",
+        likes: 118,
+        views: "4.9k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1552664688-cf412ec27db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Team Building",
+        likes: 47,
+        views: "1.9k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Leadership",
+        likes: 79,
+        views: "3.2k"
+      },
+      {
+        image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        title: "Future of Work",
+        likes: 112,
+        views: "4.7k"
+      }
+    ];
+    
     const memes = [];
     
-    for (let i = 1; i <= count; i++) {
-      const id = `meme-${type}-${i}`;
-      const likes = Math.floor(Math.random() * 2000) + 50;
+    for (let i = 0; i < count; i++) {
+      const sourceData = cardData[i % cardData.length];
+      const id = `meme-${type}-${i + 1}`;
       
       memes.push({
         id,
-        title: `${type === 'trending' ? 'Trending' : 'Sample'} Meme ${i}`,
-        likes,
-        image: null, // Will use placeholder
+        title: sourceData.title,
+        likes: sourceData.likes,
+        views: sourceData.views,
+        image: sourceData.image,
         isLiked: this.likedMemes.has(id),
         isSaved: this.savedMemes.has(id),
         timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000)
@@ -190,10 +303,16 @@ class MemeManager {
       return;
     }
     
+    // Create a row container for Bootstrap grid
+    const rowContainer = document.createElement('div');
+    rowContainer.className = 'row';
+    
     memes.forEach(meme => {
       const memeCard = this.createMemeCard(meme);
-      container.appendChild(memeCard);
+      rowContainer.appendChild(memeCard);
     });
+    
+    container.appendChild(rowContainer);
   }
 
   /**
@@ -202,67 +321,62 @@ class MemeManager {
    * @returns {HTMLElement} Meme card element
    */
   createMemeCard(meme) {
-    const card = document.createElement('div');
-    card.className = 'meme-card';
-    card.setAttribute('data-meme-id', meme.id);
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'col-sm-6 col-lg-4 col-xl-3 mb-3 mb-lg-5';
     
-    if (meme.isLiked) card.classList.add('liked');
-    if (meme.isSaved) card.classList.add('saved');
-    
-    card.innerHTML = `
-      <div class="meme-image-container">
-        ${meme.image ? 
-          `<img class="meme-image" src="${meme.image}" alt="${meme.title}" loading="lazy">` :
-          `<div class="meme-placeholder">
-            <i class="bi-image"></i>
-            <p>${meme.title}</p>
-          </div>`
-        }
-      </div>
-      
-      <div class="meme-content">
-        <div class="meme-title">
-          <h4>${meme.title}</h4>
+    cardDiv.innerHTML = `
+      <div class="meme-thumbnail js-thumbnail meme-thumbnail-container">
+        <div class="js-thumbnail-base meme-thumbnail-base disabled-meme-section meme-card" data-meme-id="${meme.id}">
+          <figure class="js-thumbnail-placeholder meme-thumbnail-placeholder">
+            <img src="${meme.image}" alt="${meme.title}" style="filter: grayscale(100%);">
+          </figure>
+
+          <div class="meme-thumbnail-overlay">
+            <div class="meme-thumbnail-overlay-content">
+              <ul class="meme-actions-container">
+                <li class="meme-action">
+                  <a class="btn2 btn2--circle btn2--secondary-alt" title="Download" href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
+                      <path d="M8 1v8m0 0L5 6m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M2 11v2a2 2 0 002 2h8a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </li>
+                <li class="meme-action">
+                  <a class="btn2 btn2--secondary-alt btn2--circle" title="Share" href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
+                      <path d="M4 8a2 2 0 100-4 2 2 0 000 4zM12 8a2 2 0 100-4 2 2 0 000 4zM8 14a2 2 0 100-4 2 2 0 000 4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M10.5 6.5L5.5 9.5M5.5 4.5L10.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
-        
-        <div class="meme-actions">
-          <button class="btn-action meme-like-btn ${meme.isLiked ? 'liked' : ''}" data-action="like" data-meme-id="${meme.id}">
-            <i class="bi-heart${meme.isLiked ? '-fill' : ''}"></i>
-            <span class="like-count">${this.formatNumber(meme.likes)}</span>
-          </button>
-          
-          <button class="btn-action meme-share-btn" data-action="share" data-meme-id="${meme.id}">
-            <i class="bi-share"></i>
-            Share
-          </button>
-          
-          <button class="btn-action meme-save-btn ${meme.isSaved ? 'saved' : ''}" data-action="save" data-meme-id="${meme.id}">
-            <i class="bi-bookmark${meme.isSaved ? '-fill' : ''}"></i>
-            Save
-          </button>
-          
-          <div class="meme-menu dropdown">
-            <button class="btn-action dropdown-toggle" data-action="menu">
-              <i class="bi-three-dots"></i>
-            </button>
-            
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#" data-action="report" data-meme-id="${meme.id}">
-                <i class="bi-flag"></i> Report
-              </a>
-              <a class="dropdown-item" href="#" data-action="download" data-meme-id="${meme.id}">
-                <i class="bi-download"></i> Download
-              </a>
-              <a class="dropdown-item" href="#" data-action="copy-link" data-meme-id="${meme.id}">
-                <i class="bi-link"></i> Copy Link
-              </a>
+
+        <div class="meme-details-container">
+          <div class="user-information">
+            <div class="photo">ZM</div>
+            <span class="display-name">ZedMemes</span>
+            <div class="meme-statistic">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" class="meme-tools-icon">
+                <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" fill="currentColor"/>
+              </svg>
+              <span>${meme.likes}</span>
+            </div>
+            <div class="meme-statistic">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" class="meme-tools-icon">
+                <path d="M10.7408 2C13.0889 2 14.6667 4.235 14.6667 6.32C14.6667 10.5425 8.11856 14 8.00004 14C7.88152 14 1.33337 10.5425 1.33337 6.32C1.33337 4.235 2.91115 2 5.2593 2C6.60745 2 7.48893 2.6825 8.00004 3.2825C8.51115 2.6825 9.39263 2 10.7408 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>${meme.views}</span>
             </div>
           </div>
         </div>
       </div>
     `;
     
-    return card;
+    return cardDiv;
   }
 
   /**

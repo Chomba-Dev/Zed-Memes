@@ -206,13 +206,8 @@
           <p>Memes you've loved and saved</p>
         </div>
         
-        <div class="empty-state">
-          <i class="bi-heart-half"></i>
-          <h3>No liked memes yet</h3>
-          <p>Start exploring and heart your favorite memes!</p>
-          <button class="btn-primary" onclick="switchContent('home')">
-            <i class="bi-house-door"></i> Browse Memes
-          </button>
+        <div class="meme-grid" data-grid-type="default">
+          <!-- Liked memes will be loaded here -->
         </div>
       </section>
 
@@ -223,19 +218,8 @@
           <p>Memes you've shared with the world</p>
         </div>
         
-        <div class="upload-area">
-          <div class="upload-box">
-            <i class="bi-cloud-upload"></i>
-            <h3>Upload a New Meme</h3>
-            <p>Drag & drop or click to select</p>
-            <button class="btn-primary">Choose File</button>
-          </div>
-        </div>
-        
-        <div class="empty-state">
-          <i class="bi-folder-x"></i>
-          <h3>No uploads yet</h3>
-          <p>Share your first meme and become a creator!</p>
+        <div class="meme-grid" data-grid-type="default">
+          <!-- User uploads will be loaded here -->
         </div>
       </section>
     </div>
