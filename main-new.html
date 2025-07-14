@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <title>ZedMemes | Main Navigation</title>
+  <link rel="shortcut icon" href="./favicon.ico">
+  
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+  <!-- Header with Two Navbars -->
+  <header class="header">
+    <!-- First Navbar - Dark -->
+    <div class="navbar-dark">
+      <div class="container">
+        <div class="navbar-content">
+          <!-- Logo -->
+          <a class="navbar-brand" href="./index.html">
+            ZedMemes
+          </a>
+
+          <!-- Search Form (Hidden on Mobile) -->
+          <div class="search-container">
+            <div class="search-form">
+              <i class="bi-search search-icon"></i>
+              <input type="search" class="search-input" placeholder="Search memes..." aria-label="Search memes">
+            </div>
+          </div>
+
+          <!-- Right Navigation -->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <div class="dropdown">
+                <button type="button" class="btn-icon" title="Notifications">
+                  <i class="bi-bell"></i>
+                  <span style="position: absolute; top: 0; right: 0; width: 0.5rem; height: 0.5rem; background: #dc3545; border-radius: 50%; border: 1px solid white;"></span>
+                </button>
+              </div>
+            </li>
+            <li class="nav-item">
+              <div class="dropdown">
+                <button type="button" class="btn-icon" id="themeToggle" title="Theme">
+                  <i class="bi-moon"></i>
+                </button>
+
+                <div class="dropdown-menu dropdown-menu-end" style="min-width: 200px;">
+                  <a class="dropdown-item" href="#" data-icon="bi-moon-stars" data-value="auto">
+                    <i class="bi-moon-stars me-2"></i>
+                    <span class="text-truncate" title="Auto (system default)">Auto (system default)</span>
+                  </a>
+                  <a class="dropdown-item" href="#" data-icon="bi-brightness-high" data-value="default">
+                    <i class="bi-brightness-high me-2"></i>
+                    <span class="text-truncate" title="Default (light mode)">Default (light mode)</span>
+                  </a>
+                  <a class="dropdown-item" href="#" data-icon="bi-moon" data-value="dark">
+                    <i class="bi-moon me-2"></i>
+                    <span class="text-truncate" title="Dark">Dark</span>
+                  </a>
+                </div>
+              </div>
+            </li>
+            <li class="nav-item">
+              <div class="dropdown">
+                <a class="navbar-dropdown-account-wrapper" href="javascript:;" id="accountNavbarDropdown">
+                  <div class="avatar avatar-sm avatar-circle bg-grey-500" style="position: relative;">
+                    <span class="avatar-initials">A</span>
+                    <span class="avatar-status avatar-status-success"></span>
+                  </div>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown-account">
+                  <div class="dropdown-item-text">
+                    <div class="d-flex align-items-center">
+                      <div class="avatar avatar-sm avatar-circle bg-grey-500">
+                        <span class="avatar-initials">A</span>
+                      </div>
+                      <div class="flex-grow-1 ms-3">
+                        <h5 class="mb-0" style="font-size: 1rem; font-weight: 600;">Admin User</h5>
+                        <p class="card-text text-body" style="margin: 0; font-size: 0.875rem;">amoskays@gmail.com</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="dropdown-divider"></div>
+
+                  <a class="dropdown-item" href="#">Profile &amp; account</a>
+                  <a class="dropdown-item" href="#">Settings</a>
+
+                  <div class="dropdown-divider"></div>
+
+                  <a class="dropdown-item" href="#">Sign out</a>
+                </div>
+              </div>
+            </li>
+            <li class="nav-item">
+              <button class="mobile-toggle" id="mobileToggle">
+                <i class="bi-list"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Navbar - Light -->
+    <div class="navbar-light">
+      <div class="container">
+        <div class="navbar-content">
+          <nav>
+            <ul class="main-nav" id="mainNav">
+              <li class="nav-item">
+                <a class="nav-link active" href="javascript:;" data-content="home">
+                  <i class="bi-house-door"></i>Home
+                </a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;" data-content="trending">
+                  <i class="bi-graph-up"></i>Trending
+                </a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;" data-content="likes">
+                  <i class="bi-heart"></i>Your Likes
+                </a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;" data-content="uploads">
+                  <i class="bi-upload"></i>Your Uploads
+                </a>
+              </li>
+              
+              <li class="nav-item hs-has-sub-menu">
+                <a class="nav-link dropdown-toggle" href="javascript:;" role="button" id="categoriesMegaMenu" data-content="categories">
+                  <i class="bi-folder"></i>Categories
+                </a>
+
+                <!-- Mega Menu -->
+                <div class="hs-sub-menu dropdown-menu navbar-dropdown-menu-borderless">
+                  <!-- Popular Categories -->
+                  <div class="hs-has-sub-menu">
+                    <a class="dropdown-item dropdown-toggle" href="#" role="button">
+                      Popular Categories
+                    </a>
+
+                    <div class="hs-sub-menu dropdown-menu navbar-dropdown-menu-borderless">
+                      <a class="dropdown-item" href="./category-funny.html">😂 Funny</a>
+                      <a class="dropdown-item" href="./category-wholesome.html">🥰 Wholesome</a>
+                      <a class="dropdown-item" href="./category-dank.html">🔥 Dank Memes</a>
+                      <a class="dropdown-item" href="./category-relatable.html">😅 Relatable</a>
+                    </div>
+                  </div>
+                  <!-- End Popular Categories -->
+
+                  <!-- Gaming -->
+                  <div class="hs-has-sub-menu">
+                    <a class="dropdown-item dropdown-toggle" href="#" role="button">
+                      Gaming <span class="badge bg-primary rounded-pill ms-1">Hot</span>
+                    </a>
+
+                    <div class="hs-sub-menu dropdown-menu navbar-dropdown-menu-borderless">
+                      <a class="dropdown-item" href="./gaming-general.html">🎮 General Gaming</a>
+                      <a class="dropdown-item" href="./gaming-fps.html">🔫 FPS Games</a>
+                      <a class="dropdown-item" href="./gaming-rpg.html">⚔️ RPG Games</a>
+                      <a class="dropdown-item" href="./gaming-mobile.html">📱 Mobile Gaming</a>
+                      <a class="dropdown-item" href="./gaming-esports.html">🏆 Esports</a>
+                    </div>
+                  </div>
+                  <!-- End Gaming -->
+
+                  <!-- Internet Culture -->
+                  <div class="hs-has-sub-menu">
+                    <a class="dropdown-item dropdown-toggle" href="#" role="button">
+                      Internet Culture
+                    </a>
+
+                    <div class="hs-sub-menu dropdown-menu navbar-dropdown-menu-borderless">
+                      <a class="dropdown-item" href="./culture-twitter.html">🐦 Twitter/X</a>
+                      <a class="dropdown-item" href="./culture-tiktok.html">📹 TikTok</a>
+                      <a class="dropdown-item" href="./culture-reddit.html">🤖 Reddit</a>
+                      <a class="dropdown-item" href="./culture-discord.html">💬 Discord</a>
+                    </div>
+                  </div>
+                  <!-- End Internet Culture -->
+
+                  <!-- Movies & TV -->
+                  <div class="hs-has-sub-menu">
+                    <a class="dropdown-item dropdown-toggle" href="#" role="button">
+                      Movies & TV
+                    </a>
+
+                    <div class="hs-sub-menu dropdown-menu navbar-dropdown-menu-borderless">
+                      <a class="dropdown-item" href="./movies-general.html">🎬 Movies</a>
+                      <a class="dropdown-item" href="./tv-series.html">📺 TV Series</a>
+                      <a class="dropdown-item" href="./anime-manga.html">🎌 Anime & Manga</a>
+                      <a class="dropdown-item" href="./cartoons.html">🎨 Cartoons</a>
+                    </div>
+                  </div>
+                  <!-- End Movies & TV -->
+
+                  <!-- Lifestyle -->
+                  <div class="hs-has-sub-menu">
+                    <a class="dropdown-item dropdown-toggle" href="#" role="button">
+                      Lifestyle
+                    </a>
+
+                    <div class="hs-sub-menu dropdown-menu navbar-dropdown-menu-borderless">
+                      <a class="dropdown-item" href="./lifestyle-school.html">🎓 School & Work</a>
+                      <a class="dropdown-item" href="./lifestyle-food.html">🍕 Food</a>
+                      <a class="dropdown-item" href="./lifestyle-pets.html">🐶 Pets</a>
+                      <a class="dropdown-item" href="./lifestyle-fitness.html">💪 Fitness</a>
+                      <a class="dropdown-item" href="./lifestyle-travel.html">✈️ Travel</a>
+                    </div>
+                  </div>
+                  <!-- End Lifestyle -->
+
+                  <!-- Seasonal -->
+                  <div class="hs-has-sub-menu">
+                    <a class="dropdown-item dropdown-toggle" href="#" role="button">
+                      Seasonal <span class="badge bg-info rounded-pill ms-1">New</span>
+                    </a>
+
+                    <div class="hs-sub-menu dropdown-menu navbar-dropdown-menu-borderless">
+                      <a class="dropdown-item" href="./seasonal-holidays.html">🎄 Holidays</a>
+                      <a class="dropdown-item" href="./seasonal-summer.html">☀️ Summer</a>
+                      <a class="dropdown-item" href="./seasonal-spooky.html">🎃 Spooky</a>
+                      <a class="dropdown-item" href="./seasonal-new-year.html">🎊 New Year</a>
+                    </div>
+                  </div>
+                  <!-- End Seasonal -->
+
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="./category-all.html">📋 All Categories</a>
+                  <a class="dropdown-item" href="./category-request.html">💡 Request Category</a>
+                </div>
+                <!-- End Mega Menu -->
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Content Sections -->
+      
+      <!-- Home Section -->
+      <section id="home-content" class="content-section active">
+        <div class="content-header">
+          <h1><i class="bi-house-door"></i> Home</h1>
+          <p>Welcome to ZedMemes - Your favorite meme destination!</p>
+        </div>
+        
+        <div class="meme-grid">
+          <div class="meme-card">
+            <div class="meme-placeholder">
+              <i class="bi-image"></i>
+              <p>Latest Meme</p>
+            </div>
+            <div class="meme-actions">
+              <button class="btn-action"><i class="bi-heart"></i> 234</button>
+              <button class="btn-action"><i class="bi-share"></i> Share</button>
+            </div>
+          </div>
+          
+          <div class="meme-card">
+            <div class="meme-placeholder">
+              <i class="bi-image"></i>
+              <p>Trending Meme</p>
+            </div>
+            <div class="meme-actions">
+              <button class="btn-action"><i class="bi-heart"></i> 567</button>
+              <button class="btn-action"><i class="bi-share"></i> Share</button>
+            </div>
+          </div>
+          
+          <div class="meme-card">
+            <div class="meme-placeholder">
+              <i class="bi-image"></i>
+              <p>Popular Meme</p>
+            </div>
+            <div class="meme-actions">
+              <button class="btn-action"><i class="bi-heart"></i> 891</button>
+              <button class="btn-action"><i class="bi-share"></i> Share</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trending Section -->
+      <section id="trending-content" class="content-section">
+        <div class="content-header">
+          <h1><i class="bi-graph-up"></i> Trending</h1>
+          <p>The hottest memes right now!</p>
+        </div>
+        
+        <div class="trending-stats">
+          <div class="stat-card">
+            <h3>🔥 Hot Today</h3>
+            <p>1,234 new memes</p>
+          </div>
+          <div class="stat-card">
+            <h3>📈 Rising Fast</h3>
+            <p>567 viral memes</p>
+          </div>
+          <div class="stat-card">
+            <h3>⭐ Top Rated</h3>
+            <p>89 perfect scores</p>
+          </div>
+        </div>
+        
+        <div class="meme-grid">
+          <div class="meme-card trending">
+            <div class="meme-placeholder">
+              <i class="bi-fire"></i>
+              <p>Viral Meme #1</p>
+            </div>
+            <div class="meme-actions">
+              <button class="btn-action"><i class="bi-heart-fill"></i> 1.2k</button>
+              <button class="btn-action"><i class="bi-share"></i> Share</button>
+            </div>
+          </div>
+          
+          <div class="meme-card trending">
+            <div class="meme-placeholder">
+              <i class="bi-graph-up"></i>
+              <p>Rising Meme #2</p>
+            </div>
+            <div class="meme-actions">
+              <button class="btn-action"><i class="bi-heart-fill"></i> 890</button>
+              <button class="btn-action"><i class="bi-share"></i> Share</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Your Likes Section -->
+      <section id="likes-content" class="content-section">
+        <div class="content-header">
+          <h1><i class="bi-heart"></i> Your Likes</h1>
+          <p>Memes you've loved and saved</p>
+        </div>
+        
+        <div class="empty-state">
+          <i class="bi-heart-half"></i>
+          <h3>No liked memes yet</h3>
+          <p>Start exploring and heart your favorite memes!</p>
+          <button class="btn-primary" onclick="switchContent('home')">
+            <i class="bi-house-door"></i> Browse Memes
+          </button>
+        </div>
+      </section>
+
+      <!-- Your Uploads Section -->
+      <section id="uploads-content" class="content-section">
+        <div class="content-header">
+          <h1><i class="bi-upload"></i> Your Uploads</h1>
+          <p>Memes you've shared with the world</p>
+        </div>
+        
+        <div class="upload-area">
+          <div class="upload-box">
+            <i class="bi-cloud-upload"></i>
+            <h3>Upload a New Meme</h3>
+            <p>Drag & drop or click to select</p>
+            <button class="btn-primary">Choose File</button>
+          </div>
+        </div>
+        
+        <div class="empty-state">
+          <i class="bi-folder-x"></i>
+          <h3>No uploads yet</h3>
+          <p>Share your first meme and become a creator!</p>
+        </div>
+      </section>
+
+      <!-- Categories Section -->
+      <section id="categories-content" class="content-section">
+        <div class="content-header">
+          <h1><i class="bi-folder"></i> Categories</h1>
+          <p>Explore memes by category</p>
+        </div>
+        
+        <!-- Blank content area for future rendering -->
+        <div id="category-content-area" class="category-content-area">
+          <div class="category-welcome">
+            <i class="bi-grid-3x3-gap"></i>
+            <h3>Categories will be rendered here</h3>
+            <p>This space is ready for dynamic category content rendering</p>
+          </div>
+        </div>
+
+
+            <!-- Gaming -->
+            <div class="category-nav-item hs-has-sub-menu">
+              <a class="category-nav-link dropdown-toggle" href="javascript:;" role="button">
+                Gaming <span class="badge">Hot</span>
+              </a>
+              
+              <div class="category-submenu hs-sub-menu dropdown-menu">
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('gaming-general')">🎮 General Gaming</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('gaming-fps')">🔫 FPS Games</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('gaming-rpg')">⚔️ RPG Games</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('gaming-mobile')">📱 Mobile Gaming</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('gaming-esports')">🏆 Esports</a>
+              </div>
+            </div>
+
+            <!-- Internet Culture -->
+            <div class="category-nav-item hs-has-sub-menu">
+              <a class="category-nav-link dropdown-toggle" href="javascript:;" role="button">
+                Internet Culture
+              </a>
+              
+              <div class="category-submenu hs-sub-menu dropdown-menu">
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('culture-twitter')">� Twitter/X</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('culture-tiktok')">📹 TikTok</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('culture-reddit')">🤖 Reddit</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('culture-discord')">💬 Discord</a>
+              </div>
+            </div>
+
+            <!-- Movies & TV -->
+            <div class="category-nav-item hs-has-sub-menu">
+              <a class="category-nav-link dropdown-toggle" href="javascript:;" role="button">
+                Movies & TV
+              </a>
+              
+              <div class="category-submenu hs-sub-menu dropdown-menu">
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('movies-general')">� Movies</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('tv-series')">📺 TV Series</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('anime-manga')">🎌 Anime & Manga</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('cartoons')">🎨 Cartoons</a>
+              </div>
+            </div>
+
+            <!-- Lifestyle -->
+            <div class="category-nav-item hs-has-sub-menu">
+              <a class="category-nav-link dropdown-toggle" href="javascript:;" role="button">
+                Lifestyle
+              </a>
+              
+              <div class="category-submenu hs-sub-menu dropdown-menu">
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('lifestyle-school')">� School & Work</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('lifestyle-food')">🍕 Food</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('lifestyle-pets')">🐶 Pets</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('lifestyle-fitness')">💪 Fitness</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('lifestyle-travel')">✈️ Travel</a>
+              </div>
+            </div>
+
+            <!-- Seasonal -->
+            <div class="category-nav-item hs-has-sub-menu">
+              <a class="category-nav-link dropdown-toggle" href="javascript:;" role="button">
+                Seasonal <span class="badge new">New</span>
+              </a>
+              
+              <div class="category-submenu hs-sub-menu dropdown-menu">
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('seasonal-holidays')">🎄 Holidays</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('seasonal-summer')">☀️ Summer</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('seasonal-spooky')">🎃 Spooky</a>
+                <a class="dropdown-item" href="javascript:;" onclick="showCategoryContent('seasonal-new-year')">🎊 New Year</a>
+              </div>
+            </div>
+
+            <div class="category-nav-divider"></div>
+            <a class="category-nav-link" href="javascript:;" onclick="showCategoryContent('all')">📋 All Categories</a>
+            <a class="category-nav-link" href="javascript:;" onclick="showCategoryContent('request')">💡 Request Category</a>
+          </div>
+        </div>
+
+        <!-- Category Content Area -->
+        <div id="category-content-area" class="category-content-area">
+          <div class="category-welcome">
+            <i class="bi-cursor"></i>
+            <h3>Hover over a category above</h3>
+            <p>Explore different meme categories by hovering over the navigation items above</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Custom JavaScript -->
+  <script src="./script.js"></script>
+</body>
+</html>
