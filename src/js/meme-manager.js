@@ -18,9 +18,12 @@ class MemeManager {
    * Initialize meme manager
    */
   init() {
+    console.log('Initializing MemeManager...');
     this.loadSavedInteractions();
     this.setupEventListeners();
-    this.loadMemes();
+    console.log('About to load home memes...');
+    this.loadHomeMemes(); // Load home memes on initialization
+    console.log('MemeManager initialization complete');
   }
 
   /**
@@ -100,11 +103,18 @@ class MemeManager {
    * Load memes for home section
    */
   loadHomeMemes() {
+    console.log('Loading home memes...');
     const grid = document.getElementById('homeMemeGrid');
-    if (!grid) return;
+    if (!grid) {
+      console.error('Home meme grid not found!');
+      return;
+    }
     
+    console.log('Home meme grid found, generating memes...');
     this.currentFilter = 'featured';
-    this.renderMemeGrid(grid, this.generateSampleMemes(20));
+    const memes = this.generateSampleMemes(20);
+    console.log('Generated memes:', memes.length);
+    this.renderMemeGrid(grid, memes);
   }
 
   /**
@@ -293,12 +303,17 @@ class MemeManager {
    * @param {Array} memes - Memes to render
    */
   renderMemeGrid(container, memes) {
-    if (!container) return;
+    console.log('Rendering meme grid:', container, memes.length);
+    if (!container) {
+      console.error('Container not found for rendering grid');
+      return;
+    }
     
     container.innerHTML = '';
     container.classList.remove('loading');
     
     if (memes.length === 0) {
+      console.log('No memes to render, showing empty state');
       this.showEmptyState(container, 'No memes found', 'Try adjusting your filters or check back later.');
       return;
     }
@@ -307,12 +322,14 @@ class MemeManager {
     const rowContainer = document.createElement('div');
     rowContainer.className = 'row';
     
+    console.log('Creating meme cards...');
     memes.forEach(meme => {
       const memeCard = this.createMemeCard(meme);
       rowContainer.appendChild(memeCard);
     });
     
     container.appendChild(rowContainer);
+    console.log('Meme grid rendered successfully');
   }
 
   /**

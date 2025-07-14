@@ -1,29 +1,52 @@
 {
-  "name": "zitfuse-dashboard",
-  "version": "1.0.0",
-  "description": "ZITFUSE Admin Dashboard - Modern admin control panel built with Front UI Kit",
-  "main": "index.html",
+  "name": "zedmemes-modular",
+  "version": "2.0.0",
+  "description": "ZedMemes - Modular meme sharing platform",
+  "main": "index-modular.html",
   "scripts": {
-    "start": "npx live-server --port=3000 --open=/index.html",
-    "dev": "npx live-server --port=3000 --open=/index.html --watch=.",
-    "build": "echo 'Production build ready'",
-    "serve": "npx http-server -p 3000 -o"
+    "start": "echo 'Open index-modular.html in your browser to start development'",
+    "serve": "npx http-server . -p 3000 -o index-modular.html",
+    "lint:css": "npx stylelint 'src/**/*.css'",
+    "lint:js": "npx eslint 'src/**/*.js'",
+    "format": "npx prettier --write 'src/**/*.{html,css,js}'",
+    "build": "echo 'Production build system not yet implemented'"
   },
   "keywords": [
-    "dashboard",
-    "admin",
-    "bootstrap",
-    "front-ui",
-    "zitfuse"
+    "memes",
+    "social",
+    "entertainment",
+    "javascript",
+    "css",
+    "html",
+    "modular",
+    "components"
   ],
-  "author": "ZITFUSE Team",
+  "author": "ZedMemes Team",
   "license": "MIT",
   "devDependencies": {
-    "live-server": "^1.2.2",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "stylelint": "^15.10.1",
+    "eslint": "^8.45.0",
+    "prettier": "^3.0.0"
   },
-  "dependencies": {
-    "bootstrap": "^5.2.2",
-    "bootstrap-icons": "^1.9.1"
-  }
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "directories": {
+    "src": "./src",
+    "assets": "./assets",
+    "components": "./src/components",
+    "styles": "./src/styles",
+    "js": "./src/js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/zedmemes.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/zedmemes/issues"
+  },
+  "homepage": "https://github.com/yourusername/zedmemes#readme"
 }
