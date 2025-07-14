@@ -90,17 +90,55 @@
 
 /* Mobile Toggle Button */
 .mobile-toggle {
-  display: none;
+  display: none; /* Hidden by default */
   background: transparent;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.375rem;
   color: rgba(255, 255, 255, 0.8);
   font-size: 1.25rem;
   cursor: pointer;
   padding: 0.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
 }
 
 .mobile-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
   color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.mobile-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+/* Mobile toggle icon animation */
+.mobile-toggle i {
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.mobile-toggle.active i {
+  transform: rotate(180deg);
+}
+
+/* Show mobile toggle ONLY on mobile devices */
+@media (max-width: 768px) {
+  .mobile-toggle {
+    display: flex !important;
+  }
+}
+
+/* Explicitly hide on desktop and tablets */
+@media (min-width: 769px) {
+  .mobile-toggle {
+    display: none !important;
+  }
 }
 
 /* Button sizes */

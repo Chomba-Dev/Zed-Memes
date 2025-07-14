@@ -113,39 +113,79 @@ class Navigation {
   }
 
   /**
-   * Close mobile navigation menu
+   * Enhanced close mobile navigation menu
    */
   closeMobileMenu() {
-    if (window.innerWidth <= 768) {
-      const mainNav = document.getElementById('mainNav');
-      const mobileToggle = document.getElementById('mobileToggle');
-      const toggleIcon = mobileToggle?.querySelector('i');
+    const mainNav = document.getElementById('mainNav');
+    const mobileToggle = document.getElementById('mobileToggle');
+    const toggleIcon = mobileToggle?.querySelector('i');
+    
+    if (mainNav && mobileToggle) {
+      mainNav.classList.remove('active');
+      mobileToggle.classList.remove('active');
       
-      if (mainNav && toggleIcon) {
-        mainNav.classList.remove('active');
-        toggleIcon.className = 'bi-list';
+      if (toggleIcon) {
+        toggleIcon.className = 'bi-arrow-bar-right'; // Reset to expand icon
       }
+      
+      // Restore body scroll
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      
+      console.log('Mobile menu closed');
     }
   }
 
   /**
-   * Mobile Navigation Toggle
+   * Enhanced Mobile Navigation Toggle
    */
   initMobileToggle() {
     const mobileToggle = document.getElementById('mobileToggle');
     const mainNav = document.getElementById('mainNav');
     
-    if (!mobileToggle || !mainNav) return;
+    if (!mobileToggle || !mainNav) {
+      console.log('Mobile toggle elements not found');
+      return;
+    }
     
     const toggleIcon = mobileToggle.querySelector('i');
+    let isOpen = false;
 
-    mobileToggle.addEventListener('click', () => {
-      mainNav.classList.toggle('active');
+    console.log('Mobile toggle initialized successfully');
+
+    mobileToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       
-      if (mainNav.classList.contains('active')) {
-        toggleIcon.className = 'bi-x';
+      // Only work on mobile
+      if (window.innerWidth > 768) {
+        return;
+      }
+      
+      isOpen = !isOpen;
+      
+      // Toggle classes with proper timing
+      mainNav.classList.toggle('active', isOpen);
+      mobileToggle.classList.toggle('active', isOpen);
+      
+      // Update icon with smooth animation
+      if (toggleIcon) {
+        if (isOpen) {
+          // Use collapse/close icon when menu is open
+          toggleIcon.className = 'bi-arrow-bar-left';
+        } else {
+          // Use expand icon when menu is closed
+          toggleIcon.className = 'bi-arrow-bar-right';
+        }
+      }
+      
+      // Handle body scroll when menu is open (prevent background scrolling)
+      if (isOpen) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = '0px'; // Prevent layout shift
       } else {
-        toggleIcon.className = 'bi-list';
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
       }
     });
 
@@ -153,8 +193,36 @@ class Navigation {
     const navLinks = document.querySelectorAll('.main-nav .nav-link');
     navLinks.forEach(link => {
       link.addEventListener('click', () => {
-        this.closeMobileMenu();
+        if (window.innerWidth <= 768) {
+          this.closeMobileMenu();
+        }
       });
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 && 
+          !mainNav.contains(e.target) && 
+          !mobileToggle.contains(e.target) && 
+          mainNav.classList.contains('active')) {
+        this.closeMobileMenu();
+      }
+    });
+
+    // Handle escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && 
+          window.innerWidth <= 768 && 
+          mainNav.classList.contains('active')) {
+        this.closeMobileMenu();
+      }
+    });
+
+    // Handle window resize - close menu if switching to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768 && mainNav.classList.contains('active')) {
+        this.closeMobileMenu();
+      }
     });
   }
 
@@ -230,12 +298,17 @@ class Navigation {
       const toggleIcon = mobileToggle.querySelector('i');
       
       if (window.innerWidth > 768) {
+        // Close mobile menu when switching to desktop
         mainNav.classList.remove('active');
+        mobileToggle.classList.remove('active');
+        
         if (toggleIcon) {
-          toggleIcon.className = 'bi-list';
+          toggleIcon.className = 'bi-arrow-bar-right';
         }
-        // Reinitialize hover effects for desktop
-        this.initSubMenus();
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
       }
     });
   }
@@ -412,8 +485,8 @@ class Navigation {
     const themeToggle = document.getElementById('themeToggle');
     const profileToggle = document.getElementById('accountNavbarDropdown');
     
-    console.log('Theme toggle element:', themeToggle);
-    console.log('Profile toggle element:', profileToggle);
+    console.log('Theme toggle element:', themeToggle ? 'Found' : 'Not found');
+    console.log('Profile toggle element:', profileToggle ? 'Found' : 'Not found');
     
     if (!themeToggle) {
       console.error('Theme toggle not found!');
@@ -422,17 +495,6 @@ class Navigation {
     if (!profileToggle) {
       console.error('Profile toggle not found!');
     }
-    
-    // Add debugging to see if clicks are being detected
-    document.addEventListener('click', (e) => {
-      console.log('Click detected on:', e.target);
-      if (e.target.closest('#themeToggle')) {
-        console.log('Theme toggle clicked!');
-      }
-      if (e.target.closest('#accountNavbarDropdown')) {
-        console.log('Profile toggle clicked!');
-      }
-    });
   }
 }
 

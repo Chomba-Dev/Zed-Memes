@@ -349,6 +349,11 @@ h5 {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .navbar-dark {
+    position: relative;
+    z-index: 1001;
+  }
+
   .search-container {
     display: none;
   }
@@ -371,5 +376,51 @@ h5 {
     width: 28px;
     height: 28px;
     font-size: 0.75rem;
+  }
+
+  /* Mobile Toggle - Show only on mobile */
+  .mobile-toggle {
+    display: flex !important;
+    position: relative;
+    z-index: 1002;
+  }
+
+  /* Ensure mobile toggle is visible and properly styled */
+  .mobile-toggle i {
+    font-size: 1.125rem;
+    transition: all 0.3s ease;
+  }
+
+  /* Smooth icon transitions */
+  .mobile-toggle.active i {
+    color: #6366f1;
+    transform: rotate(180deg);
+  }
+
+  /* Add backdrop when mobile menu is open */
+  .main-nav.active::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* Desktop and Tablet - Hide mobile toggle */
+@media (min-width: 769px) {
+  .mobile-toggle {
+    display: none !important;
   }
 }
