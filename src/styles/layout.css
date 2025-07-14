@@ -8,7 +8,7 @@
   width: 100%;
 }
 
-/* Only apply sticky positioning on tablet and desktop */
+/* Apply sticky positioning on all screen sizes */
 @media (min-width: 769px) {
   .header {
     position: sticky !important;
@@ -17,11 +17,11 @@
   }
 }
 
-/* On mobile, use relative positioning */
+/* On mobile, also use sticky positioning */
 @media (max-width: 768px) {
   .header {
-    position: relative !important;
-    top: auto !important;
+    position: sticky !important;
+    top: 0 !important;
     z-index: 1030 !important;
   }
 }

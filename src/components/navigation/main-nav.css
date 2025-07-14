@@ -175,10 +175,11 @@
 /* Responsive - Mobile Navigation with Pure White Background */
 @media (max-width: 768px) {
   .navbar-light {
-    position: relative; /* Remove sticky positioning on mobile */
-    top: auto; /* Reset top position */
+    position: sticky !important;
+    top: 70px !important; /* Position below the dark navbar */
     z-index: 1000;
     background-color: #f8f9fa; /* Keep the navbar container gray */
+    width: 100%;
   }
 
   /* Override the container background for mobile navigation */

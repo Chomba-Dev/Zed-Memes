@@ -354,9 +354,10 @@ h5 {
 /* Responsive */
 @media (max-width: 768px) {
   .navbar-dark {
-    position: relative;
+    position: sticky !important;
+    top: 0 !important;
     z-index: 1001;
-    top: auto; /* Remove sticky positioning on mobile */
+    width: 100%;
   }
 
   .search-container {
@@ -445,7 +446,7 @@ h5 {
   /* Ensure mobile nav breaks out of any parent background */
   .navbar-light .main-nav {
     position: fixed !important; /* Use fixed positioning to break out completely */
-    top: 120px !important; /* Position below both navbars */
+    top: 120px !important; /* Position below both sticky navbars */
     left: 0 !important;
     right: 0 !important;
     width: 100vw !important; /* Full viewport width */
@@ -455,7 +456,7 @@ h5 {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
     border: none !important;
     border-radius: 0 !important; /* Remove border radius for full-width look */
-    z-index: 1000 !important;
+    z-index: 999 !important; /* Lower than sticky navbar */
   }
 
   .navbar-light .main-nav.active {
