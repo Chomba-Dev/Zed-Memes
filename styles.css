@@ -156,7 +156,7 @@ body {
 
 .navbar-light .navbar-content {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
 }
 
 .main-nav {
