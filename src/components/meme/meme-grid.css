@@ -1,12 +1,15 @@
 /* Meme Grid Styles - Updated for Bootstrap Grid */
 
 .meme-grid {
-  margin-bottom: 2rem;
+  margin-bottom: 0; /* Remove bottom margin */
+  margin-top: 0; /* Remove top margin */
 }
 
 .meme-grid .row {
   margin-left: -0.75rem;
   margin-right: -0.75rem;
+  margin-top: 0; /* Remove top margin */
+  margin-bottom: 0; /* Remove bottom margin */
 }
 
 .meme-grid .col-sm-6,
@@ -14,6 +17,7 @@
 .meme-grid .col-xl-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
+  padding-bottom: 0.5rem; /* Small bottom padding instead of margin */
 }
 
 .meme-grid[data-grid-type="large"] .col-xl-3 {
@@ -34,7 +38,7 @@
 
 .meme-grid[data-grid-type="masonry"] .meme-card {
   break-inside: avoid;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem; /* Reduced from 1.5rem */
 }
 
 /* Loading State */
@@ -88,7 +92,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem; /* Reduced from 2rem */
   flex-wrap: wrap;
   gap: 1rem;
 }

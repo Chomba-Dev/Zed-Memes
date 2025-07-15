@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="./src/components/ui/empty-state.css">
 </head>
 
-<body>
+<body style="background-color: white;">
   <!-- Header with Two Navbars -->
   <header class="header">
     <!-- Dark Navbar -->
@@ -175,25 +175,13 @@
     <div class="container">
       <!-- Home Section -->
       <section id="home-content" class="content-section active">
-        <div class="content-header">
-          <h1><i class="bi-house-door"></i> Home</h1>
-          <p>Welcome to ZedMemes - Your favorite meme destination!</p>
-        </div>
-        
-        <div class="home-featured">
-          <div class="meme-grid" data-grid-type="default" id="homeMemeGrid">
-            <!-- Meme cards will be dynamically loaded here -->
-          </div>
+        <div class="meme-grid" data-grid-type="default" id="homeMemeGrid">
+          <!-- Meme cards will be dynamically loaded here -->
         </div>
       </section>
 
       <!-- Trending Section -->
       <section id="trending-content" class="content-section">
-        <div class="content-header">
-          <h1><i class="bi-graph-up"></i> Trending</h1>
-          <p>The hottest memes right now!</p>
-        </div>
-        
         <div class="meme-grid" data-grid-type="default">
           <!-- Trending memes will be loaded here -->
         </div>
@@ -201,11 +189,6 @@
 
       <!-- Your Likes Section -->
       <section id="likes-content" class="content-section">
-        <div class="content-header">
-          <h1><i class="bi-heart"></i> Your Likes</h1>
-          <p>Memes you've loved and saved</p>
-        </div>
-        
         <div class="meme-grid" data-grid-type="default">
           <!-- Liked memes will be loaded here -->
         </div>
@@ -213,11 +196,6 @@
 
       <!-- Your Uploads Section -->
       <section id="uploads-content" class="content-section">
-        <div class="content-header">
-          <h1><i class="bi-upload"></i> Your Uploads</h1>
-          <p>Memes you've shared with the world</p>
-        </div>
-        
         <div class="meme-grid" data-grid-type="default">
           <!-- User uploads will be loaded here -->
         </div>

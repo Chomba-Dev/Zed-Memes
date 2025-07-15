@@ -27,9 +27,17 @@
 }
 
 .main-content {
-  margin-top: 120px; /* Space for fixed header */
+  margin-top: 20px; /* Double the margin for more breathing room */
   min-height: calc(100vh - 120px);
-  padding: 2rem 0;
+  padding: 0; /* Remove padding to eliminate space */
+  background-color: white;
+}
+
+/* Reduce margin on mobile when second navbar is hidden */
+@media (max-width: 768px) {
+  .main-content {
+    margin-top: 10px; /* Reduced margin on mobile */
+  }
 }
 
 .content-section {
@@ -37,6 +45,8 @@
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.3s ease;
+  background-color: white;
+  padding: 0; /* Remove any padding */
 }
 
 .content-section.active {
@@ -48,6 +58,26 @@
 .content-section.slide-out {
   opacity: 0;
   transform: translateY(-20px);
+}
+
+/* Content Header Styles */
+.content-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.content-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+}
+
+.content-header p {
+  color: #6c757d;
+  font-size: 1rem;
+  margin-bottom: 0;
 }
 
 .content-header {
