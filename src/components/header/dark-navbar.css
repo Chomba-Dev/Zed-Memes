@@ -21,10 +21,161 @@
   text-decoration: none;
   font-size: 1.5rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .navbar-brand:hover {
   color: #f8f9fa;
+}
+
+/* Logo Responsive Styles */
+.navbar-logo {
+  height: 48px;
+  width: auto;
+  max-width: 240px;
+  object-fit: contain;
+  transition: all 0.2s ease;
+  display: block;
+  
+  /* Ensure logo loads smoothly */
+  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast;
+  
+  /* Prevent logo from breaking layout while loading */
+  min-width: 90px;
+  background: transparent;
+  
+  /* Add subtle hover effect */
+  opacity: 1;
+}
+
+.navbar-logo:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+/* Logo loading state */
+.navbar-logo[src=""], .navbar-logo:not([src]) {
+  min-width: 140px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  position: relative;
+}
+
+.navbar-logo[src=""]:before, .navbar-logo:not([src]):before {
+  content: "ZedMemes";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Tablet and smaller desktop screens */
+@media (max-width: 1024px) {
+  .navbar-logo {
+    height: 42px;
+    max-width: 210px;
+  }
+}
+
+/* Mobile landscape and portrait tablets */
+@media (max-width: 768px) {
+  .navbar-logo {
+    height: 38px;
+    max-width: 180px;
+  }
+  
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 575.98px) {
+  .navbar-logo {
+    height: 34px;
+    max-width: 140px;
+  }
+  
+  .navbar-brand {
+    font-size: 1.125rem;
+  }
+}
+
+/* Extra small mobile screens */
+@media (max-width: 480px) {
+  .navbar-logo {
+    height: 30px;
+    max-width: 120px;
+  }
+  
+  .navbar-brand {
+    font-size: 1rem;
+  }
+}
+
+/* Extra responsive adjustments for small screens */
+@media (max-width: 480px) {
+  .navbar-content {
+    min-height: 44px;
+    padding: 0.25rem 0;
+  }
+
+  .navbar-brand {
+    margin-right: 0.5rem;
+  }
+
+  .navbar-nav {
+    gap: 0.125rem;
+  }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.875rem;
+  }
+
+  .avatar {
+    width: 26px;
+    height: 26px;
+  }
+
+  .avatar-sm {
+    width: 24px;
+    height: 24px;
+    font-size: 0.625rem;
+  }
+
+  .mobile-toggle {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mobile-toggle i {
+    font-size: 1rem;
+  }
+}
+
+/* Large screens - ensure logo doesn't get too big */
+@media (min-width: 1200px) {
+  .navbar-logo {
+    height: 52px;
+    max-width: 260px;
+  }
+}
+
+/* Ultra-wide screens - prevent logo from getting too large */
+@media (min-width: 1600px) {
+  .navbar-logo {
+    height: 56px;
+    max-width: 280px;
+  }
 }
 
 /* Search Form */
@@ -368,6 +519,16 @@ h5 {
     gap: 0.25rem;
   }
 
+  /* Give logo more space on mobile */
+  .navbar-brand {
+    flex-shrink: 0;
+    margin-right: 1rem;
+  }
+
+  .navbar-content {
+    min-height: 48px;
+  }
+
   .btn-icon {
     width: 35px;
     height: 35px;
@@ -506,5 +667,13 @@ h5 {
     to {
       opacity: 1;
     }
+  }
+}
+
+/* High DPI displays - ensure crisp logo rendering */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .navbar-logo {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 }
