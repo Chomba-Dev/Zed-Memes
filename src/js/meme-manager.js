@@ -75,6 +75,16 @@ class MemeManager {
         e.preventDefault();
         this.handleShare(e.target.closest('.meme-share-btn'));
       }
+      
+      if (e.target.closest('.btn-upvote')) {
+        e.preventDefault();
+        this.handleUpvote(e.target.closest('.btn-upvote'));
+      }
+      
+      if (e.target.closest('.btn-downvote')) {
+        e.preventDefault();
+        this.handleDownvote(e.target.closest('.btn-downvote'));
+      }
     });
   }
 
@@ -164,115 +174,153 @@ class MemeManager {
         image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
         title: "Team Collaboration",
         likes: 53,
-        views: "2.2k"
+        views: "2.2k",
+        upvotes: 84,
+        downvotes: 12
       },
       {
         image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Modern Workspace",
         likes: 87,
-        views: "3.4k"
+        views: "3.4k",
+        upvotes: 142,
+        downvotes: 23
       },
       {
         image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Business Meeting",
         likes: 42,
-        views: "1.8k"
+        views: "1.8k",
+        upvotes: 67,
+        downvotes: 8
       },
       {
         image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Tech Innovation",
         likes: 96,
-        views: "4.1k"
+        views: "4.1k",
+        upvotes: 203,
+        downvotes: 31
       },
       {
         image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Digital Strategy",
         likes: 71,
-        views: "2.9k"
+        views: "2.9k",
+        upvotes: 118,
+        downvotes: 15
       },
       {
         image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Creative Process",
         likes: 38,
-        views: "1.5k"
+        views: "1.5k",
+        upvotes: 52,
+        downvotes: 7
       },
       {
         image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Data Analytics",
         likes: 124,
-        views: "5.2k"
+        views: "5.2k",
+        upvotes: 287,
+        downvotes: 43
       },
       {
         image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Startup Culture",
         likes: 67,
-        views: "2.7k"
+        views: "2.7k",
+        upvotes: 95,
+        downvotes: 18
       },
       {
         image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Remote Work",
         likes: 89,
-        views: "3.6k"
+        views: "3.6k",
+        upvotes: 156,
+        downvotes: 21
       },
       {
         image: "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Office Design",
         likes: 55,
-        views: "2.1k"
+        views: "2.1k",
+        upvotes: 78,
+        downvotes: 9
       },
       {
         image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Product Launch",
         likes: 103,
-        views: "4.5k"
+        views: "4.5k",
+        upvotes: 234,
+        downvotes: 38
       },
       {
         image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Brand Strategy",
         likes: 76,
-        views: "3.1k"
+        views: "3.1k",
+        upvotes: 124,
+        downvotes: 19
       },
       {
         image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Marketing Campaign",
         likes: 91,
-        views: "3.8k"
+        views: "3.8k",
+        upvotes: 167,
+        downvotes: 25
       },
       {
         image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Growth Hacking",
         likes: 62,
-        views: "2.4k"
+        views: "2.4k",
+        upvotes: 89,
+        downvotes: 13
       },
       {
         image: "https://images.unsplash.com/photo-1553028826-f4804a6dba3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "User Experience",
         likes: 84,
-        views: "3.3k"
+        views: "3.3k",
+        upvotes: 145,
+        downvotes: 22
       },
       {
         image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Digital Transformation",
         likes: 118,
-        views: "4.9k"
+        views: "4.9k",
+        upvotes: 298,
+        downvotes: 47
       },
       {
         image: "https://images.unsplash.com/photo-1552664688-cf412ec27db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Team Building",
         likes: 47,
-        views: "1.9k"
+        views: "1.9k",
+        upvotes: 63,
+        downvotes: 6
       },
       {
         image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Leadership",
         likes: 79,
-        views: "3.2k"
+        views: "3.2k",
+        upvotes: 132,
+        downvotes: 17
       },
       {
         image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         title: "Future of Work",
         likes: 112,
-        views: "4.7k"
+        views: "4.7k",
+        upvotes: 256,
+        downvotes: 41
       }
     ];
     
@@ -287,6 +335,8 @@ class MemeManager {
         title: sourceData.title,
         likes: sourceData.likes,
         views: sourceData.views,
+        upvotes: sourceData.upvotes,
+        downvotes: sourceData.downvotes,
         image: sourceData.image,
         isLiked: this.likedMemes.has(id),
         isSaved: this.savedMemes.has(id),
@@ -371,12 +421,24 @@ class MemeManager {
           <div class="user-information">
             <div class="photo">ZM</div>
             <span class="display-name">ZedMemes</span>
-            <div class="meme-statistic">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" class="meme-tools-icon">
-                <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" fill="currentColor"/>
-              </svg>
-              <span>${meme.likes}</span>
+            
+            <!-- Vote buttons -->
+            <div class="meme-vote-container">
+              <button class="btn-vote btn-upvote" data-meme-id="${meme.id}" data-action="upvote" title="Upvote">
+                <svg fill="currentColor" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 19c-.072 0-.145 0-.218-.006A4.1 4.1 0 0 1 6 14.816V11H2.862a1.751 1.751 0 0 1-1.234-2.993L9.41.28a.836.836 0 0 1 1.18 0l7.782 7.727A1.751 1.751 0 0 1 17.139 11H14v3.882a4.134 4.134 0 0 1-.854 2.592A3.99 3.99 0 0 1 10 19Zm0-17.193L2.685 9.071a.251.251 0 0 0 .177.429H7.5v5.316A2.63 2.63 0 0 0 9.864 17.5a2.441 2.441 0 0 0 1.856-.682A2.478 2.478 0 0 0 12.5 15V9.5h4.639a.25.25 0 0 0 .176-.429L10 1.807Z"></path>
+                </svg>
+                <span class="vote-count">${meme.upvotes || 0}</span>
+              </button>
+              
+              <button class="btn-vote btn-downvote" data-meme-id="${meme.id}" data-action="downvote" title="Downvote">
+                <svg fill="currentColor" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 1c.072 0 .145 0 .218.006A4.1 4.1 0 0 1 14 5.184V9h3.138a1.751 1.751 0 0 1 1.234 2.993L10.59 19.72a.836.836 0 0 1-1.18 0l-7.782-7.727A1.751 1.751 0 0 1 2.861 9H6V5.118a4.134 4.134 0 0 1 .854-2.592A3.99 3.99 0 0 1 10 1Zm0 17.193 7.315-7.264a.251.251 0 0 0-.177-.429H12.5V5.184A2.631 2.631 0 0 0 10.136 2.5a2.441 2.441 0 0 0-1.856.682A2.478 2.478 0 0 0 7.5 5v5.5H2.861a.251.251 0 0 0-.176.429L10 18.193Z"></path>
+                </svg>
+                <span class="vote-count">${meme.downvotes || 0}</span>
+              </button>
             </div>
+            
             <div class="meme-statistic">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" class="meme-tools-icon">
                 <path d="M10.7408 2C13.0889 2 14.6667 4.235 14.6667 6.32C14.6667 10.5425 8.11856 14 8.00004 14C7.88152 14 1.33337 10.5425 1.33337 6.32C1.33337 4.235 2.91115 2 5.2593 2C6.60745 2 7.48893 2.6825 8.00004 3.2825C8.51115 2.6825 9.39263 2 10.7408 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -485,6 +547,94 @@ class MemeManager {
       }).catch(() => {
         this.showToast('Unable to copy link');
       });
+    }
+  }
+
+  /**
+   * Handle upvote action
+   * @param {HTMLElement} button - Upvote button element
+   */
+  handleUpvote(button) {
+    const memeId = button.getAttribute('data-meme-id');
+    const countSpan = button.querySelector('.vote-count');
+    const card = button.closest('.meme-card');
+    const downvoteBtn = card.querySelector('.btn-downvote');
+    
+    if (button.classList.contains('active')) {
+      // Remove upvote
+      button.classList.remove('active');
+      card.classList.remove('upvoted');
+      
+      // Decrease count
+      const currentCount = parseInt(countSpan.textContent) || 0;
+      countSpan.textContent = currentCount - 1;
+    } else {
+      // Add upvote
+      button.classList.add('active');
+      card.classList.add('upvoted');
+      card.classList.remove('downvoted');
+      
+      // Remove downvote if active
+      if (downvoteBtn.classList.contains('active')) {
+        downvoteBtn.classList.remove('active');
+        const downvoteCount = downvoteBtn.querySelector('.vote-count');
+        const downvoteCurrentCount = parseInt(downvoteCount.textContent) || 0;
+        downvoteCount.textContent = downvoteCurrentCount - 1;
+      }
+      
+      // Increase count
+      const currentCount = parseInt(countSpan.textContent) || 0;
+      countSpan.textContent = currentCount + 1;
+      
+      // Add animation
+      button.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        button.style.transform = '';
+      }, 200);
+    }
+  }
+
+  /**
+   * Handle downvote action
+   * @param {HTMLElement} button - Downvote button element
+   */
+  handleDownvote(button) {
+    const memeId = button.getAttribute('data-meme-id');
+    const countSpan = button.querySelector('.vote-count');
+    const card = button.closest('.meme-card');
+    const upvoteBtn = card.querySelector('.btn-upvote');
+    
+    if (button.classList.contains('active')) {
+      // Remove downvote
+      button.classList.remove('active');
+      card.classList.remove('downvoted');
+      
+      // Decrease count (or increase since it's negative)
+      const currentCount = parseInt(countSpan.textContent) || 0;
+      countSpan.textContent = currentCount - 1;
+    } else {
+      // Add downvote
+      button.classList.add('active');
+      card.classList.add('downvoted');
+      card.classList.remove('upvoted');
+      
+      // Remove upvote if active
+      if (upvoteBtn.classList.contains('active')) {
+        upvoteBtn.classList.remove('active');
+        const upvoteCount = upvoteBtn.querySelector('.vote-count');
+        const upvoteCurrentCount = parseInt(upvoteCount.textContent) || 0;
+        upvoteCount.textContent = upvoteCurrentCount - 1;
+      }
+      
+      // Increase count
+      const currentCount = parseInt(countSpan.textContent) || 0;
+      countSpan.textContent = currentCount + 1;
+      
+      // Add animation
+      button.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        button.style.transform = '';
+      }, 200);
     }
   }
 

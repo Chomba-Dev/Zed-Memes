@@ -677,3 +677,55 @@ h5 {
     image-rendering: crisp-edges;
   }
 }
+
+/* Login and Sign Up button styling */
+.navbar-nav .btn {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.navbar-nav .btn-outline-primary {
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+.navbar-nav .btn-outline-primary:hover {
+  background-color: #6366f1;
+  border-color: #6366f1;
+  color: white;
+}
+
+.navbar-nav .btn-primary {
+  background-color: #6366f1;
+  border-color: #6366f1;
+}
+
+.navbar-nav .btn-primary:hover {
+  background-color: #5856eb;
+  border-color: #5856eb;
+}
+
+/* Modal styling adjustments */
+.ui.modal .header {
+  background-color: #f8f9fa;
+  color: #343a40;
+  border-bottom: 1px solid #dee2e6;
+  text-align: center;
+}
+
+.ui.modal .content {
+  background-color: white;
+}
+
+.ui.modal .actions {
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+.ui.modal .positive.button {
+  background-color: #6366f1 !important;
+}
+
+.ui.modal .positive.button:hover {
+  background-color: #5856eb !important;
+}
