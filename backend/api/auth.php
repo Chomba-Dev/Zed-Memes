@@ -22,8 +22,7 @@ try {
     $authHandler = new AuthHandler();
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $action = $_GET['action'] ?? '';
-        
+        $action = $_REQUESTT['action'] ?? '';
         switch ($action) {
             case 'register':
                 handleRegister($authHandler);
@@ -34,9 +33,23 @@ try {
             case 'verify_token':
                 handleVerifyToken($authHandler);
                 break;
+            default:
+                sendResponse(false, 'Invalid action');
+        }
+    } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $action = $_REQUEST['action'] ?? '';
+
+        switch ($action) {
             case 'profile':
                 handleGetProfile($authHandler);
                 break;
+            default:
+                sendResponse(false, 'Invalid action');
+        }
+    } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+        $action = $_REQUEST['action'] ?? '';
+
+        switch ($action) {
             case 'edit_profile':
                 handleEditProfile($authHandler);
                 break;
@@ -110,21 +123,13 @@ function handleRegister($authHandler) {
  */
 function handleLogin($authHandler) {
     $json = json_decode(file_get_contents("php://input"), true);
-    $email = $json['email'];
-    $password = $json['password'];
-    
-    // Validate input
-    if (empty($email) || empty($password)) {
-        sendResponse(false, 'Email and password are required');
+    $identifier = $json['identifier'] ?? '';
+    $password = $json['password'] ?? '';
+    if (empty($identifier) || empty($password)) {
+        sendResponse(false, 'Username/email and password are required');
     }
-    
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        sendResponse(false, 'Invalid email format');
-    }
-    
     try {
-        $result = $authHandler->login($email, $password);
-        
+        $result = $authHandler->login($identifier, $password);
         if ($result['success']) {
             sendResponse(true, 'Login successful', $result['data']);
         } else {
@@ -203,7 +208,7 @@ function handleEditProfile($authHandler) {
     if (!$json) {
         sendResponse(false, 'No data provided');
     }
-    $fields = array_intersect_key($json, array_flip(['username', 'email', 'bio', 'profile_picture']));
+    $fields = array_intersect_key($json, array_flip(['username', 'email', 'profile_picture_path']));
     if (empty($fields)) {
         sendResponse(false, 'No valid fields to update');
     }

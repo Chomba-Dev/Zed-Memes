@@ -70,7 +70,8 @@ function handleAddReaction($db, $authHandler) {
         sendResponse(false, 'Invalid meme ID');
     }
     
-    if (!in_array($reactionType, ['like', 'dislike'])) {
+    $allowedTypes = ['like', 'love', 'haha', 'wow', 'sad', 'angry'];
+    if (!in_array($reactionType, $allowedTypes)) {
         sendResponse(false, 'Invalid reaction type');
     }
     
@@ -84,72 +85,50 @@ function handleAddReaction($db, $authHandler) {
         
         // Check if user already has a reaction
         $stmt = $db->prepare("
-            SELECT reaction_id, reaction_type 
-            FROM reactions 
-            WHERE meme_id = ? AND user_id = ?
+            SELECT reaction_id, vote_type 
+            FROM user_meme_reaction 
+            WHERE meme_id = ? AND user_id = ? AND vote_type = ?
         ");
-        $stmt->execute([$memeId, $currentUser['user_id']]);
+        $stmt->execute([$memeId, $currentUser['user_id'], $reactionType]);
         $existingReaction = $stmt->fetch();
         
         if ($existingReaction) {
             // Update existing reaction
-            if ($existingReaction['reaction_type'] === $reactionType) {
-                // Remove reaction if clicking the same type
-                $stmt = $db->prepare("DELETE FROM reactions WHERE reaction_id = ?");
-                $stmt->execute([$existingReaction['reaction_id']]);
-            } else {
-                // Change reaction type
-                $stmt = $db->prepare("
-                    UPDATE reactions 
-                    SET reaction_type = ?, updated_at = NOW() 
-                    WHERE reaction_id = ?
-                ");
-                $stmt->execute([$reactionType, $existingReaction['id']]);
-            }
+            // Remove reaction if clicking the same type
+            $stmt = $db->prepare("DELETE FROM user_meme_reaction WHERE reaction_id = ?");
+            $stmt->execute([$existingReaction['reaction_id']]);
         } else {
             // Add new reaction
             $stmt = $db->prepare("
-                INSERT INTO reactions (meme_id, user_id, reaction_type, created_at) 
-                VALUES (?, ?, ?, NOW())
+                INSERT INTO user_meme_reaction (meme_id, user_id, vote_type) 
+                VALUES (?, ?, ?)
             ");
             $stmt->execute([$memeId, $currentUser['user_id'], $reactionType]);
         }
         
-        // Get updated reaction counts
-        $likes = $db->prepare("
-            SELECT COUNT(*) as count 
-            FROM reactions 
-            WHERE meme_id = ? AND reaction_type = 'like'
-        ");
-        $likes->execute([$memeId]);
-        $likesCount = $likes->fetch()['count'];
-        
-        $dislikes = $db->prepare("
-            SELECT COUNT(*) as count 
-            FROM reactions 
-            WHERE meme_id = ? AND reaction_type = 'dislike'
-        ");
-        $dislikes->execute([$memeId]);
-        $dislikesCount = $dislikes->fetch()['count'];
+        // Get updated reaction counts for all types
+        $counts = [];
+        foreach ($allowedTypes as $type) {
+            $stmt = $db->prepare("
+                SELECT COUNT(*) as count 
+                FROM user_meme_reaction 
+                WHERE meme_id = ? AND vote_type = ?
+            ");
+            $stmt->execute([$memeId, $type]);
+            $counts[$type] = (int)($stmt->fetch()['count'] ?? 0);
+        }
         
         // Get user's current reaction
         $userReaction = null;
         if ($existingReaction) {
-            if ($existingReaction['reaction_type'] === $reactionType) {
-                // Reaction was removed
-                $userReaction = null;
-            } else {
-                // Reaction was changed
-                $userReaction = $reactionType;
-            }
+            // Reaction was removed
+            $userReaction = null;
         } else {
             // New reaction added
             $userReaction = $reactionType;
         }
-        
         sendResponse(true, 'Reaction updated successfully', [
-            'likes' => $likesCount,
-            'dislikes' => $dislikesCount,
+            'reactions' => $counts,
             'user_reaction' => $userReaction
         ]);
         
@@ -188,31 +167,24 @@ function handleRemoveReaction($db, $authHandler) {
     try {
         // Remove user's reaction
         $stmt = $db->prepare("
-            DELETE FROM reactions 
+            DELETE FROM user_meme_reaction 
             WHERE meme_id = ? AND user_id = ?
         ");
         $stmt->execute([$memeId, $currentUser['user_id']]);
-        
-        // Get updated reaction counts
-        $likes = $db->prepare("
-            SELECT COUNT(*) as count 
-            FROM reactions 
-            WHERE meme_id = ? AND reaction_type = 'like'
-        ");
-        $likes->execute([$memeId]);
-        $likesCount = $likes->fetch()['count'];
-        
-        $dislikes = $db->prepare("
-            SELECT COUNT(*) as count 
-            FROM reactions 
-            WHERE meme_id = ? AND reaction_type = 'dislike'
-        ");
-        $dislikes->execute([$memeId]);
-        $dislikesCount = $dislikes->fetch()['count'];
-        
+        // Get updated reaction counts for all types
+        $allowedTypes = ['like', 'love', 'haha', 'wow', 'sad', 'angry'];
+        $counts = [];
+        foreach ($allowedTypes as $type) {
+            $stmt = $db->prepare("
+                SELECT COUNT(*) as count 
+                FROM user_meme_reaction 
+                WHERE meme_id = ? AND vote_type = ?
+            ");
+            $stmt->execute([$memeId, $type]);
+            $counts[$type] = (int)($stmt->fetch()['count'] ?? 0);
+        }
         sendResponse(true, 'Reaction removed successfully', [
-            'likes' => $likesCount,
-            'dislikes' => $dislikesCount,
+            'reactions' => $counts,
             'user_reaction' => null
         ]);
         
