@@ -345,7 +345,7 @@ class MemeManager {
       <div class="meme-thumbnail js-thumbnail meme-thumbnail-container">
         <div class="js-thumbnail-base meme-thumbnail-base disabled-meme-section meme-card" data-meme-id="${meme.id}">
           <figure class="js-thumbnail-placeholder meme-thumbnail-placeholder">
-            <img src="${meme.image}" alt="${meme.title}" style="filter: grayscale(100%);">
+            <img src="${meme.image}" alt="${meme.title}">
           </figure>
 
           <div class="meme-thumbnail-overlay">

@@ -16,10 +16,14 @@
   /* Remove box-shadow, keeping just the border line */
 }
 
-/* Hide second navbar on mobile */
+/* Show navbar on mobile but hide the nav links by default */
 @media (max-width: 768px) {
   .navbar-light {
-    display: none;
+    display: block; /* Show the navbar container */
+  }
+  
+  .main-nav {
+    display: none; /* Hide the navigation links by default */
   }
 }
 

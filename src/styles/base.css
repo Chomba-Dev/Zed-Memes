@@ -193,3 +193,49 @@ img {
     max-width: 25%;
   }
 }
+
+/* Page Header Styles */
+.page-header-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #343a40;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Uploads page header with Liberation Mono font */
+#uploads-content .page-header-title {
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+  font-weight: 700;
+}
+
+/* Row and Column Layout */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.col {
+  flex: 1;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.col-auto {
+  flex: 0 0 auto;
+  width: auto;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+/* Spacing utilities */
+.me-1 {
+  margin-right: 0.25rem;
+}

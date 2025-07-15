@@ -38,6 +38,11 @@
   .main-content {
     margin-top: 10px; /* Reduced margin on mobile */
   }
+  
+  /* Adjust margin when mobile nav is open */
+  .main-nav.active ~ .main-content {
+    margin-top: 15px; /* Slightly more space when mobile nav is open */
+  }
 }
 
 .content-section {
