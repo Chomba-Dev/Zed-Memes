@@ -1,47 +1,29 @@
-# Zed-Memes Backend Documentation
+# Zed-Memes Backend API Documentation
 
 ## Overview
 
-The Zed-Memes backend is a RESTful API built in PHP, providing endpoints for user authentication, meme management, comments, reactions, and image uploads. The backend uses JWT-based authentication for protected routes and returns all responses in JSON format.
+The Zed-Memes backend is a RESTful API built in PHP, providing endpoints for user authentication, meme management, reactions, voting, image uploads, and logging. The backend uses JWT-based authentication for protected routes and returns all responses in JSON format.
 
 ---
 
 ## Table of Contents
 
-1. [Authentication & Authorization](#authentication--authorization)
-2. [API Endpoints](#api-endpoints)
-    - [Auth](#auth)
-    - [Memes](#memes)
-    - [Comments](#comments)
-    - [Reactions](#reactions)
-    - [Upload](#upload)
-3. [Database Structure](#database-structure)
-4. [Error Handling](#error-handling)
-5. [CORS & Headers](#cors--headers)
-6. [Example Usage](#example-usage)
+1. [Authentication](#authentication)
+2. [Memes](#memes)
+3. [Reactions](#reactions)
+4. [Votes](#votes)
+5. [Upload](#upload)
+6. [Logs](#logs)
+7. [Error Handling](#error-handling)
+8. [CORS & Headers](#cors--headers)
 
 ---
 
-## Authentication & Authorization
+## Authentication
 
-- **JWT (JSON Web Token)** is used for authentication.
-- After registration or login, the API returns a `token` which must be included in the `Authorization` header for protected endpoints.
-- Format:  
-  ```
-  Authorization: Bearer <token>
-  ```
-- Tokens are valid for 24 hours.
+**Base URL:** `/backend/api/auth.php`
 
----
-
-## API Endpoints
-
-### Auth
-
-**Base URL:** `/backend/api/auth.php?action=<action>`
-
-#### 1. Register
-
+### 1. Register
 - **Method:** `POST`
 - **Action:** `register`
 - **Request Body (JSON):**
@@ -68,23 +50,38 @@ The Zed-Memes backend is a RESTful API built in PHP, providing endpoints for use
     }
   }
   ```
+- **Errors:**
+  - Missing/invalid fields, password mismatch, weak password, duplicate email/username, etc.
 
-#### 2. Login
-
+### 2. Login
 - **Method:** `POST`
 - **Action:** `login`
 - **Request Body (JSON):**
   ```json
   {
-    "email": "string",
+    "identifier": "username or email",
     "password": "string"
   }
   ```
-- **Response:**  
-  Same as registration.
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Login successful",
+    "data": {
+      "token": "JWT token",
+      "user": {
+        "id": 1,
+        "username": "string",
+        "email": "string"
+      }
+    }
+  }
+  ```
+- **Errors:**
+  - Invalid credentials, missing fields, etc.
 
-#### 3. Verify Token
-
+### 3. Verify Token
 - **Method:** `POST`
 - **Action:** `verify_token`
 - **Headers:** `Authorization: Bearer <token>`
@@ -100,10 +97,11 @@ The Zed-Memes backend is a RESTful API built in PHP, providing endpoints for use
     }
   }
   ```
+- **Errors:**
+  - No token, invalid/expired token
 
-#### 4. Get Profile
-
-- **Method:** `POST`
+### 4. Get Profile
+- **Method:** `GET`
 - **Action:** `profile`
 - **Headers:** `Authorization: Bearer <token>`
 - **Response:**
@@ -124,10 +122,11 @@ The Zed-Memes backend is a RESTful API built in PHP, providing endpoints for use
     }
   }
   ```
+- **Errors:**
+  - No token, invalid/expired token
 
-#### 5. Edit Profile
-
-- **Method:** `POST`
+### 5. Edit Profile
+- **Method:** `PUT`
 - **Action:** `edit_profile`
 - **Headers:** `Authorization: Bearer <token>`
 - **Request Body (JSON):**
@@ -135,165 +134,233 @@ The Zed-Memes backend is a RESTful API built in PHP, providing endpoints for use
   {
     "username": "string (optional)",
     "email": "string (optional)",
-    "bio": "string (optional)",
-    "profile_picture": "url (optional)"
+    "profile_picture_path": "url (optional)"
   }
   ```
-- **Response:**  
-  Standard success/error response.
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Profile updated successfully"
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token, no valid fields
 
-#### 6. Delete Profile
-
-- **Method:** `POST`
+### 6. Delete Profile
+- **Method:** `PUT`
 - **Action:** `delete_profile`
 - **Headers:** `Authorization: Bearer <token>`
-- **Response:**  
-  Standard success/error response.
-
----
-
-### Memes
-
-**Base URL:** `/backend/api/memes.php?action=<action>`
-
-#### 1. Get Memes (Paginated)
-
-- **Method:** `GET`
-- **Action:** `get_memes`
-- **Query Params:** `page`, `limit`
 - **Response:**
   ```json
   {
     "success": true,
-    "message": "Memes retrieved successfully",
-    "data": {
-      "memes": [ ... ],
-      "pagination": {
-        "current_page": 1,
-        "total_pages": 10,
-        "total_items": 100,
-        "items_per_page": 12
-      }
-    }
+    "message": "Profile deleted successfully"
   }
   ```
+- **Errors:**
+  - No token, invalid/expired token
 
-#### 2. Get Meme Detail
+---
 
+## Memes
+
+**Base URL:** `/backend/api/memes.php`
+
+### 1. Get Memes (Relevant/Random)
 - **Method:** `GET`
-- **Action:** `get_meme_detail`
-- **Query Params:** `meme_id`
-- **Headers (optional):** `Authorization: Bearer <token>` (to get user reaction)
-- **Response:**  
-  Meme details, including user reaction if authenticated.
+- **Action:** `get_memes` or `get_relevant`
+- **Headers (optional):** `Authorization: Bearer <token>`
+- **Query Params:**
+  - `limit` (optional, default 12, max 20)
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Relevant memes retrieved successfully",
+    "data": [
+      {
+        "meme_id": 1,
+        "user": { "user_id": 1, "username": "string", "email": "string" },
+        "image_path": "url",
+        "caption": "string",
+        "uploaded_at": "datetime",
+        "download_logs": [ ... ],
+        "share_logs": [ ... ],
+        "reactions": [ { "vote_type": "like", "count": 10 }, ... ],
+        "votes": [ { "vote_type": "upvote", "count": 5 }, ... ]
+      }
+    ]
+  }
+  ```
+- **Notes:**
+  - If no token is provided, returns random memes.
 
-#### 3. Get Trending Memes
-
+### 2. Get Trending Memes
 - **Method:** `GET`
 - **Action:** `get_trending`
-- **Response:**  
-  List of trending memes.
-
-#### 4. Search Memes
-
-- **Method:** `GET`
-- **Action:** `search_memes`
-- **Query Params:** `query`
-- **Response:**  
-  List of memes matching the search.
-
-#### 5. Filter Memes
-
-- **Method:** `GET`
-- **Action:** `filter_memes`
-- **Query Params:** `category` (e.g., funny, gaming, animals, politics, other)
-- **Response:**  
-  List of memes in the category.
-
----
-
-### Comments
-
-**Base URL:** `/backend/api/comments.php`
-
-#### 1. Get Comments
-
-- **Method:** `GET`
-- **Action:** `get_comments`
-- **Query Params:** `meme_id`, `page`, `limit`
+- **Query Params:**
+  - `limit` (optional, default 12, max 20)
 - **Response:**
   ```json
   {
     "success": true,
-    "message": "Comments retrieved successfully",
-    "data": {
-      "comments": [ ... ],
-      "pagination": { ... }
-    }
+    "message": "Trending memes retrieved successfully",
+    "data": [ ... ]
   }
   ```
 
-#### 2. Add Comment
+### 3. Search Memes
+- **Method:** `GET`
+- **Action:** `search_memes`
+- **Query Params:**
+  - `query` (required, min 2 chars)
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Search completed successfully",
+    "data": [
+      {
+        "meme_id": 1,
+        "title": "string",
+        "description": "string",
+        "image_path": "url",
+        "category": "string",
+        "created_at": "datetime",
+        "author": "string",
+        "user_id": 1,
+        "likes": 10,
+        "dislikes": 2,
+        "comments_count": 5
+      }
+    ]
+  }
+  ```
+- **Errors:**
+  - Missing/short query, etc.
 
-- **Method:** `POST`
-- **Form Data:**
-  - `action=add_comment`
-  - `meme_id`
-  - `comment_text`
+### 4. Get User Uploads
+- **Method:** `GET`
+- **Action:** `get_user_uploads`
 - **Headers:** `Authorization: Bearer <token>`
-- **Response:**  
-  Newly created comment and updated comment count.
-
-#### 3. Delete Comment
-
-- **Method:** `POST`
-- **Form Data:**
-  - `action=delete_comment`
-  - `comment_id`
-- **Headers:** `Authorization: Bearer <token>`
-- **Response:**  
-  Updated comment count.
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "User uploaded memes retrieved successfully",
+    "data": [ ... ]
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token
 
 ---
 
-### Reactions
+## Reactions
 
 **Base URL:** `/backend/api/reactions.php`
 
-#### 1. Add Reaction
-
+### 1. Add Reaction
 - **Method:** `POST`
 - **Form Data:**
   - `action=add_reaction`
-  - `meme_id`
-  - `reaction_type` (`like` or `dislike`)
+  - `meme_id` (int, required)
+  - `reaction_type` (string, one of: like, love, haha, wow, sad, angry)
 - **Headers:** `Authorization: Bearer <token>`
-- **Response:**  
-  Updated reaction counts.
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Reaction updated successfully",
+    "data": {
+      "reactions": { "like": 10, "love": 2, ... },
+      "user_reaction": "like" // or null if removed
+    }
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token, invalid meme ID/type
 
-#### 2. Remove Reaction
-
+### 2. Remove Reaction
 - **Method:** `POST`
 - **Form Data:**
   - `action=remove_reaction`
-  - `meme_id`
+  - `meme_id` (int, required)
 - **Headers:** `Authorization: Bearer <token>`
-- **Response:**  
-  Updated reaction counts.
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Reaction removed successfully",
+    "data": {
+      "reactions": { "like": 9, "love": 2, ... },
+      "user_reaction": null
+    }
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token, invalid meme ID
 
 ---
 
-### Upload
+## Votes
+
+**Base URL:** `/backend/api/upvote.php`
+
+### 1. Add Vote
+- **Method:** `POST`
+- **Form Data:**
+  - `action=add_vote`
+  - `meme_id` (int, required)
+  - `vote_type` (string, one of: upvote, downvote)
+- **Headers:** `Authorization: Bearer <token>`
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "vote updated successfully",
+    "data": {
+      "upvotes": 10,
+      "downvotes": 2,
+      "user_vote": "upvote" // or null if removed
+    }
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token, invalid meme ID/type
+
+### 2. Remove Vote
+- **Method:** `POST`
+- **Form Data:**
+  - `action=remove_vote`
+  - `meme_id` (int, required)
+- **Headers:** `Authorization: Bearer <token>`
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "vote removed successfully",
+    "data": {
+      "upvotes": 9,
+      "downvotes": 2,
+      "user_vote": null
+    }
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token, invalid meme ID
+
+---
+
+## Upload
 
 **Base URL:** `/backend/api/upload.php`
 
-#### 1. Upload Meme
-
+### 1. Upload Meme
 - **Method:** `POST`
 - **Form Data (multipart/form-data):**
-  - `title` (string, 3-100 chars)
-  - `description` (optional, max 500 chars)
-  - `category` (funny, gaming, animals, politics, other)
+  - `caption` (string, optional, max 255 chars)
   - `meme_image` (file, required)
 - **Headers:** `Authorization: Bearer <token>`
 - **Response:**
@@ -308,20 +375,96 @@ The Zed-Memes backend is a RESTful API built in PHP, providing endpoints for use
     }
   }
   ```
+- **Errors:**
+  - No token, invalid/expired token, missing/invalid file, caption too long
+
+### 2. Upload Profile Picture
+- **Method:** `POST`
+- **Form Data (multipart/form-data):**
+  - `action=upload_profile_picture`
+  - `profile_picture` (file, required)
+- **Headers:** `Authorization: Bearer <token>`
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Profile picture uploaded successfully",
+    "data": {
+      "profile_picture_path": "url"
+    }
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token, missing/invalid file
+
+### 3. Delete Meme
+- **Method:** `POST`
+- **Form Data:**
+  - `action=delete_meme`
+  - `meme_id` (int, required)
+- **Headers:** `Authorization: Bearer <token>`
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Meme deleted successfully"
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token, invalid meme ID
+
+### 4. Delete Profile Picture
+- **Method:** `POST`
+- **Form Data:**
+  - `action=delete_profile_picture`
+- **Headers:** `Authorization: Bearer <token>`
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Profile picture deleted successfully"
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token
 
 ---
 
-## Database Structure
+## Logs
 
-- **users:** User accounts, profile info, admin/verified flags.
-- **memes:** Meme posts, images, categories, author, stats.
-- **reactions:** User reactions to memes (like, dislike, etc.).
-- **comments:** Comments on memes, supports threading.
-- **tags, meme_tags:** Tagging system for memes.
-- **user_follows, user_favorites:** Social features.
-- **notifications:** User notifications.
-- **api_rate_limits:** API rate limiting.
-- **system_settings:** Configurable backend settings.
+**Base URL:** `/backend/api/logs.php`
+
+### 1. Add Download Log
+- **Method:** `POST`
+- **Form Data:**
+  - `action=add_download_log`
+  - `meme_id` (int, required)
+- **Headers:** `Authorization: Bearer <token>`
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Download log added successfully"
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token, invalid meme ID
+
+### 2. Add Share Log
+- **Method:** `POST`
+- **Form Data:**
+  - `action=add_share_log`
+  - `meme_id` (int, required)
+- **Headers:** `Authorization: Bearer <token>`
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "message": "Share log added successfully"
+  }
+  ```
+- **Errors:**
+  - No token, invalid/expired token, invalid meme ID
 
 ---
 
@@ -345,30 +488,28 @@ The Zed-Memes backend is a RESTful API built in PHP, providing endpoints for use
 
 **Register:**
 ```bash
-curl -X POST "http://<host>/backend/api/auth.php?action=register" \
+curl -X POST "http://<host>/backend/api/auth.php" \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser","email":"test@example.com","password":"TestPass123","confirm_password":"TestPass123"}'
+  -d '{"username":"testuser","email":"test@example.com","password":"TestPass123","confirm_password":"TestPass123","action":"register"}'
 ```
 
 **Login:**
 ```bash
-curl -X POST "http://<host>/backend/api/auth.php?action=login" \
+curl -X POST "http://<host>/backend/api/auth.php" \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"TestPass123"}'
+  -d '{"identifier":"test@example.com","password":"TestPass123","action":"login"}'
 ```
 
 **Get Memes:**
 ```bash
-curl -X GET "http://<host>/backend/api/memes.php?action=get_memes&page=1&limit=12"
+curl -X GET "http://<host>/backend/api/memes.php?action=get_memes&limit=12"
 ```
 
 **Upload Meme:**
 ```bash
 curl -X POST "http://<host>/backend/api/upload.php" \
   -H "Authorization: Bearer <token>" \
-  -F "title=My Meme" \
-  -F "description=Funny meme" \
-  -F "category=funny" \
+  -F "caption=My Meme" \
   -F "meme_image=@/path/to/image.jpg"
 ```
 
@@ -379,5 +520,6 @@ curl -X POST "http://<host>/backend/api/upload.php" \
 - Always check the `success` field in responses.
 - Use the JWT token for all protected actions.
 - For file uploads, use `multipart/form-data`.
-- Pagination is supported for memes and comments.
-- Categories and reaction types are validated on the backend. 
+- Pagination is supported for memes (see `limit` param).
+- Categories and reaction types are validated on the backend.
+- Comments API is currently **deprecated/removed**. 

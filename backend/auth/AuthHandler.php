@@ -25,74 +25,56 @@ class AuthHandler {
             if ($stmt->fetch()) {
                 return ['success' => false, 'message' => 'Username already exists'];
             }
-            
             // Check if email already exists
             $stmt = $this->db->prepare("SELECT user_id FROM users WHERE email = ?");
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
                 return ['success' => false, 'message' => 'Email already registered'];
             }
-            
             // Hash password
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            
             // Insert new user
-            $stmt = $this->db->prepare("
-                INSERT INTO users (username, email, password, created_at) 
-                VALUES (?, ?, ?, NOW())
-            ");
+            $stmt = $this->db->prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)");
             $stmt->execute([$username, $email, $hashedPassword]);
-            
             $userId = $this->db->lastInsertId();
-            
             // Generate token
             $token = $this->generateToken($userId, $username, $email);
-            
             return [
                 'success' => true,
                 'message' => 'Registration successful',
                 'data' => [
                     'token' => $token,
                     'user' => [
-                        'id' => $userId,
+                        'user_id' => $userId,
                         'username' => $username,
                         'email' => $email
                     ]
                 ]
             ];
-            
         } catch (Exception $e) {
             error_log("Registration error: " . $e->getMessage());
             return ['success' => false, 'message' => 'Registration failed'];
         }
     }
-    
+
     /**
-     * Login user
+     * Login user (by email or username)
      */
-    public function login($email, $password) {
+    public function login($identifier, $password) {
         try {
-            // Get user by email
-            $stmt = $this->db->prepare("
-                SELECT user_id, username, email, password 
-                FROM users 
-                WHERE email = ?
-            ");
-            $stmt->execute([$email]);
+            // Get user by email or username
+            $stmt = $this->db->prepare("SELECT user_id, username, email, password_hash FROM users WHERE email = ? OR username = ?");
+            $stmt->execute([$identifier, $identifier]);
             $user = $stmt->fetch();
-            
             if (!$user) {
-                return ['success' => false, 'message' => 'Invalid email or password'];
+                return ['success' => false, 'message' => 'Invalid username/email or password'];
             }
-            
             // Verify password
-            if (!password_verify($password, $user['password'])) {
-                return ['success' => false, 'message' => 'Invalid email or password'];
+            if (!password_verify($password, $user['password_hash'])) {
+                return ['success' => false, 'message' => 'Invalid username/email or password'];
             }
-            
             // Generate token
             $token = $this->generateToken($user['user_id'], $user['username'], $user['email']);
-            
             return [
                 'success' => true,
                 'message' => 'Login successful',
@@ -105,13 +87,12 @@ class AuthHandler {
                     ]
                 ]
             ];
-            
         } catch (Exception $e) {
             error_log("Login error: " . $e->getMessage());
             return ['success' => false, 'message' => 'Login failed'];
         }
     }
-    
+
     /**
      * Verify JWT token
      */
@@ -220,16 +201,9 @@ class AuthHandler {
     public function updatePassword($userId, $newPassword) {
         try {
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-            
-            $stmt = $this->db->prepare("
-                UPDATE users 
-                SET password = ?, updated_at = NOW() 
-                WHERE user_id = ?
-            ");
+            $stmt = $this->db->prepare("UPDATE users SET password_hash = ? WHERE user_id = ?");
             $stmt->execute([$hashedPassword, $userId]);
-            
             return ['success' => true, 'message' => 'Password updated successfully'];
-            
         } catch (Exception $e) {
             error_log("Password update error: " . $e->getMessage());
             return ['success' => false, 'message' => 'Password update failed'];
@@ -242,27 +216,20 @@ class AuthHandler {
     public function deleteAccount($userId) {
         try {
             $this->db->beginTransaction();
-            
             // Delete user's memes
             $stmt = $this->db->prepare("DELETE FROM memes WHERE user_id = ?");
             $stmt->execute([$userId]);
-            
+            // Delete user's votes
+            $stmt = $this->db->prepare("DELETE FROM user_meme_votes WHERE user_id = ?");
+            $stmt->execute([$userId]);
             // Delete user's reactions
-            $stmt = $this->db->prepare("DELETE FROM reactions WHERE user_id = ?");
+            $stmt = $this->db->prepare("DELETE FROM user_meme_reaction WHERE user_id = ?");
             $stmt->execute([$userId]);
-            
-            // Delete user's comments
-            $stmt = $this->db->prepare("DELETE FROM comments WHERE user_id = ?");
-            $stmt->execute([$userId]);
-            
             // Delete user
             $stmt = $this->db->prepare("DELETE FROM users WHERE user_id = ?");
             $stmt->execute([$userId]);
-            
             $this->db->commit();
-            
             return ['success' => true, 'message' => 'Account deleted successfully'];
-            
         } catch (Exception $e) {
             $this->db->rollback();
             error_log("Account deletion error: " . $e->getMessage());
@@ -275,7 +242,7 @@ class AuthHandler {
      */
     public function getProfile($userId) {
         try {
-            $stmt = $this->db->prepare("SELECT user_id, username, email, profile_picture, bio, is_verified, is_admin, created_at, updated_at FROM users WHERE user_id = ?");
+            $stmt = $this->db->prepare("SELECT user_id, username, email, profile_picture_path FROM users WHERE user_id = ?");
             $stmt->execute([$userId]);
             $user = $stmt->fetch();
             if (!$user) {
@@ -289,11 +256,11 @@ class AuthHandler {
     }
 
     /**
-     * Update user profile (username, email, bio, profile_picture)
+     * Update user profile (username, email, profile_picture_path)
      */
     public function updateProfile($userId, $fields) {
         try {
-            $allowed = ['username', 'email', 'bio', 'profile_picture'];
+            $allowed = ['username', 'email', 'profile_picture_path'];
             $set = [];
             $params = [];
             foreach ($fields as $key => $value) {
@@ -306,7 +273,7 @@ class AuthHandler {
                 return ['success' => false, 'message' => 'No valid fields to update'];
             }
             $params[] = $userId;
-            $sql = "UPDATE users SET " . implode(", ", $set) . ", updated_at = NOW() WHERE user_id = ?";
+            $sql = "UPDATE users SET " . implode(", ", $set) . " WHERE user_id = ?";
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
             return ['success' => true, 'message' => 'Profile updated successfully'];

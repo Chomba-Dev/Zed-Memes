@@ -237,6 +237,46 @@ class UploadHandler {
     }
     
     /**
+     * Upload a profile picture and update user record
+     */
+    public function uploadProfilePicture($file, $userId) {
+        try {
+            // Validate file
+            $validation = $this->validateFile($file);
+            if (!$validation['success']) {
+                return $validation;
+            }
+
+            // Generate unique filename
+            $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $timestamp = time();
+            $random = bin2hex(random_bytes(8));
+            $filename = "profile_{$userId}_{$timestamp}_{$random}.{$extension}";
+            $filepath = $this->uploadDir . $filename;
+
+            // Process and save image
+            $processResult = $this->processImage($file['tmp_name'], $filepath);
+            if (!$processResult['success']) {
+                return $processResult;
+            }
+
+            // Update user profile_picture_path in DB
+            $stmt = $this->db->prepare("UPDATE users SET profile_picture_path = ? WHERE user_id = ?");
+            $stmt->execute([$filename, $userId]);
+
+            return [
+                'success' => true,
+                'data' => [
+                    'profile_picture_path' => $filename
+                ]
+            ];
+        } catch (Exception $e) {
+            error_log("Profile picture upload error: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Profile picture upload failed'];
+        }
+    }
+    
+    /**
      * Delete meme and associated files
      */
     public function deleteMeme($memeId, $userId) {
@@ -287,6 +327,66 @@ class UploadHandler {
             $this->db->rollback();
             error_log("Delete meme error: " . $e->getMessage());
             return ['success' => false, 'message' => 'Failed to delete meme'];
+        }
+    }
+    
+    /**
+     * Delete meme and associated image file
+     */
+    public function deleteMemeWithImage($memeId, $userId) {
+        try {
+            // Get meme info
+            $stmt = $this->db->prepare("SELECT image_path, user_id FROM memes WHERE meme_id = ?");
+            $stmt->execute([$memeId]);
+            $meme = $stmt->fetch();
+            if (!$meme) {
+                return ['success' => false, 'message' => 'Meme not found'];
+            }
+            if ($meme['user_id'] != $userId) {
+                return ['success' => false, 'message' => 'Unauthorized'];
+            }
+            $this->db->beginTransaction();
+            // Delete meme record
+            $stmt = $this->db->prepare("DELETE FROM memes WHERE meme_id = ?");
+            $stmt->execute([$memeId]);
+            $this->db->commit();
+            // Delete image file
+            $filepath = $this->uploadDir . $meme['image_path'];
+            if (file_exists($filepath)) {
+                unlink($filepath);
+            }
+            return ['success' => true, 'message' => 'Meme and image deleted successfully'];
+        } catch (Exception $e) {
+            $this->db->rollback();
+            error_log("Delete meme with image error: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Failed to delete meme and image'];
+        }
+    }
+
+    /**
+     * Delete user's profile picture (set to NULL and remove file)
+     */
+    public function deleteProfilePicture($userId) {
+        try {
+            // Get current profile picture path
+            $stmt = $this->db->prepare("SELECT profile_picture_path FROM users WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch();
+            if (!$user || !$user['profile_picture_path']) {
+                return ['success' => false, 'message' => 'No profile picture to delete'];
+            }
+            $filepath = $this->uploadDir . $user['profile_picture_path'];
+            // Set profile_picture_path to NULL
+            $stmt = $this->db->prepare("UPDATE users SET profile_picture_path = NULL WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            // Delete image file
+            if (file_exists($filepath)) {
+                unlink($filepath);
+            }
+            return ['success' => true, 'message' => 'Profile picture deleted successfully'];
+        } catch (Exception $e) {
+            error_log("Delete profile picture error: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Failed to delete profile picture'];
         }
     }
     

@@ -37,10 +37,6 @@ echo "✅ All required PHP extensions are installed\n";
 $directories = [
     'assets/images',
     'assets/uploads',
-    'logs',
-    'cache',
-    'backups',
-    'reports'
 ];
 
 echo "\n📁 Creating directories...\n";
@@ -321,21 +317,6 @@ try {
     exit(1);
 }
 
-// Run tests
-echo "\n🧪 Running tests...\n";
-if (file_exists('run_tests.php')) {
-    $output = shell_exec('php run_tests.php 2>&1');
-    echo $output;
-    
-    if (strpos($output, 'All tests passed') !== false) {
-        echo "✅ All tests passed!\n";
-    } else {
-        echo "⚠️  Some tests failed. Check the output above.\n";
-    }
-} else {
-    echo "ℹ️  Test runner not found. Skipping tests.\n";
-}
-
 // Create .htaccess for Apache
 echo "\n🌐 Creating .htaccess file...\n";
 $htaccess_content = 'RewriteEngine On
@@ -350,8 +331,6 @@ Header always set X-XSS-Protection "1; mode=block"
 
 # Cache control for static assets
 <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg)$">
-    // ExpiresActive On
-    ExpiresDefault "access plus 1 month"
 </FilesMatch>';
 
 if (file_put_contents('.htaccess', $htaccess_content)) {
