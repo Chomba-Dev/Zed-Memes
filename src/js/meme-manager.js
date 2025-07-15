@@ -318,17 +318,12 @@ class MemeManager {
       return;
     }
     
-    // Create a row container for Bootstrap grid
-    const rowContainer = document.createElement('div');
-    rowContainer.className = 'row';
-    
     console.log('Creating meme cards...');
     memes.forEach(meme => {
       const memeCard = this.createMemeCard(meme);
-      rowContainer.appendChild(memeCard);
+      container.appendChild(memeCard);
     });
     
-    container.appendChild(rowContainer);
     console.log('Meme grid rendered successfully');
   }
 
@@ -339,7 +334,7 @@ class MemeManager {
    */
   createMemeCard(meme) {
     const cardDiv = document.createElement('div');
-    cardDiv.className = 'col-sm-6 col-lg-4 col-xl-3 mb-3 mb-lg-5';
+    cardDiv.className = 'four wide column';
     
     cardDiv.innerHTML = `
       <div class="meme-thumbnail js-thumbnail meme-thumbnail-container">

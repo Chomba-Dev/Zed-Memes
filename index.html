@@ -14,6 +14,9 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   
+  <!-- Semantic UI CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  
   <!-- Modular CSS -->
   <link rel="stylesheet" href="./src/styles/base.css">
   <link rel="stylesheet" href="./src/styles/layout.css">
@@ -176,21 +179,21 @@
     <div class="container">
       <!-- Home Section -->
       <section id="home-content" class="content-section active">
-        <div class="meme-grid" data-grid-type="default" id="homeMemeGrid">
+        <div class="ui grid meme-grid" data-grid-type="default" id="homeMemeGrid">
           <!-- Meme cards will be dynamically loaded here -->
         </div>
       </section>
 
       <!-- Trending Section -->
       <section id="trending-content" class="content-section">
-        <div class="meme-grid" data-grid-type="default">
+        <div class="ui grid meme-grid" data-grid-type="default">
           <!-- Trending memes will be loaded here -->
         </div>
       </section>
 
       <!-- Your Likes Section -->
       <section id="likes-content" class="content-section">
-        <div class="meme-grid" data-grid-type="default">
+        <div class="ui grid meme-grid" data-grid-type="default">
           <!-- Liked memes will be loaded here -->
         </div>
       </section>
@@ -211,7 +214,7 @@
           <!-- End Col -->
         </div>
         
-        <div class="meme-grid" data-grid-type="default">
+        <div class="ui grid meme-grid" data-grid-type="default">
           <!-- User uploads will be loaded here -->
         </div>
       </section>
@@ -219,6 +222,7 @@
   </main>
 
   <!-- JavaScript Modules -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
   <script src="./src/js/theme-manager.js"></script>
   <script src="./src/js/navigation.js"></script>
   <script src="./src/js/meme-manager.js"></script>

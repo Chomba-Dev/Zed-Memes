@@ -1,39 +1,77 @@
-/* Meme Grid Styles - Updated for Bootstrap Grid */
+/* Meme Grid Styles - Updated for Semantic UI Grid */
 
 .meme-grid {
   margin-bottom: 0; /* Remove bottom margin */
   margin-top: 0; /* Remove top margin */
 }
 
-.meme-grid .row {
-  margin-left: -0.75rem;
-  margin-right: -0.75rem;
-  margin-top: 0; /* Remove top margin */
-  margin-bottom: 0; /* Remove bottom margin */
+/* Meme Grid Styles - Force 4 columns per row */
+
+.meme-grid {
+  margin-bottom: 0;
+  margin-top: 0;
 }
 
-.meme-grid .col-sm-6,
-.meme-grid .col-lg-4,
-.meme-grid .col-xl-3 {
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
-  padding-bottom: 0.5rem; /* Small bottom padding instead of margin */
+.meme-grid.ui.grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-.meme-grid[data-grid-type="large"] .col-xl-3 {
-  flex: 0 0 33.333333%;
-  max-width: 33.333333%;
+.meme-grid.ui.grid > .four.wide.column {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+  box-sizing: border-box !important;
 }
 
-.meme-grid[data-grid-type="compact"] .col-xl-3 {
-  flex: 0 0 20%;
-  max-width: 20%;
+/* Handle different grid types */
+.meme-grid[data-grid-type="large"].ui.grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+.meme-grid[data-grid-type="compact"].ui.grid {
+  grid-template-columns: repeat(5, 1fr) !important;
+}
+
+/* Ensure masonry layout overrides grid display */
+.meme-grid[data-grid-type="masonry"].ui.grid {
+  display: block !important;
+  columns: 280px;
+  column-gap: 1.5rem;
+  grid-template-columns: none !important;
+}
+
+.meme-grid[data-grid-type="masonry"].ui.grid > .four.wide.column {
+  display: inline-block !important;
+  break-inside: avoid;
+  margin-bottom: 1rem;
+  width: auto !important;
+}
+
+@media (min-width: 768px) {
+  .meme-grid[data-grid-type="masonry"].ui.grid {
+    columns: 250px;
+  }
+}
+
+@media (max-width: 767px) {
+  .meme-grid[data-grid-type="masonry"].ui.grid {
+    columns: 1;
+    column-gap: 0;
+  }
 }
 
 .meme-grid[data-grid-type="masonry"] {
   columns: 280px;
   column-gap: 1.5rem;
-  display: block;
+  display: block !important;
 }
 
 .meme-grid[data-grid-type="masonry"] .meme-card {
@@ -182,37 +220,71 @@
   margin-left: 0.5rem;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .meme-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+/* Responsive Grid */
+@media (min-width: 1200px) {
+  .meme-grid.ui.grid {
+    grid-template-columns: repeat(4, 1fr) !important;
   }
   
-  .meme-grid[data-grid-type="large"] {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  .meme-grid[data-grid-type="large"].ui.grid {
+    grid-template-columns: repeat(3, 1fr) !important;
   }
   
+  .meme-grid[data-grid-type="compact"].ui.grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .meme-grid.ui.grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .meme-grid[data-grid-type="large"].ui.grid,
+  .meme-grid[data-grid-type="compact"].ui.grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .meme-grid.ui.grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .meme-grid[data-grid-type="large"].ui.grid,
+  .meme-grid[data-grid-type="compact"].ui.grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .meme-grid.ui.grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  .meme-grid[data-grid-type="large"].ui.grid,
+  .meme-grid[data-grid-type="compact"].ui.grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+}
+
+/* Masonry layout handling */
+@media (min-width: 768px) {
   .meme-grid[data-grid-type="masonry"] {
     columns: 250px;
   }
 }
 
-@media (max-width: 768px) {
-  .meme-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-  
-  .meme-grid[data-grid-type="large"],
-  .meme-grid[data-grid-type="compact"] {
-    grid-template-columns: 1fr;
-  }
-  
+@media (max-width: 767px) {
   .meme-grid[data-grid-type="masonry"] {
     columns: 1;
     column-gap: 0;
   }
-  
+}
+
+/* Grid controls responsive */
+@media (max-width: 767px) {
   .meme-grid-controls {
     flex-direction: column;
     align-items: stretch;
@@ -221,37 +293,18 @@
   .grid-view-toggle {
     justify-content: center;
   }
-}
-
-@media (max-width: 575.98px) {
-  .meme-grid .row {
-    margin-left: -0.5rem;
-    margin-right: -0.5rem;
-  }
-  
-  .meme-grid .col-sm-6,
-  .meme-grid .col-lg-4,
-  .meme-grid .col-xl-3 {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
   
   .meme-card {
     margin-bottom: 1rem;
   }
 }
 
-/* Tablet adjustments */
-@media (min-width: 576px) and (max-width: 991.98px) {
-  .meme-grid .row {
-    margin-left: -0.625rem;
-    margin-right: -0.625rem;
-  }
-  
-  .meme-grid .col-sm-6,
-  .meme-grid .col-lg-4,
-  .meme-grid .col-xl-3 {
-    padding-left: 0.625rem;
-    padding-right: 0.625rem;
-  }
+/* Override any conflicting Semantic UI styles */
+.meme-grid.ui.grid > .four.wide.column {
+  position: relative !important;
+}
+
+.meme-grid.ui.grid > .four.wide.column .meme-card {
+  width: 100% !important;
+  height: auto !important;
 }
