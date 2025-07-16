@@ -11,6 +11,8 @@ class MemeManager {
     this.currentSort = 'latest';
     this.likedMemes = new Set();
     this.savedMemes = new Set();
+    this.currentGalleryIndex = 0;
+    this.galleryMemes = [];
     this.init();
   }
 
@@ -61,6 +63,11 @@ class MemeManager {
 
     // Listen for meme interactions
     document.addEventListener('click', (e) => {
+      if (e.target.closest('.meme-view-btn')) {
+        e.preventDefault();
+        this.handleView(e.target.closest('.meme-view-btn'));
+      }
+      
       if (e.target.closest('.meme-like-btn')) {
         e.preventDefault();
         this.handleLike(e.target.closest('.meme-like-btn'));
@@ -84,6 +91,27 @@ class MemeManager {
       if (e.target.closest('.btn-downvote')) {
         e.preventDefault();
         this.handleDownvote(e.target.closest('.btn-downvote'));
+      }
+
+      // Gallery navigation
+      if (e.target.closest('#prevImageBtn')) {
+        e.preventDefault();
+        this.showPreviousImage();
+      }
+      
+      if (e.target.closest('#nextImageBtn')) {
+        e.preventDefault();
+        this.showNextImage();
+      }
+      
+      if (e.target.closest('#downloadImageBtn')) {
+        e.preventDefault();
+        this.downloadCurrentImage();
+      }
+      
+      if (e.target.closest('#shareImageBtn')) {
+        e.preventDefault();
+        this.shareCurrentImage();
       }
     });
   }
@@ -359,6 +387,9 @@ class MemeManager {
       return;
     }
     
+    // Store memes in instance variable so they can be accessed by gallery
+    this.memes = memes;
+    
     container.innerHTML = '';
     container.classList.remove('loading');
     
@@ -396,6 +427,14 @@ class MemeManager {
           <div class="meme-thumbnail-overlay">
             <div class="meme-thumbnail-overlay-content">
               <ul class="meme-actions-container">
+                <li class="meme-action">
+                  <a class="btn2 btn2--circle btn2--secondary-alt meme-view-btn" title="View" href="#" data-meme-id="${meme.id}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
+                      <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </li>
                 <li class="meme-action">
                   <a class="btn2 btn2--circle btn2--secondary-alt" title="Download" href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
@@ -638,91 +677,150 @@ class MemeManager {
   }
 
   /**
-   * Show empty state
-   * @param {HTMLElement} container - Container element
-   * @param {string} title - Empty state title
-   * @param {string} message - Empty state message
+   * Handle view action - Open image in gallery modal
+   * @param {HTMLElement} button - View button element
    */
-  showEmptyState(container, title, message) {
-    container.innerHTML = `
-      <div class="meme-grid-empty">
-        <i class="bi-emoji-frown"></i>
-        <h3>${title}</h3>
-        <p>${message}</p>
-      </div>
-    `;
-  }
-
-  /**
-   * Format number for display
-   * @param {number} num - Number to format
-   * @returns {string} Formatted number
-   */
-  formatNumber(num) {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'k';
+  handleView(button) {
+    const memeId = button.getAttribute('data-meme-id');
+    const meme = this.memes.find(m => m.id === memeId);
+    
+    if (meme) {
+      this.openGallery(meme);
     }
-    return num.toString();
   }
 
   /**
-   * Show toast notification
-   * @param {string} message - Toast message
+   * Open gallery modal with specific meme
+   * @param {Object} meme - Meme object to display
    */
-  showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.textContent = message;
-    toast.style.cssText = `
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #343a40;
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      z-index: 9999;
-      transform: translateY(100px);
-      transition: transform 0.3s ease;
-    `;
+  openGallery(meme) {
+    // Set current gallery data
+    this.galleryMemes = [...this.memes];
+    this.currentGalleryIndex = this.galleryMemes.findIndex(m => m.id === meme.id);
     
-    document.body.appendChild(toast);
-    
-    // Animate in
-    setTimeout(() => {
-      toast.style.transform = 'translateY(0)';
-    }, 10);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-      toast.style.transform = 'translateY(100px)';
-      setTimeout(() => {
-        document.body.removeChild(toast);
-      }, 300);
-    }, 3000);
+    // Show modal
+    if (typeof $ !== 'undefined' && $.fn.modal) {
+      $('#imageGalleryModal').modal('show');
+      this.updateGalleryImage();
+    }
   }
 
   /**
-   * Load more memes (for infinite scroll)
+   * Update gallery image and info
    */
-  loadMoreMemes() {
-    if (this.isLoading) return;
-    
-    this.isLoading = true;
-    this.currentPage++;
-    
-    // Simulate API call
-    setTimeout(() => {
-      const newMemes = this.generateSampleMemes(this.itemsPerPage);
-      this.memes.push(...newMemes);
-      this.isLoading = false;
-    }, 1000);
-  }
-}
+  updateGalleryImage() {
+    const currentMeme = this.galleryMemes[this.currentGalleryIndex];
+    if (!currentMeme) return;
 
-// Export for module use
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = MemeManager;
+    const loader = document.getElementById('galleryLoader');
+    const container = document.getElementById('galleryImageContainer');
+    const image = document.getElementById('galleryImage');
+    const title = document.getElementById('galleryImageTitle');
+    const stats = document.getElementById('galleryImageStats');
+    const galleryTitle = document.getElementById('galleryTitle');
+    const prevBtn = document.getElementById('prevImageBtn');
+    const nextBtn = document.getElementById('nextImageBtn');
+
+    // Show loader
+    loader.style.display = 'block';
+    container.style.display = 'none';
+
+    // Update navigation buttons
+    prevBtn.disabled = this.currentGalleryIndex === 0;
+    nextBtn.disabled = this.currentGalleryIndex === this.galleryMemes.length - 1;
+
+    // Update title
+    galleryTitle.textContent = `${currentMeme.title} (${this.currentGalleryIndex + 1} of ${this.galleryMemes.length})`;
+
+    // Load image
+    const img = new Image();
+    img.onload = () => {
+      image.src = currentMeme.image;
+      image.alt = currentMeme.title;
+      title.textContent = currentMeme.title;
+      stats.innerHTML = `
+        <span class="gallery-stat">
+          <i class="bi-heart"></i> ${currentMeme.likes || 0}
+        </span>
+        <span class="gallery-stat">
+          <i class="bi-eye"></i> ${currentMeme.views || 0}
+        </span>
+        <span class="gallery-stat">
+          <i class="bi-arrow-up"></i> ${currentMeme.upvotes || 0}
+        </span>
+        <span class="gallery-stat">
+          <i class="bi-arrow-down"></i> ${currentMeme.downvotes || 0}
+        </span>
+      `;
+
+      // Hide loader, show container
+      loader.style.display = 'none';
+      container.style.display = 'block';
+    };
+
+    img.onerror = () => {
+      loader.style.display = 'none';
+      container.style.display = 'block';
+      image.src = 'src/images/placeholder.png';
+      image.alt = 'Error loading image';
+    };
+
+    img.src = currentMeme.image;
+  }
+
+  /**
+   * Show previous image in gallery
+   */
+  showPreviousImage() {
+    if (this.currentGalleryIndex > 0) {
+      this.currentGalleryIndex--;
+      this.updateGalleryImage();
+    }
+  }
+
+  /**
+   * Show next image in gallery
+   */
+  showNextImage() {
+    if (this.currentGalleryIndex < this.galleryMemes.length - 1) {
+      this.currentGalleryIndex++;
+      this.updateGalleryImage();
+    }
+  }
+
+  /**
+   * Download current gallery image
+   */
+  downloadCurrentImage() {
+    const currentMeme = this.galleryMemes[this.currentGalleryIndex];
+    if (!currentMeme) return;
+
+    const link = document.createElement('a');
+    link.href = currentMeme.image;
+    link.download = `${currentMeme.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  /**
+   * Share current gallery image
+   */
+  shareCurrentImage() {
+    const currentMeme = this.galleryMemes[this.currentGalleryIndex];
+    if (!currentMeme) return;
+
+    if (navigator.share) {
+      navigator.share({
+        title: currentMeme.title,
+        text: `Check out this meme: ${currentMeme.title}`,
+        url: currentMeme.image
+      });
+    } else {
+      // Fallback - copy to clipboard
+      navigator.clipboard.writeText(currentMeme.image).then(() => {
+        alert('Image URL copied to clipboard!');
+      });
+    }
+  }
 }

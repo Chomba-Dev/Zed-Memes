@@ -330,6 +330,49 @@
     </div>
   </div>
 
+  <!-- Image Gallery Modal -->
+  <div class="ui fullscreen modal" id="imageGalleryModal">
+    <div class="header">
+      <i class="bi-images me-2"></i>
+      <span id="galleryTitle">Image Gallery</span>
+      <div class="ui right floated basic buttons">
+        <button class="ui button" id="prevImageBtn" title="Previous">
+          <i class="bi-chevron-left"></i>
+        </button>
+        <button class="ui button" id="nextImageBtn" title="Next">
+          <i class="bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="ui center aligned segment" id="galleryContent">
+        <div class="ui active centered inline loader" id="galleryLoader"></div>
+        <div class="gallery-image-container" id="galleryImageContainer" style="display: none;">
+          <img id="galleryImage" class="ui fluid image" alt="Gallery Image">
+          <div class="gallery-info">
+            <h3 id="galleryImageTitle"></h3>
+            <div class="gallery-stats">
+              <span id="galleryImageStats"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="ui left floated basic button" id="downloadImageBtn">
+        <i class="bi-download me-1"></i>Download
+      </div>
+      <div class="ui right floated buttons">
+        <div class="ui button" id="shareImageBtn">
+          <i class="bi-share me-1"></i>Share
+        </div>
+        <div class="ui deny button">
+          Close
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- JavaScript Modules -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
@@ -366,6 +409,29 @@
             // Handle signup logic here
             console.log('Sign up submitted');
             return false; // Prevent modal from closing for now
+          }
+        });
+
+        // Initialize image gallery modal
+        $('#imageGalleryModal').modal({
+          closable: true,
+          transition: 'scale',
+          duration: 300,
+          onShow: function() {
+            $('body').addClass('gallery-modal-open');
+            $(document).on('keydown.gallery', function(e) {
+              if (e.key === 'ArrowLeft') {
+                $('#prevImageBtn').click();
+              } else if (e.key === 'ArrowRight') {
+                $('#nextImageBtn').click();
+              } else if (e.key === 'Escape') {
+                $('#imageGalleryModal').modal('hide');
+              }
+            });
+          },
+          onHide: function() {
+            $('body').removeClass('gallery-modal-open');
+            $(document).off('keydown.gallery');
           }
         });
 
