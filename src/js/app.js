@@ -150,7 +150,10 @@ class ZedMemesApp {
       clearTimeout(searchTimeout);
       const query = e.target.value.trim();
       
-      if (query.length === 0) return;
+      if (query.length === 0) {
+        this.clearSearchResults();
+        return;
+      }
       
       searchTimeout = setTimeout(() => {
         this.performSearch(query);
@@ -171,10 +174,248 @@ class ZedMemesApp {
    * @param {string} query - Search query
    */
   performSearch(query) {
+    if (!query || query.length < 2) {
+      this.clearSearchResults();
+      return;
+    }
+
     console.log('Searching for:', query);
-    // TODO: Implement search functionality
-    // For now, just show a toast
-    this.showToast(`Searching for "${query}"...`);
+    this.showSearchLoading();
+
+    // Use absolute path for XAMPP
+    fetch(`/Zed-Memes/backend/api/memes.php?action=search_memes&query=${encodeURIComponent(query)}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Search results:', data);
+        
+        if (data.success) {
+          this.displaySearchResults(data.data, query);
+        } else {
+          this.showSearchError(data.message || 'Search failed');
+        }
+      })
+      .catch(err => {
+        console.error('Search error:', err);
+        this.showSearchError('Search error: ' + err.message);
+      });
+  }
+
+  /**
+   * Display search results in an overlay
+   * @param {Array} results - Search results
+   * @param {string} query - Search query
+   */
+  displaySearchResults(results, query) {
+    // Remove any existing search overlay
+    this.clearSearchResults();
+    
+    // Create search results overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'search-results-overlay';
+    overlay.style.cssText = `
+      position: fixed;
+      top: 70px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 20px;
+    `;
+    
+    // Create search results container
+    const container = document.createElement('div');
+    container.style.cssText = `
+      max-width: 1200px;
+      margin: 0 auto;
+    `;
+    
+    // Add search header with close button
+    const header = document.createElement('div');
+    header.style.cssText = `
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #eee;
+    `;
+    
+    const title = document.createElement('h2');
+    title.textContent = `Search Results for "${query}" (${results.length} found)`;
+    title.style.cssText = `
+      margin: 0;
+      color: #333;
+      font-size: 24px;
+    `;
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.cssText = `
+      background: #f0f0f0;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #666;
+      padding: 8px 12px;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+    `;
+    closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#ddd';
+    closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#f0f0f0';
+    closeBtn.onclick = () => this.clearSearchResults();
+    
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    container.appendChild(header);
+    
+    if (results.length === 0) {
+      // Show no results message
+      const noResults = document.createElement('div');
+      noResults.style.cssText = `
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+      `;
+      noResults.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
+        <h3 style="margin-bottom: 10px; color: #333;">No memes found</h3>
+        <p>Try searching with different keywords or check your spelling.</p>
+      `;
+      container.appendChild(noResults);
+    } else {
+      // Create meme grid for results
+      const grid = document.createElement('div');
+      grid.className = 'meme-grid ui four column grid';
+      grid.setAttribute('data-grid-type', 'search');
+      
+      // Use meme manager to render results
+      if (this.memeManager) {
+        // Transform search results to match expected format
+        const transformedResults = this.transformSearchResults(results);
+        this.memeManager.renderMemeGrid(grid, transformedResults);
+      }
+      container.appendChild(grid);
+    }
+    
+    overlay.appendChild(container);
+    document.body.appendChild(overlay);
+    
+    // Add smooth entrance animation
+    overlay.style.opacity = '0';
+    overlay.style.transform = 'translateY(-20px)';
+    requestAnimationFrame(() => {
+      overlay.style.transition = 'all 0.3s ease-out';
+      overlay.style.opacity = '1';
+      overlay.style.transform = 'translateY(0)';
+    });
+  }
+
+  /**
+   * Transform search results to match meme manager format
+   * @param {Array} searchResults - Raw search results from API
+   * @returns {Array} Transformed results
+   */
+  transformSearchResults(searchResults) {
+    return searchResults.map(result => ({
+      id: `search-${result.meme_id}`,
+      title: result.title || result.description || 'Meme',
+      likes: result.likes || 0,
+      views: this.formatNumber(Math.max(100, (result.likes || 0) * 15)),
+      upvotes: result.likes || 0,
+      downvotes: 0,
+      image: `/Zed-Memes/${result.image_path}`,
+      isLiked: false,
+      isSaved: false,
+      timestamp: new Date(result.created_at || Date.now()),
+      author: result.author || 'ZedMemes',
+      meme_id: result.meme_id
+    }));
+  }
+
+  /**
+   * Show search loading state
+   */
+  showSearchLoading() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.style.background = '#f8f9fa url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'%23666\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z\'/%3E%3Cpath d=\'M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z\'/%3E%3C/svg%3E") no-repeat right 10px center';
+      searchInput.style.animation = 'spin 1s linear infinite';
+      
+      // Add CSS animation if not exists
+      if (!document.getElementById('search-loading-styles')) {
+        const style = document.createElement('style');
+        style.id = 'search-loading-styles';
+        style.textContent = `
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+  }
+
+  /**
+   * Clear search results and return to normal view
+   */
+  clearSearchResults() {
+    const overlay = document.getElementById('search-results-overlay');
+    if (overlay) {
+      overlay.style.transition = 'all 0.3s ease-out';
+      overlay.style.opacity = '0';
+      overlay.style.transform = 'translateY(-20px)';
+      setTimeout(() => {
+        if (overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
+      }, 300);
+    }
+    
+    // Reset search input styling
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.style.background = '';
+      searchInput.style.animation = '';
+    }
+  }
+
+  /**
+   * Show search error message
+   * @param {string} message - Error message
+   */
+  showSearchError(message) {
+    this.clearSearchResults();
+    this.showToast(message, 'error');
+    
+    // Reset search input styling
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.style.background = '';
+      searchInput.style.animation = '';
+    }
+  }
+
+  /**
+   * Format number for display
+   * @param {number} num - Number to format
+   * @returns {string} Formatted number
+   */
+  formatNumber(num) {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
   }
 
   /**
