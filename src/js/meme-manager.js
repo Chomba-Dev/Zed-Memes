@@ -165,7 +165,112 @@ class MemeManager {
     
     if (scrollTop + windowHeight >= documentHeight - 200) {
       console.log('Near bottom, loading more memes...');
+      this.showLoadingIndicator();
       this.loadMoreMemes();
+    }
+  }
+
+  /**
+   * Show loading indicator when fetching more memes
+   */
+  showLoadingIndicator() {
+    // Remove any existing loading indicators
+    this.hideLoadingIndicator();
+    
+    // Create a prominent loading overlay
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.id = 'meme-loading-overlay';
+    loadingOverlay.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      font-size: 14px;
+      font-weight: 500;
+    `;
+    
+    loadingOverlay.innerHTML = `
+      <div class="spinner" style="
+        width: 20px;
+        height: 20px;
+        border: 2px solid #fff3;
+        border-top: 2px solid #fff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      "></div>
+      <span>Loading more memes...</span>
+    `;
+    
+    // Add CSS animation for spinner
+    if (!document.getElementById('meme-loading-styles')) {
+      const style = document.createElement('style');
+      style.id = 'meme-loading-styles';
+      style.textContent = `
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        #meme-loading-overlay {
+          animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+          from {
+            transform: translateX(-50%) translateY(20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(loadingOverlay);
+  }
+
+  /**
+   * Hide loading indicator
+   */
+  hideLoadingIndicator() {
+    const existing = document.getElementById('meme-loading-overlay');
+    if (existing) {
+      existing.style.animation = 'slideDown 0.3s ease-out forwards';
+      setTimeout(() => {
+        if (existing.parentNode) {
+          existing.parentNode.removeChild(existing);
+        }
+      }, 300);
+    }
+    
+    // Add slideDown animation if not exists
+    const style = document.getElementById('meme-loading-styles');
+    if (style && !style.textContent.includes('slideDown')) {
+      style.textContent += `
+        @keyframes slideDown {
+          from {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(-50%) translateY(20px);
+            opacity: 0;
+          }
+        }
+      `;
     }
   }
 
@@ -179,6 +284,9 @@ class MemeManager {
     this.currentPage++;
 
     try {
+      // Add a small delay to simulate real API loading time (for demo purposes)
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       switch (this.currentSection) {
         case 'home':
           await this.loadHomeMemes(false); // false = append to grid
@@ -196,9 +304,64 @@ class MemeManager {
     } catch (error) {
       console.error('Error loading more memes:', error);
       this.currentPage--; // Revert page increment on error
+      
+      // Show error message to user
+      this.showErrorMessage('Failed to load more memes. Please try again.');
     } finally {
       this.isLoading = false;
+      this.hideLoadingIndicator();
     }
+  }
+
+  /**
+   * Show error message to user
+   * @param {string} message - Error message to display
+   */
+  showErrorMessage(message) {
+    // Remove any existing error messages
+    const existing = document.getElementById('meme-error-overlay');
+    if (existing) existing.remove();
+    
+    const errorOverlay = document.createElement('div');
+    errorOverlay.id = 'meme-error-overlay';
+    errorOverlay.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(220, 53, 69, 0.9);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+      backdrop-filter: blur(10px);
+      font-size: 14px;
+      font-weight: 500;
+      animation: slideUp 0.3s ease-out;
+    `;
+    
+    errorOverlay.innerHTML = `
+      <i class="exclamation triangle icon" style="color: white;"></i>
+      <span>${message}</span>
+    `;
+    
+    document.body.appendChild(errorOverlay);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      if (errorOverlay.parentNode) {
+        errorOverlay.style.animation = 'slideDown 0.3s ease-out forwards';
+        setTimeout(() => {
+          if (errorOverlay.parentNode) {
+            errorOverlay.parentNode.removeChild(errorOverlay);
+          }
+        }, 300);
+      }
+    }, 5000);
   }
 
   /**
@@ -597,7 +760,7 @@ class MemeManager {
     }
     
     // Remove any loading indicators
-    const loadingElements = container.querySelectorAll('.ui.loader, .loading-message');
+    const loadingElements = container.querySelectorAll('.ui.loader, .loading-message, .spinner');
     loadingElements.forEach(el => el.remove());
     
     // Append new memes to existing ones
@@ -609,10 +772,8 @@ class MemeManager {
       container.appendChild(memeCard);
     });
     
-    // Add loading indicator if there are more memes to load
-    if (this.hasMoreMemes) {
-      this.addLoadingIndicator(container);
-    } else {
+    // Add end message if no more memes
+    if (!this.hasMoreMemes) {
       this.addEndMessage(container);
     }
     
