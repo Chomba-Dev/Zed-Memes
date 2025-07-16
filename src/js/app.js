@@ -295,36 +295,31 @@ class ZedMemesApp {
    * Perform search
    * @param {string} query - Search query
    */
-  performSearch(query) {
+  async performSearch(query) {
     if (!query || query.length < 2) {
-      this.clearSearchResults();
       return;
     }
 
     console.log('Searching for:', query);
     this.showSearchLoading();
 
-    // Use absolute path for XAMPP
-    fetch(`/Zed-Memes/backend/api/memes.php?action=search_memes&query=${encodeURIComponent(query)}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Search results:', data);
-        
-        if (data.success) {
-          this.displaySearchResults(data.data, query);
-        } else {
-          this.showSearchError(data.message || 'Search failed');
-        }
-      })
-      .catch(err => {
-        console.error('Search error:', err);
-        this.showSearchError('Search error: ' + err.message);
-      });
+    try {
+      // Use the same base as login/register
+      const response = await fetch(`http://localhost/Zed-memes/backend/api/memes.php?action=search_memes&query=${encodeURIComponent(query)}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('Search results:', data);
+      if (data.success) {
+        this.displaySearchResults(data.data, query);
+      } else {
+        this.showSearchError(data.message || 'Search failed');
+      }
+    } catch (err) {
+      console.error('Search error:', err);
+      this.showSearchError('Search error: ' + err.message);
+    }
   }
 
   /**
