@@ -14,6 +14,14 @@ class ZedMemesApp {
 
     const self = this;
 
+    //Get All buttons
+    const loginButtonMobile = document.getElementById('loginBtnMobile');
+    const loginButtonDesktop = document.getElementById('loginBtn');
+    const signupButtonMobile = document.getElementById('signupBtnMobile');
+    const signupButtonDesktop = document.getElementById('signupBtn');
+    const accountButton = document.getElementById('accountNavbarDropdown');
+    const notificationButton = document.getElementById('notificationNavbarDropdown');
+
     // Ensure clicking the modal's Login button submits the form
     const loginBtn = loginModal.querySelector('.ui.positive.button');
     if (loginBtn) {
@@ -53,6 +61,13 @@ class ZedMemesApp {
           // Store session info
           localStorage.setItem('zedmemes-token', data.data.token);
           localStorage.setItem('zedmemes-user', JSON.stringify(data.data.user));
+          // Update UI elements
+          if (loginButtonMobile) loginButtonMobile.style.display = 'none';
+          if (loginButtonDesktop) loginButtonDesktop.style.display = 'none';
+          if (signupButtonMobile) signupButtonMobile.style.display = 'none';
+          if (signupButtonDesktop) signupButtonDesktop.style.display = 'none';
+          if (accountButton) accountButton.style.display = 'block';
+          if (notificationButton) notificationButton.style.display = 'block';
           self.showToast('Login successful! Welcome, ' + data.data.user.username, 'success');
           // Optionally close modal (if using jQuery/Semantic UI)
           if (typeof $ !== 'undefined' && $.fn.modal) {

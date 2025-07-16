@@ -73,7 +73,7 @@
           <!-- Right Navigation -->
           <ul class="navbar-nav">
             <!-- Notifications Hidden for now -->
-            <li class="nav-item" style="display: none;">
+            <li class="nav-item" style="display: none;" id="notificationNavbarDropdown">
               <div class="dropdown">
                 <button type="button" class="btn-icon" title="Notifications" id="notificationBtn">
                   <i class="bi-bell"></i>
@@ -107,21 +107,21 @@
             </li>
 
             <!-- Login Button (desktop only) -->
-            <li class="nav-item auth-desktop">
+            <li class="nav-item auth-desktop" >
               <button type="button" class="btn btn-outline-primary me-2" id="loginBtn">
                 <i class="bi-box-arrow-in-right me-1"></i>Login
               </button>
             </li>
 
             <!-- Sign Up Button (desktop only) -->
-            <li class="nav-item auth-desktop">
+            <li class="nav-item auth-desktop" >
               <button type="button" class="btn btn-primary" id="signupBtn">
                 <i class="bi-person-plus me-1"></i>Sign Up
               </button>
             </li>
 
             <!-- User Profile (Hidden for now) -->
-            <li class="nav-item" style="display: none;">
+            <li class="nav-item"  style="display: none;" id="accountNavbarDropdown">
               <div class="dropdown">
                 <button type="button" class="navbar-dropdown-account-wrapper" id="accountNavbarDropdown" title="Account">
                   <div class="avatar avatar-sm avatar-circle bg-grey-500">
