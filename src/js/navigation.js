@@ -250,7 +250,7 @@ class Navigation {
   initClickOutside() {
     document.addEventListener('click', (e) => {
       const themeToggle = document.getElementById('themeToggle');
-      const profileToggle = document.getElementById('accountNavbarDropdown');
+      const profileToggle = document.getElementById('accountNavbarDropdownBtn');
       
       if (!themeToggle || !profileToggle) return;
       
@@ -404,7 +404,7 @@ class Navigation {
    * Initialize profile dropdown
    */
   initProfileDropdown() {
-    const profileToggle = document.getElementById('accountNavbarDropdown');
+    const profileToggle = document.getElementById('accountNavbarDropdownBtn');
     if (!profileToggle) {
       console.error('Profile toggle element not found!');
       return;
@@ -453,7 +453,9 @@ class Navigation {
             console.log('Opening settings...');
             break;
           case 'Sign out':
-            console.log('Signing out...');
+            if (window.zedMemesApp && typeof window.zedMemesApp.logout === 'function') {
+              window.zedMemesApp.logout();
+            }
             break;
         }
         
@@ -483,7 +485,7 @@ class Navigation {
     
     // Check if elements exist
     const themeToggle = document.getElementById('themeToggle');
-    const profileToggle = document.getElementById('accountNavbarDropdown');
+    const profileToggle = document.getElementById('accountNavbarDropdownBtn');
     
     console.log('Theme toggle element:', themeToggle ? 'Found' : 'Not found');
     console.log('Profile toggle element:', profileToggle ? 'Found' : 'Not found');
