@@ -100,6 +100,30 @@ class ZedMemesApp {
         });
       }
 
+      // Show/hide auth/profile UI based on login state
+      const token = localStorage.getItem('zedmemes-token');
+      const loginButtonMobile = document.getElementById('loginBtnMobile');
+      const loginButtonDesktop = document.getElementById('loginBtn');
+      const signupButtonMobile = document.getElementById('signupBtnMobile');
+      const signupButtonDesktop = document.getElementById('signupBtn');
+      const accountButton = document.getElementById('accountNavbarDropdown');
+      const notificationButton = document.getElementById('notificationNavbarDropdown');
+      if (token) {
+        if (loginButtonMobile) loginButtonMobile.style.display = 'none';
+        if (loginButtonDesktop) loginButtonDesktop.style.display = 'none';
+        if (signupButtonMobile) signupButtonMobile.style.display = 'none';
+        if (signupButtonDesktop) signupButtonDesktop.style.display = 'none';
+        if (accountButton) accountButton.style.display = 'block';
+        if (notificationButton) notificationButton.style.display = 'block';
+      } else {
+        if (loginButtonMobile) loginButtonMobile.style.display = '';
+        if (loginButtonDesktop) loginButtonDesktop.style.display = '';
+        if (signupButtonMobile) signupButtonMobile.style.display = '';
+        if (signupButtonDesktop) signupButtonDesktop.style.display = '';
+        if (accountButton) accountButton.style.display = 'none';
+        if (notificationButton) notificationButton.style.display = 'none';
+      }
+
       // Initialize core modules
       this.initModules();
       
@@ -281,12 +305,60 @@ class ZedMemesApp {
   }
 
   /**
+   * Log out the current user
+   */
+  logout() {
+    // Clear session info
+    localStorage.removeItem('zedmemes-token');
+    localStorage.removeItem('zedmemes-user');
+
+    // Update UI elements
+    const loginButtonMobile = document.getElementById('loginBtnMobile');
+    const loginButtonDesktop = document.getElementById('loginBtn');
+    const signupButtonMobile = document.getElementById('signupBtnMobile');
+    const signupButtonDesktop = document.getElementById('signupBtn');
+    const accountButton = document.getElementById('accountNavbarDropdown');
+    const notificationButton = document.getElementById('notificationNavbarDropdown');
+
+    if (loginButtonMobile) loginButtonMobile.style.display = '';
+    if (loginButtonDesktop) loginButtonDesktop.style.display = '';
+    if (signupButtonMobile) signupButtonMobile.style.display = '';
+    if (signupButtonDesktop) signupButtonDesktop.style.display = '';
+    if (accountButton) accountButton.style.display = 'none';
+    if (notificationButton) notificationButton.style.display = 'none';
+
+    this.showToast('You have been logged out.', 'info');
+  }
+
+  /**
    * Initialize components
    */
   initComponents() {
     // Initialize any additional components here
     this.initNotifications();
     this.initKeyboardShortcuts();
+    this.initLogoutHandler();
+  }
+
+  /**
+   * Attach logout handler to account dropdown
+   */
+  initLogoutHandler() {
+    // Find the sign out link in the account dropdown
+    const accountDropdown = document.getElementById('accountNavbarDropdown');
+    if (!accountDropdown) return;
+    const dropdownMenu = accountDropdown.parentElement && accountDropdown.parentElement.querySelector('.dropdown-menu');
+    if (!dropdownMenu) return;
+    const signOutLink = Array.from(dropdownMenu.querySelectorAll('a.dropdown-item')).find(a => a.textContent && a.textContent.trim().toLowerCase() === 'sign out');
+    if (!signOutLink) return;
+    signOutLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.logout();
+      // Optionally close the dropdown if using Semantic UI/jQuery
+      if (typeof $ !== 'undefined' && $.fn.dropdown) {
+        $(accountDropdown).dropdown('hide');
+      }
+    });
   }
 
   /**
