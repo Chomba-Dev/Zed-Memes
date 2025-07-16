@@ -68,6 +68,7 @@ class ZedMemesApp {
           if (signupButtonDesktop) signupButtonDesktop.style.display = 'none';
           if (accountButton) accountButton.style.display = 'block';
           if (notificationButton) notificationButton.style.display = 'block';
+          self.updateUserProfileUI(data.data.user);
           self.showToast('Login successful! Welcome, ' + data.data.user.username, 'success');
           // Optionally close modal (if using jQuery/Semantic UI)
           if (typeof $ !== 'undefined' && $.fn.modal) {
@@ -102,6 +103,8 @@ class ZedMemesApp {
 
       // Show/hide auth/profile UI based on login state
       const token = localStorage.getItem('zedmemes-token');
+      const userStr = localStorage.getItem('zedmemes-user');
+      const user = userStr ? JSON.parse(userStr) : null;
       const loginButtonMobile = document.getElementById('loginBtnMobile');
       const loginButtonDesktop = document.getElementById('loginBtn');
       const signupButtonMobile = document.getElementById('signupBtnMobile');
@@ -115,6 +118,7 @@ class ZedMemesApp {
         if (signupButtonDesktop) signupButtonDesktop.style.display = 'none';
         if (accountButton) accountButton.style.display = 'block';
         if (notificationButton) notificationButton.style.display = 'block';
+        this.updateUserProfileUI(user);
       } else {
         if (loginButtonMobile) loginButtonMobile.style.display = '';
         if (loginButtonDesktop) loginButtonDesktop.style.display = '';
@@ -122,6 +126,7 @@ class ZedMemesApp {
         if (signupButtonDesktop) signupButtonDesktop.style.display = '';
         if (accountButton) accountButton.style.display = 'none';
         if (notificationButton) notificationButton.style.display = 'none';
+        this.updateUserProfileUI({ username: '', email: '' });
       }
 
       // Initialize core modules
@@ -326,7 +331,7 @@ class ZedMemesApp {
     if (signupButtonDesktop) signupButtonDesktop.style.display = '';
     if (accountButton) accountButton.style.display = 'none';
     if (notificationButton) notificationButton.style.display = 'none';
-
+    this.updateUserProfileUI({ username: '', email: '' });
     this.showToast('You have been logged out.', 'info');
   }
 
@@ -514,6 +519,31 @@ class ZedMemesApp {
   }
 
   // --- END OF showToast ---
+
+  /**
+   * Update the user profile UI in the dropdown
+   * @param {Object} user - The user object with username and email
+   */
+  updateUserProfileUI(user) {
+    if (!user) return;
+    // Get initials from username
+    let initials = '';
+    if (user.username) {
+      const parts = user.username.trim().split(' ');
+      initials = parts.length > 1 ? (parts[0][0] + parts[1][0]) : parts[0][0];
+      initials = initials.toUpperCase();
+    }
+    // Update initials in both avatar spots
+    const initialsEl = document.getElementById('profileInitials');
+    const initialsDropdownEl = document.getElementById('profileInitialsDropdown');
+    if (initialsEl) initialsEl.textContent = initials;
+    if (initialsDropdownEl) initialsDropdownEl.textContent = initials;
+    // Update name and email
+    const nameEl = document.getElementById('profileName');
+    const emailEl = document.getElementById('profileEmail');
+    if (nameEl) nameEl.textContent = user.username || '';
+    if (emailEl) emailEl.textContent = user.email || '';
+  }
 
   /**
    * Get app instance
