@@ -68,7 +68,13 @@ class ZedMemesApp {
           if (signupButtonDesktop) signupButtonDesktop.style.display = 'none';
           if (accountButton) accountButton.style.display = 'block';
           if (notificationButton) notificationButton.style.display = 'block';
+          if (navLikes) navLikes.style.display = '';
+          if (navUploads) navUploads.style.display = '';
           self.updateUserProfileUI(data.data.user);
+          // Re-initialize profile dropdown if needed (REMOVED to prevent multiple listeners)
+          // if (window.navigationInstance && typeof window.navigationInstance.initProfileDropdown === 'function') {
+          //   window.navigationInstance.initProfileDropdown();
+          // }
           self.showToast('Login successful! Welcome, ' + data.data.user.username, 'success');
           // Optionally close modal (if using jQuery/Semantic UI)
           if (typeof $ !== 'undefined' && $.fn.modal) {
@@ -111,6 +117,8 @@ class ZedMemesApp {
       const signupButtonDesktop = document.getElementById('signupBtn');
       const accountButton = document.getElementById('accountNavbarDropdown');
       const notificationButton = document.getElementById('notificationNavbarDropdown');
+      const navLikes = document.getElementById('navLikes');
+      const navUploads = document.getElementById('navUploads');
       if (token) {
         if (loginButtonMobile) loginButtonMobile.style.display = 'none';
         if (loginButtonDesktop) loginButtonDesktop.style.display = 'none';
@@ -118,6 +126,8 @@ class ZedMemesApp {
         if (signupButtonDesktop) signupButtonDesktop.style.display = 'none';
         if (accountButton) accountButton.style.display = 'block';
         if (notificationButton) notificationButton.style.display = 'block';
+        if (navLikes) navLikes.style.display = '';
+        if (navUploads) navUploads.style.display = '';
         this.updateUserProfileUI(user);
       } else {
         if (loginButtonMobile) loginButtonMobile.style.display = '';
@@ -126,6 +136,8 @@ class ZedMemesApp {
         if (signupButtonDesktop) signupButtonDesktop.style.display = '';
         if (accountButton) accountButton.style.display = 'none';
         if (notificationButton) notificationButton.style.display = 'none';
+        if (navLikes) navLikes.style.display = 'none';
+        if (navUploads) navUploads.style.display = 'none';
         this.updateUserProfileUI({ username: '', email: '' });
       }
 
@@ -324,6 +336,8 @@ class ZedMemesApp {
     const signupButtonDesktop = document.getElementById('signupBtn');
     const accountButton = document.getElementById('accountNavbarDropdown');
     const notificationButton = document.getElementById('notificationNavbarDropdown');
+    const navLikes = document.getElementById('navLikes');
+    const navUploads = document.getElementById('navUploads');
 
     if (loginButtonMobile) loginButtonMobile.style.display = '';
     if (loginButtonDesktop) loginButtonDesktop.style.display = '';
@@ -331,6 +345,8 @@ class ZedMemesApp {
     if (signupButtonDesktop) signupButtonDesktop.style.display = '';
     if (accountButton) accountButton.style.display = 'none';
     if (notificationButton) notificationButton.style.display = 'none';
+    if (navLikes) navLikes.style.display = 'none';
+    if (navUploads) navUploads.style.display = 'none';
     this.updateUserProfileUI({ username: '', email: '' });
     this.showToast('You have been logged out.', 'info');
   }
