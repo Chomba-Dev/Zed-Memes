@@ -1,7 +1,71 @@
+
 /**
  * Main Application Entry Point
  */
 class ZedMemesApp {
+  /**
+   * Setup login form handler
+   */
+  setupLogin() {
+    const loginModal = document.getElementById('loginModal');
+    if (!loginModal) return;
+    const form = loginModal.querySelector('form.ui.form');
+    if (!form) return;
+
+    const self = this;
+
+    // Ensure clicking the modal's Login button submits the form
+    const loginBtn = loginModal.querySelector('.ui.positive.button');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        form.requestSubmit();
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const identifier = form.querySelector('input[name="email"]').value.trim();
+      const password = form.querySelector('input[name="password"]').value;
+
+      // Basic validation
+      if (!identifier || !password) {
+        self.showToast('Please fill in all fields', 'error');
+        return;
+      }
+
+      // Prepare request
+      const payload = {
+        identifier: identifier,
+        password: password
+      };
+
+      try {
+        const response = await fetch('http://localhost/Zed-memes/backend/api/auth.php?action=login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (data.success) {
+          // Store session info
+          localStorage.setItem('zedmemes-token', data.data.token);
+          localStorage.setItem('zedmemes-user', JSON.stringify(data.data.user));
+          self.showToast('Login successful! Welcome, ' + data.data.user.username, 'success');
+          // Optionally close modal (if using jQuery/Semantic UI)
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#loginModal').modal('hide');
+          }
+        } else {
+          self.showToast(data.message || 'Login failed', 'error');
+        }
+      } catch (err) {
+        self.showToast('Login error: ' + err.message, 'error');
+      }
+    });
+  }
   constructor() {
     this.navigation = null;
     this.themeManager = null;
@@ -32,6 +96,8 @@ class ZedMemesApp {
 
       // Setup registration handler
       this.setupRegistration();
+      // Setup login handler
+      this.setupLogin();
       
       console.log('ZedMemes App initialized successfully');
     } catch (error) {
@@ -276,13 +342,91 @@ class ZedMemesApp {
    * @param {string} message - Toast message
    * @param {string} type - Toast type ('info', 'success', 'warning', 'error')
    */
-  showToast(message, type = 'info') {
+  showToast(message, type = 'info', title = '', icon = '') {
+    // If memeManager has a toast, use it
     if (this.memeManager && this.memeManager.showToast) {
-      this.memeManager.showToast(message);
-    } else {
-      console.log(`Toast: ${message}`);
+      this.memeManager.showToast(message, type, title, icon);
+      return;
     }
+
+    // Toast type to color/icon/title
+    const typeMap = {
+      info:    { color: '#2563eb', icon: 'ℹ️', title: 'Info' },
+      success: { color: '#16a34a', icon: '✔️', title: 'Success' },
+      warning: { color: '#f59e42', icon: '⚠️', title: 'Warning' },
+      error:   { color: '#dc2626', icon: '⛔', title: 'Error' }
+    };
+    const t = typeMap[type] || typeMap.info;
+    const toastTitle = title || t.title;
+    const toastIcon = icon || t.icon;
+    const toastColor = t.color;
+
+    // Ensure toast container exists
+    let toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.id = 'toastContainer';
+      toastContainer.style.position = 'fixed';
+      toastContainer.style.bottom = '0';
+      toastContainer.style.right = '0';
+      toastContainer.style.zIndex = '1055';
+      toastContainer.style.padding = '1rem';
+      toastContainer.style.maxWidth = '350px';
+      toastContainer.style.display = 'flex';
+      toastContainer.style.flexDirection = 'column';
+      toastContainer.style.gap = '10px';
+      document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.setAttribute('role', 'alert');
+    toast.style.minWidth = '250px';
+    toast.style.background = '#fff';
+    toast.style.border = `1.5px solid ${toastColor}`;
+    toast.style.borderRadius = '8px';
+    toast.style.boxShadow = '0 2px 12px rgba(0,0,0,0.12)';
+    toast.style.overflow = 'hidden';
+    toast.style.animation = 'fadeInToast 0.3s';
+    toast.style.display = 'flex';
+    toast.style.flexDirection = 'column';
+    toast.innerHTML = `
+      <div style="display:flex;align-items:center;padding:0.5rem 1rem;background:${toastColor};color:#fff;">
+        <span style="font-size:1.3em;margin-right:0.5em;">${toastIcon}</span>
+        <strong style="flex:1;">${toastTitle}</strong>
+        <small style="opacity:0.8;">Just now</small>
+        <button type="button" aria-label="Close" style="background:none;border:none;color:#fff;font-size:1.2em;margin-left:0.5em;cursor:pointer;">&times;</button>
+      </div>
+      <div style="padding:0.75rem 1rem;">${message}</div>
+    `;
+
+    // Close button handler
+    toast.querySelector('button[aria-label="Close"]').onclick = () => {
+      toast.style.animation = 'fadeOutToast 0.3s';
+      setTimeout(() => toast.remove(), 300);
+    };
+
+    // Auto-dismiss after 4 seconds
+    setTimeout(() => {
+      toast.style.animation = 'fadeOutToast 0.3s';
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+
+    // Add keyframes for fade in/out if not present
+    if (!document.getElementById('toastKeyframes')) {
+      const style = document.createElement('style');
+      style.id = 'toastKeyframes';
+      style.innerHTML = `
+        @keyframes fadeInToast { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
+        @keyframes fadeOutToast { from { opacity: 1; transform: translateY(0);} to { opacity: 0; transform: translateY(20px);} }
+      `;
+      document.head.appendChild(style);
+    }
+
+    toastContainer.appendChild(toast);
   }
+
+  // --- END OF showToast ---
 
   /**
    * Get app instance

@@ -418,12 +418,8 @@
           closable: true,
           onDeny: function() {
             return true;
-          },
-          onApprove: function() {
-            // Handle login logic here
-            console.log('Login submitted');
-            return false; // Prevent modal from closing for now
           }
+          // Removed onApprove to allow app.js to handle login
         });
 
         $('#signupModal').modal({
