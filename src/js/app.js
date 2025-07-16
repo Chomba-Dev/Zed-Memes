@@ -29,11 +29,83 @@ class ZedMemesApp {
       
       // Initialize components
       this.initComponents();
+
+      // Setup registration handler
+      this.setupRegistration();
       
       console.log('ZedMemes App initialized successfully');
     } catch (error) {
       console.error('Failed to initialize ZedMemes App:', error);
     }
+  }
+  /**
+   * Setup registration form handler
+   */
+  setupRegistration() {
+    const signupModal = document.getElementById('signupModal');
+    if (!signupModal) return;
+    const form = signupModal.querySelector('form.ui.form');
+    if (!form) return;
+
+    // Ensure clicking the modal's Sign Up button submits the form
+    const signupBtn = signupModal.querySelector('.ui.positive.button');
+    if (signupBtn) {
+      signupBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        form.requestSubmit();
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = form.querySelector('input[name="name"]').value.trim();
+      const email = form.querySelector('input[name="email"]').value.trim();
+      const password = form.querySelector('input[name="password"]').value;
+      const confirm_password = form.querySelector('input[name="confirm_password"]').value;
+
+      // Basic validation
+      if (!username || !email || !password || !confirm_password) {
+        this.showToast('Please fill in all fields', 'error');
+        return;
+      }
+      if (password !== confirm_password) {
+        this.showToast('Passwords do not match', 'error');
+        return;
+      }
+
+      // Prepare request
+      const payload = {
+        username: username,
+        email: email,
+        password: password,
+        confirm_password: confirm_password
+      };
+
+      try {
+        const response = await fetch('http://localhost/Zed-memes/backend/api/auth.php?action=register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (data.success) {
+          // Store session info
+          localStorage.setItem('zedmemes-token', data.data.token);
+          localStorage.setItem('zedmemes-user', JSON.stringify(data.data.user));
+          this.showToast('Registration successful! Welcome, ' + data.data.user.username, 'success');
+          // Optionally close modal (if using jQuery/Semantic UI)
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#signupModal').modal('hide');
+          }
+        } else {
+          this.showToast(data.message || 'Registration failed', 'error');
+        }
+      } catch (err) {
+        this.showToast('Registration error: ' + err.message, 'error');
+      }
+    });
   }
 
   /**

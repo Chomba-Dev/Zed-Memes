@@ -27,6 +27,21 @@
   <link rel="stylesheet" href="./src/components/meme/meme-grid.css">
   <link rel="stylesheet" href="./src/components/content/home-section.css">
   <link rel="stylesheet" href="./src/components/ui/empty-state.css">
+
+  <!-- Mobile Auth Buttons CSS -->
+  <style>
+    /* Hide mobile auth buttons on desktop, show on mobile */
+    .mobile-auth-btns { display: none; }
+    @media (max-width: 768px) {
+      .mobile-auth-btns { display: flex !important; gap: 8px; margin-top: 8px; }
+      .mobile-auth-btns .btn { width: 100%; }
+      /* Hide original login/signup in dark navbar on mobile */
+      .navbar-dark .navbar-nav .nav-item.auth-desktop { display: none !important; }
+    }
+    @media (min-width: 769px) {
+      .mobile-auth-btns { display: none !important; }
+    }
+  </style>
 </head>
 
 <body style="background-color: white;">
@@ -91,15 +106,15 @@
               </div>
             </li>
 
-            <!-- Login Button -->
-            <li class="nav-item">
+            <!-- Login Button (desktop only) -->
+            <li class="nav-item auth-desktop">
               <button type="button" class="btn btn-outline-primary me-2" id="loginBtn">
                 <i class="bi-box-arrow-in-right me-1"></i>Login
               </button>
             </li>
 
-            <!-- Sign Up Button -->
-            <li class="nav-item">
+            <!-- Sign Up Button (desktop only) -->
+            <li class="nav-item auth-desktop">
               <button type="button" class="btn btn-primary" id="signupBtn">
                 <i class="bi-person-plus me-1"></i>Sign Up
               </button>
@@ -179,6 +194,16 @@
                 <a class="nav-link" href="javascript:;" data-content="uploads">
                   <i class="bi-upload"></i>Your Uploads
                 </a>
+              </li>
+
+              <!-- Mobile Auth Buttons (Login/Sign Up) -->
+              <li class="nav-item mobile-auth-btns" style="flex-direction: column; align-items: stretch;">
+                <button type="button" class="btn btn-outline-primary mb-2" id="loginBtnMobile">
+                  <i class="bi-box-arrow-in-right me-1"></i>Login
+                </button>
+                <button type="button" class="btn btn-primary" id="signupBtnMobile">
+                  <i class="bi-person-plus me-1"></i>Sign Up
+                </button>
               </li>
 
             </ul>
@@ -330,7 +355,7 @@
     </div>
   </div>
 
-  <!-- Image Gallery Modal -->
+  <!-- Image Gallery Modal (commented out)
   <div class="ui fullscreen modal" id="imageGalleryModal">
     <div class="header">
       <i class="bi-images me-2"></i>
@@ -372,6 +397,7 @@
       </div>
     </div>
   </div>
+  -->
 
   <!-- JavaScript Modules -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -412,7 +438,8 @@
           }
         });
 
-        // Initialize image gallery modal
+        // Initialize image gallery modal (commented out)
+        /*
         $('#imageGalleryModal').modal({
           closable: true,
           transition: 'scale',
@@ -434,28 +461,59 @@
             $(document).off('keydown.gallery');
           }
         });
+        */
 
         // Initialize checkboxes
         $('.ui.checkbox').checkbox();
       }
 
-      // Login button click handler
+      // Login button click handler (desktop)
       const loginBtn = document.getElementById('loginBtn');
       if (loginBtn) {
         loginBtn.addEventListener('click', function() {
           console.log('Login button clicked');
           if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#imageGalleryModal').modal('hide');
             $('#loginModal').modal('show');
           }
         });
       }
 
-      // Sign up button click handler
+      // Sign up button click handler (desktop)
       const signupBtn = document.getElementById('signupBtn');
       if (signupBtn) {
         signupBtn.addEventListener('click', function() {
           console.log('Sign up button clicked');
           if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#imageGalleryModal').modal('hide');
+            $('#signupModal').modal('show');
+          }
+        });
+      }
+
+      // Mobile Login button click handler
+      const loginBtnMobile = document.getElementById('loginBtnMobile');
+      if (loginBtnMobile) {
+        loginBtnMobile.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          console.log('Mobile Login button clicked');
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#imageGalleryModal').modal('hide');
+            $('#loginModal').modal('show');
+          }
+        });
+      }
+
+      // Mobile Sign up button click handler
+      const signupBtnMobile = document.getElementById('signupBtnMobile');
+      if (signupBtnMobile) {
+        signupBtnMobile.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          console.log('Mobile Sign up button clicked');
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#imageGalleryModal').modal('hide');
             $('#signupModal').modal('show');
           }
         });
