@@ -258,102 +258,33 @@
               <i class="bi-upload me-2"></i>Upload Meme
             </div>
             <div class="content">
-              <form class="ui form" id="memeUploadForm" enctype="multipart/form-data">
+              <form class="ui form" id="uploadForm" enctype="multipart/form-data">
                 <div class="field">
                   <label>Caption</label>
                   <input type="text" name="caption" placeholder="Enter meme caption" required>
                 </div>
                 <div class="field">
                   <label>Image</label>
-                  <input type="file" name="image" id="uploadImageInput" accept="image/*" required>
+                  <input type="file" name="meme_image" id="uploadImageInput" accept="image/*" required>
                 </div>
                 <div class="field" id="imagePreviewContainer" style="display:none; text-align:center; margin-top: 1rem;">
                   <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 100%; max-height: 220px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee;" />
                 </div>
+              <div class="actions" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <div class="ui black deny button">
+                  Cancel
+                </div>
+                <button type="submit" class="ui positive right labeled icon button" id="uploadMemeBtn" style="font-size: 1.1rem; padding: 0.5rem 1.5rem; border-radius: 1.5rem;">
+                  <i class="bi-cloud-arrow-up me-2" style="font-size: 1.3rem;"></i> Upload
+                </button>
+              </div>
               </form>
             </div>
             <div class="actions">
-              <div class="ui black deny button">
-                Cancel
-              </div>
-              <button type="submit" class="ui positive right labeled icon button" form="memeUploadForm" id="uploadMemeBtn" style="font-size: 1.1rem; padding: 0.5rem 1.5rem; border-radius: 1.5rem;">
-                <i class="bi-cloud-arrow-up me-2" style="font-size: 1.3rem;"></i> Upload
-              </button>
-            </div>
+            <!-- actions moved inside the form above -->
           </div>
 
-          <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            // Show upload modal on button click
-            const uploadBtn = document.getElementById('uploadBtn');
-            if (uploadBtn) {
-              uploadBtn.addEventListener('click', function() {
-                if (typeof $ !== 'undefined' && $.fn.modal) {
-                  $('#uploadModal').modal({
-                    onHide: function() {
-                      // Reset preview and form on close
-                      document.getElementById('memeUploadForm').reset();
-                      document.getElementById('imagePreviewContainer').style.display = 'none';
-                      document.getElementById('imagePreview').src = '#';
-                    }
-                  }).modal('show');
-                }
-              });
-            }
 
-            // Image preview logic
-            const imageInput = document.getElementById('uploadImageInput');
-            const previewContainer = document.getElementById('imagePreviewContainer');
-            const previewImg = document.getElementById('imagePreview');
-            if (imageInput) {
-              imageInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = function(evt) {
-                    previewImg.src = evt.target.result;
-                    previewContainer.style.display = 'block';
-                  };
-                  reader.readAsDataURL(file);
-                } else {
-                  previewContainer.style.display = 'none';
-                  previewImg.src = '#';
-                }
-              });
-            }
-
-            // Handle meme upload form submission
-            const memeUploadForm = document.getElementById('memeUploadForm');
-            if (memeUploadForm) {
-              memeUploadForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const formData = new FormData(memeUploadForm);
-                const token = localStorage.getItem('zedmemes-token');
-                try {
-                  const response = await fetch('http://localhost/Zed-memes/backend/api/upload.php', {
-                    method: 'POST',
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-                    body: formData
-                  });
-                  const data = await response.json();
-                  if (data.success) {
-                    alert('Meme uploaded successfully!');
-                    if (typeof $ !== 'undefined' && $.fn.modal) {
-                      $('#uploadModal').modal('hide');
-                    }
-                    memeUploadForm.reset();
-                    previewContainer.style.display = 'none';
-                    previewImg.src = '#';
-                  } else {
-                    alert(data.message || 'Upload failed.');
-                  }
-                } catch (err) {
-                  alert('Upload error: ' + err.message);
-                }
-              });
-            }
-          });
-          </script>
 
         </div>
         
@@ -503,9 +434,12 @@
   </div>
   -->
 
+
+
   <!-- JavaScript Modules -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+  <script src="./src/js/constants.js"></script>
   <script src="./src/js/theme-manager.js"></script>
   <script src="./src/js/navigation.js"></script>
   <script src="./src/js/meme-manager.js"></script>

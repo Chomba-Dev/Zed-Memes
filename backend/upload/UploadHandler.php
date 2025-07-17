@@ -26,7 +26,7 @@ class UploadHandler {
     /**
      * Upload a meme image
      */
-    public function uploadMeme($file, $title, $description, $category, $userId) {
+    public function uploadMeme($file, $caption, $userId) {
         try {
             // Validate file
             $validation = $this->validateFile($file);
@@ -45,7 +45,7 @@ class UploadHandler {
             }
             
             // Save to database
-            $dbResult = $this->saveToDatabase($title, $description, $category, $filename, $userId);
+            $dbResult = $this->saveToDatabase($caption, $filename, $userId);
             if (!$dbResult['success']) {
                 // Delete uploaded file if database save fails
                 if (file_exists($filepath)) {
@@ -60,7 +60,7 @@ class UploadHandler {
                 'data' => [
                     'meme_id' => $dbResult['data']['meme_id'],
                     'filename' => $filename,
-                    'title' => $title
+                    'caption' => $caption
                 ]
             ];
             
@@ -215,14 +215,14 @@ class UploadHandler {
     /**
      * Save meme data to database
      */
-    private function saveToDatabase($title, $description, $category, $filename, $userId) {
+    private function saveToDatabase($caption, $filename, $userId) {
         try {
             $stmt = $this->db->prepare("
-                INSERT INTO memes (title, description, category, image_path, user_id, created_at) 
-                VALUES (?, ?, ?, ?, ?, NOW())
+                INSERT INTO memes (caption, image_path, user_id, uploaded_at) 
+                VALUES (?, ?, ?, NOW())
             ");
             
-            $stmt->execute([$title, $description, $category, $filename, $userId]);
+            $stmt->execute([$caption, $filename, $userId]);
             $memeId = $this->db->lastInsertId();
             
             return [

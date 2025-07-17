@@ -32,8 +32,8 @@ class MemeManager {
    * Load saved likes and saves from localStorage
    */
   loadSavedInteractions() {
-    const liked = localStorage.getItem('zedmemes-liked');
-    const saved = localStorage.getItem('zedmemes-saved');
+    const liked = localStorage.getItem(APP_CONFIG.STORAGE.LIKED_MEMES);
+    const saved = localStorage.getItem(APP_CONFIG.STORAGE.SAVED_MEMES);
     
     if (liked) {
       this.likedMemes = new Set(JSON.parse(liked));
@@ -48,8 +48,8 @@ class MemeManager {
    * Save interactions to localStorage
    */
   saveInteractions() {
-    localStorage.setItem('zedmemes-liked', JSON.stringify([...this.likedMemes]));
-    localStorage.setItem('zedmemes-saved', JSON.stringify([...this.savedMemes]));
+    localStorage.setItem(APP_CONFIG.STORAGE.LIKED_MEMES, JSON.stringify([...this.likedMemes]));
+    localStorage.setItem(APP_CONFIG.STORAGE.SAVED_MEMES, JSON.stringify([...this.savedMemes]));
   }
 
   /**
@@ -165,7 +165,7 @@ class MemeManager {
     this.currentFilter = 'featured';
     
     try {
-      const token = localStorage.getItem('zedmemes-token');
+      const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -174,7 +174,7 @@ class MemeManager {
         headers['Authorization'] = `Bearer ${token}`;
       }
       
-      const response = await fetch('http://localhost/Zed-memes/backend/api/memes.php?action=get_relevant', {
+      const response = await fetch(getApiUrl(APP_CONFIG.API.MEMES.GET_RELEVANT), {
         method: 'GET',
         headers: headers
       });
@@ -210,7 +210,7 @@ class MemeManager {
     this.currentFilter = 'trending';
     
     try {
-      const token = localStorage.getItem('zedmemes-token');
+      const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -219,7 +219,7 @@ class MemeManager {
         headers['Authorization'] = `Bearer ${token}`;
       }
       
-      const response = await fetch('http://localhost/Zed-memes/backend/api/memes.php?action=get_trending', {
+      const response = await fetch(getApiUrl(APP_CONFIG.API.MEMES.GET_TRENDING), {
         method: 'GET',
         headers: headers
       });
@@ -269,7 +269,7 @@ class MemeManager {
     this.currentFilter = 'uploads';
     
     try {
-      const token = localStorage.getItem('zedmemes-token');
+      const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
       if (!token) {
         this.showToast('Please login to view your uploads');
         this.renderMemeGrid(grid, []);
@@ -281,16 +281,20 @@ class MemeManager {
         'Authorization': `Bearer ${token}`
       };
       
-      const response = await fetch('http://localhost/Zed-memes/backend/api/memes.php?action=get_user_uploads', {
+      console.log('Loading user uploads...');
+      const response = await fetch(getApiUrl(APP_CONFIG.API.MEMES.GET_USER_UPLOADS), {
         method: 'GET',
         headers: headers
       });
+      
+      console.log('Response status:', response.status);
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
       const data = await response.json();
+      console.log('User uploads response:', data);
       
       if (data.success) {
         console.log('User uploads loaded:', data.data.length);
@@ -357,7 +361,11 @@ class MemeManager {
     // Handle both backend and sample data formats
     const memeId = meme.meme_id || meme.id;
     const title = meme.caption || meme.title || 'Untitled Meme';
-    const imagePath = meme.image_path || meme.image;
+    let imagePath = meme.image_path || meme.image;
+    // If imagePath does not contain a slash, prepend assets/images/
+    if (imagePath && !imagePath.includes('/')) {
+      imagePath = 'assets/images/' + imagePath;
+    }
     const author = meme.user?.username || 'ZedMemes';
     const upvotes = meme.votes?.find(v => v.vote_type === 'upvote')?.count || meme.upvotes || 0;
     const downvotes = meme.votes?.find(v => v.vote_type === 'downvote')?.count || meme.downvotes || 0;
@@ -444,7 +452,7 @@ class MemeManager {
    */
   async handleLikeAPI(button) {
     const memeId = button.getAttribute('data-meme-id');
-    const token = localStorage.getItem('zedmemes-token');
+    const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
     
     if (!token) {
       this.showToast('Please login to like memes');
@@ -465,7 +473,7 @@ class MemeManager {
       formData.append('meme_id', memeId);
       formData.append('reaction_type', liked ? 'unlike' : 'like');
       
-      const response = await fetch('http://localhost/Zed-memes/backend/api/reactions.php', {
+      const response = await fetch(getApiUrl(APP_CONFIG.API.REACTIONS.ADD_REACTION), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -505,7 +513,7 @@ class MemeManager {
    */
   async handleVoteAPI(button, type) {
     const memeId = button.getAttribute('data-meme-id');
-    const token = localStorage.getItem('zedmemes-token');
+    const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
     
     if (!token) {
       this.showToast('Please login to vote on memes');
@@ -526,7 +534,7 @@ class MemeManager {
       formData.append('meme_id', memeId);
       formData.append('vote_type', type);
       
-      const response = await fetch('http://localhost/Zed-memes/backend/api/upvote.php', {
+      const response = await fetch(getApiUrl(APP_CONFIG.API.VOTES.ADD_VOTE), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -818,7 +826,7 @@ class MemeManager {
    */
   async handleReaction(card, reaction) {
     const memeId = card.getAttribute('data-meme-id');
-    const token = localStorage.getItem('zedmemes-token');
+    const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
     
     if (!token) {
       this.showToast('Please login to react to memes');
@@ -831,7 +839,7 @@ class MemeManager {
       formData.append('meme_id', memeId);
       formData.append('reaction_type', reaction);
       
-      const response = await fetch('http://localhost/Zed-memes/backend/api/reactions.php', {
+      const response = await fetch(getApiUrl(APP_CONFIG.API.REACTIONS.ADD_REACTION), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -882,5 +890,64 @@ class MemeManager {
    */
   setupReactionBar(card, reactions, userReaction) {
     this.updateReactionBar(card, reactions, userReaction);
+  }
+
+  /**
+   * Show empty state message
+   * @param {HTMLElement} container - Container to show empty state in
+   * @param {string} title - Empty state title
+   * @param {string} message - Empty state message
+   */
+  showEmptyState(container, title = 'No memes found', message = 'Try adjusting your filters or check back later.') {
+    if (!container) return;
+    
+    container.innerHTML = `
+      <div class="empty-state" style="text-align: center; padding: 40px 20px; color: #666;">
+        <div style="font-size: 48px; margin-bottom: 20px;">📷</div>
+        <h3 style="margin-bottom: 10px; color: #333;">${title}</h3>
+        <p>${message}</p>
+      </div>
+    `;
+  }
+
+  /**
+   * Refresh memes after upload
+   * @param {string} section - Section to refresh ('home', 'trending', 'likes', 'uploads')
+   */
+  async refreshMemes(section = 'home') {
+    console.log('Refreshing memes for section:', section);
+    
+    const grid = document.querySelector('.meme-grid');
+    if (!grid) {
+      console.error('Meme grid not found for refresh');
+      return;
+    }
+    
+    // Show loading state
+    grid.classList.add('loading');
+    
+    try {
+      switch (section) {
+        case 'home':
+          await this.loadHomeMemes();
+          break;
+        case 'trending':
+          await this.loadTrendingMemes();
+          break;
+        case 'likes':
+          this.loadLikedMemes();
+          break;
+        case 'uploads':
+          await this.loadUserUploads();
+          break;
+        default:
+          await this.loadHomeMemes();
+      }
+    } catch (error) {
+      console.error('Error refreshing memes:', error);
+      this.showEmptyState(grid, 'Error loading memes', 'Please try refreshing the page.');
+    } finally {
+      grid.classList.remove('loading');
+    }
   }
 }

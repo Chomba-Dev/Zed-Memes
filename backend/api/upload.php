@@ -43,11 +43,14 @@ try {
  * Handle meme upload
  */
 function handleUpload() {
+    error_log("Upload request received");
+    
     // Check if user is authenticated
     $headers = getallheaders();
     $authHeader = $headers['Authorization'] ?? '';
     
     if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        error_log("Authentication required");
         sendResponse(false, 'Authentication required');
     }
     
@@ -56,22 +59,37 @@ function handleUpload() {
     $currentUser = $authHandler->getCurrentUser($token);
     
     if (!$currentUser) {
+        error_log("Invalid or expired token");
         sendResponse(false, 'Invalid or expired token');
     }
     
+    error_log("User authenticated: " . $currentUser['user_id']);
+    
     // Validate form data
     $caption = trim($_POST['caption'] ?? '');
+    error_log("Caption: " . $caption);
+    
     if (!empty($caption) && strlen($caption) > 255) {
+        error_log("Caption too long");
         sendResponse(false, 'Caption must be less than 255 characters');
     }
+    
     // Check if file was uploaded
     if (!isset($_FILES['meme_image']) || $_FILES['meme_image']['error'] !== UPLOAD_ERR_OK) {
+        error_log("File upload error: " . ($_FILES['meme_image']['error'] ?? 'No file'));
         sendResponse(false, 'Please select an image file');
     }
+    
     $uploadedFile = $_FILES['meme_image'];
+    error_log("File uploaded: " . $uploadedFile['name'] . " (" . $uploadedFile['size'] . " bytes)");
+    
     try {
         $uploadHandler = new UploadHandler();
+        error_log("Calling uploadMeme with parameters: " . $caption . ", " . $currentUser['user_id']);
         $result = $uploadHandler->uploadMeme($uploadedFile, $caption, $currentUser['user_id']);
+        
+        error_log("Upload result: " . json_encode($result));
+        
         if ($result['success']) {
             sendResponse(true, 'Meme uploaded successfully', $result['data']);
         } else {

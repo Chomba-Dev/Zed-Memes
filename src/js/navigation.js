@@ -113,6 +113,14 @@ class Navigation {
   }
 
   /**
+   * Get current section
+   * @returns {string} Current section name
+   */
+  getCurrentSection() {
+    return this.currentSection;
+  }
+
+  /**
    * Enhanced close mobile navigation menu
    */
   closeMobileMenu() {
