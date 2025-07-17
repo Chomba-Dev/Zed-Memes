@@ -179,3 +179,61 @@ BEGIN
     DROP TEMPORARY TABLE IF EXISTS similar_users;
 END //
 DELIMITER ;
+
+-- Sample users
+INSERT INTO users (username, email, password_hash) VALUES
+('alice', 'alice@example.com', '$2y$10$5smxmCAFWnkRjQ1LlKjAjO0ARDx5B1FquJA9EVHV/eCEd1pGHmmVm'),
+('bob', 'bob@example.com', '$2y$10$4DzPJkcz0/33iQqlxm17zO5a7xA2uSYjXrA7h71X05h0fLELymT1G'),
+('charlie', 'charlie@example.com', '$2y$10$E9c2YS7FzC8QW7pdmUOcEuESjtXPU4fLWqnRBe5w2gJUjIqJ3WFju'),
+('diana', 'diana@example.com', '$2y$10$kUp8WxmsK8uyOiCBTzAbEeV8IJrn0IDJgjaIX1mHV1CQqNnzci4vW');
+
+-- Sample memes
+INSERT INTO memes (user_id, image_path, caption) VALUES
+(2, 'assets/images/meme_1752478377_9c8b20c20e61774f.jpg', 'meme 1752478377 9c8b20c20e61774f'),
+(1, 'assets/images/meme_1752478497_5b5520d6af769ea0.jpg', 'meme 1752478497 5b5520d6af769ea0'),
+(2, 'assets/images/meme_1752478502_6d6102d021e380c2.jpg', 'meme 1752478502 6d6102d021e380c2'),
+(4, 'assets/images/meme_1752478506_8a3d05c34f8aaf62.jpg', 'meme 1752478506 8a3d05c34f8aaf62');
+
+-- Sample votes
+INSERT INTO user_meme_votes (user_id, meme_id, vote_type) VALUES
+(2, 1, 'downvote'),
+(4, 1, 'downvote'),
+(1, 2, 'downvote'),
+(1, 3, 'upvote'),
+(2, 4, 'downvote'),
+(3, 4, 'downvote'),
+(4, 4, 'downvote');
+
+-- Sample reactions
+INSERT INTO user_meme_reaction (user_id, meme_id, vote_type) VALUES
+(1, 1, 'sad'),
+(3, 1, 'love'),
+(3, 2, 'angry'),
+(2, 3, 'wow'),
+(2, 4, 'love'),
+(3, 4, 'sad');
+
+-- Sample download logs
+INSERT INTO meme_download_log (user_id, meme_id) VALUES
+(1, 1),
+(3, 1),
+(1, 2),
+(3, 2),
+(4, 2),
+(3, 3),
+(1, 4),
+(2, 4),
+(4, 4);
+
+-- Sample share logs
+INSERT INTO meme_share_log (user_id, meme_id) VALUES
+(1, 1),
+(2, 1),
+(3, 1),
+(4, 1),
+(1, 2),
+(2, 2),
+(3, 2),
+(3, 3),
+(1, 4),
+(4, 4);
