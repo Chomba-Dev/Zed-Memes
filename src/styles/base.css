@@ -1,0 +1,523 @@
+/* Base Styles - Global resets and typography */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background-color: white;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: white;
+  line-height: 1.6;
+  color: #343a40;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Override container padding in main content */
+.main-content .container {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Links */
+a {
+  color: #6366f1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #5856eb;
+}
+
+/* Lists */
+ul, ol {
+  list-style: none;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Focus states */
+*:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Transitions */
+* {
+  transition: all 0.2s ease;
+}
+
+/* Bootstrap Grid System */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.col-sm-6,
+.col-lg-4,
+.col-xl-3 {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.col-sm-6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+
+.col-lg-4 {
+  flex: 0 0 33.333333%;
+  max-width: 33.333333%;
+}
+
+.col-xl-3 {
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+
+/* Bootstrap spacing utilities */
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-lg-5 {
+  margin-bottom: 3rem !important;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 575.98px) {
+  .col-sm-6,
+  .col-lg-4,
+  .col-xl-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  .container {
+    padding: 0 10px;
+  }
+  
+  .main-content {
+    padding-top: 1rem;
+  }
+  
+  .content-header {
+    margin-bottom: 1rem;
+  }
+  
+  .content-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .content-header p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .col-sm-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  
+  .col-lg-4,
+  .col-xl-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  
+  .container {
+    padding: 0 12px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .col-lg-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+  
+  .col-xl-3 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .col-xl-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+}
+
+/* Page Header Styles */
+.page-header-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #343a40;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Uploads page header with Liberation Mono font */
+#uploads-content .page-header-title {
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+  font-weight: 700;
+}
+
+/* Row and Column Layout */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.col {
+  flex: 1;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.col-auto {
+  flex: 0 0 auto;
+  width: auto;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+/* Spacing utilities */
+.me-1 {
+  margin-right: 0.25rem;
+}
+
+/* Gallery Styles */
+.gallery-modal .modal-content {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  max-width: 95vw;
+  max-height: 95vh;
+}
+
+.gallery-header {
+  background-color: #2d2d2d;
+  padding: 1rem;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #404040;
+}
+
+.gallery-title {
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.gallery-close {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.gallery-close:hover {
+  background-color: #404040;
+}
+
+.gallery-content {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  background-color: #1a1a1a;
+}
+
+.gallery-image-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-color: #000000;
+  padding: 2rem;
+}
+
+.gallery-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.gallery-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  font-size: 1.5rem;
+}
+
+.gallery-navigation {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 1.2rem;
+}
+
+.gallery-navigation:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.gallery-navigation:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gallery-navigation.prev {
+  left: 20px;
+}
+
+.gallery-navigation.next {
+  right: 20px;
+}
+
+.gallery-info {
+  background-color: #2d2d2d;
+  padding: 1.5rem;
+  border-radius: 0 0 8px 8px;
+  border-top: 1px solid #404040;
+}
+
+.gallery-image-title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.gallery-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gallery-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #cccccc;
+  font-size: 0.9rem;
+}
+
+.gallery-stat i {
+  font-size: 1rem;
+}
+
+.gallery-controls {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.gallery-controls .btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.gallery-controls .btn-primary {
+  background-color: #6366f1;
+  color: #ffffff;
+}
+
+.gallery-controls .btn-primary:hover {
+  background-color: #5855eb;
+}
+
+.gallery-controls .btn-secondary {
+  background-color: #4b5563;
+  color: #ffffff;
+}
+
+.gallery-controls .btn-secondary:hover {
+  background-color: #374151;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .gallery-modal .modal-content {
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .gallery-header {
+    border-radius: 0;
+    padding: 1rem;
+  }
+  
+  .gallery-content {
+    height: calc(100vh - 120px);
+  }
+  
+  .gallery-image-container {
+    padding: 1rem;
+  }
+  
+  .gallery-navigation {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .gallery-navigation.prev {
+    left: 10px;
+  }
+  
+  .gallery-navigation.next {
+    right: 10px;
+  }
+  
+  .gallery-info {
+    padding: 1rem;
+    border-radius: 0;
+  }
+  
+  .gallery-stats {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .gallery-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .gallery-controls .btn {
+    width: 100%;
+  }
+}
+
+/* Gallery Modal Fullscreen Overlay */
+#imageGalleryModal.ui.fullscreen.modal {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-width: 100vw !important;
+  min-height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  z-index: 9999 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: rgba(26,26,26,0.98) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#imageGalleryModal .content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  background: transparent;
+}
+
+body.gallery-modal-open {
+  overflow: hidden !important;
+}
+
+/* Ensure modal actions are always visible at the bottom */
+#imageGalleryModal .actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  background: rgba(26,26,26,0.98);
+  border-top: 1px solid #404040;
+  padding: 1rem 2rem;
+  z-index: 10000;
+  display: flex;
+  justify-content: space-between;
+}

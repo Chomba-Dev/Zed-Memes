@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <title>ZedMemes | Main Navigation</title>
+  <link rel="shortcut icon" href="./favicon.ico">
+  
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Liberation+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  
+  <!-- Semantic UI CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  
+  <!-- Modular CSS -->
+  <link rel="stylesheet" href="./src/styles/base.css">
+  <link rel="stylesheet" href="./src/styles/layout.css">
+  <link rel="stylesheet" href="./src/styles/buttons.css">
+  <link rel="stylesheet" href="./src/components/header/dark-navbar.css">
+  <link rel="stylesheet" href="./src/components/navigation/main-nav.css">
+  <link rel="stylesheet" href="./src/components/meme/meme-card.css">
+  <link rel="stylesheet" href="./src/components/meme/meme-grid.css">
+  <link rel="stylesheet" href="./src/components/content/home-section.css">
+  <link rel="stylesheet" href="./src/components/ui/empty-state.css">
+
+  <!-- Mobile Auth Buttons CSS -->
+  <style>
+    /* Hide mobile auth buttons on desktop, show on mobile */
+    .mobile-auth-btns { display: none; }
+    @media (max-width: 768px) {
+      .mobile-auth-btns { display: flex !important; gap: 8px; margin-top: 8px; }
+      .mobile-auth-btns .btn { width: 100%; }
+      /* Hide original login/signup in dark navbar on mobile */
+      .navbar-dark .navbar-nav .nav-item.auth-desktop { display: none !important; }
+    }
+    @media (min-width: 769px) {
+      .mobile-auth-btns { display: none !important; }
+    }
+  </style>
+</head>
+
+<body style="background-color: white;">
+  <!-- Header with Two Navbars -->
+  <header class="header">
+    <!-- Dark Navbar -->
+    <div class="navbar-dark">
+      <div class="container">
+        <div class="navbar-content">
+          <!-- Logo -->
+          <a class="navbar-brand" href="./index.html">
+            <img src="./src/images/logo.png" alt="ZedMemes Logo" class="navbar-logo">
+          </a>
+
+          <!-- Search Form (Hidden on Mobile) -->
+          <div class="search-container">
+            <div class="search-form">
+              <i class="bi-search search-icon"></i>
+              <input 
+                type="search" 
+                class="search-input" 
+                placeholder="Search memes..." 
+                aria-label="Search memes"
+                id="searchInput"
+              >
+            </div>
+          </div>
+
+          <!-- Right Navigation -->
+          <ul class="navbar-nav">
+            <!-- Notifications Hidden for now -->
+            <li class="nav-item" style="display: none;">
+              <div class="dropdown">
+                <button type="button" class="btn-icon" title="Notifications" id="notificationBtn">
+                  <i class="bi-bell"></i>
+                  <span class="notification-badge"></span>
+                </button>
+              </div>
+            </li>
+
+            <!-- Theme Toggle -->
+            <li class="nav-item">
+              <div class="dropdown">
+                <button type="button" class="btn-icon" id="themeToggle" title="Theme">
+                  <i class="bi-moon"></i>
+                </button>
+
+                <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="#" data-icon="bi-moon-stars" data-value="auto">
+                    <i class="bi-moon-stars me-2"></i>
+                    <span class="text-truncate" title="Auto (system default)">Auto (system default)</span>
+                  </a>
+                  <a class="dropdown-item" href="#" data-icon="bi-brightness-high" data-value="default">
+                    <i class="bi-brightness-high me-2"></i>
+                    <span class="text-truncate" title="Default (light mode)">Default (light mode)</span>
+                  </a>
+                  <a class="dropdown-item" href="#" data-icon="bi-moon" data-value="dark">
+                    <i class="bi-moon me-2"></i>
+                    <span class="text-truncate" title="Dark">Dark</span>
+                  </a>
+                </div>
+              </div>
+            </li>
+
+            <!-- Login Button (desktop only) -->
+            <li class="nav-item auth-desktop">
+              <button type="button" class="btn btn-outline-primary me-2" id="loginBtn">
+                <i class="bi-box-arrow-in-right me-1"></i>Login
+              </button>
+            </li>
+
+            <!-- Sign Up Button (desktop only) -->
+            <li class="nav-item auth-desktop">
+              <button type="button" class="btn btn-primary" id="signupBtn">
+                <i class="bi-person-plus me-1"></i>Sign Up
+              </button>
+            </li>
+
+            <!-- User Profile (Hidden for now) -->
+            <li class="nav-item" style="display: none;">
+              <div class="dropdown">
+                <button type="button" class="navbar-dropdown-account-wrapper" id="accountNavbarDropdown" title="Account">
+                  <div class="avatar avatar-sm avatar-circle bg-grey-500">
+                    <span class="avatar-initials">A</span>
+                    <span class="avatar-status avatar-sm-status avatar-status-success"></span>
+                  </div>
+                </button>
+
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown-account">
+                  <div class="dropdown-item-text">
+                    <div class="d-flex align-items-center">
+                      <div class="avatar avatar-sm avatar-circle bg-grey-500">
+                        <span class="avatar-initials">A</span>
+                      </div>
+                      <div class="flex-grow-1 ms-3">
+                        <h5 class="mb-0">Admin User</h5>
+                        <p class="card-text text-body">amoskays@gmail.com</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="dropdown-divider"></div>
+
+                  <a class="dropdown-item" href="#">Profile &amp; account</a>
+                  <a class="dropdown-item" href="#">Settings</a>
+
+                  <div class="dropdown-divider"></div>
+
+                  <a class="dropdown-item" href="#">Sign out</a>
+                </div>
+              </div>
+            </li>
+
+            <!-- Mobile Toggle -->
+            <li class="nav-item">
+              <button class="mobile-toggle" id="mobileToggle" title="Toggle Navigation">
+                <i class="bi-arrow-bar-right"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Light Navbar -->
+    <div class="navbar-light">
+      <div class="container">
+        <div class="navbar-content">
+          <nav>
+            <ul class="main-nav" id="mainNav">
+              <li class="nav-item">
+                <a class="nav-link active" href="javascript:;" data-content="home">
+                  <i class="bi-house-door"></i>Home
+                </a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;" data-content="trending">
+                  <i class="bi-graph-up"></i>Trending
+                </a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;" data-content="likes">
+                  <i class="bi-heart"></i>Your Likes
+                </a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:;" data-content="uploads">
+                  <i class="bi-upload"></i>Your Uploads
+                </a>
+              </li>
+
+              <!-- Mobile Auth Buttons (Login/Sign Up) -->
+              <li class="nav-item mobile-auth-btns" style="flex-direction: column; align-items: stretch;">
+                <button type="button" class="btn btn-outline-primary mb-2" id="loginBtnMobile">
+                  <i class="bi-box-arrow-in-right me-1"></i>Login
+                </button>
+                <button type="button" class="btn btn-primary" id="signupBtnMobile">
+                  <i class="bi-person-plus me-1"></i>Sign Up
+                </button>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Home Section -->
+      <section id="home-content" class="content-section active">
+        <div class="ui grid meme-grid" data-grid-type="default" id="homeMemeGrid">
+          <!-- Meme cards will be dynamically loaded here -->
+        </div>
+      </section>
+
+      <!-- Trending Section -->
+      <section id="trending-content" class="content-section">
+        <div class="ui grid meme-grid" data-grid-type="default">
+          <!-- Trending memes will be loaded here -->
+        </div>
+      </section>
+
+      <!-- Your Likes Section -->
+      <section id="likes-content" class="content-section">
+        <div class="ui grid meme-grid" data-grid-type="default">
+          <!-- Liked memes will be loaded here -->
+        </div>
+      </section>
+
+      <!-- Your Uploads Section -->
+      <section id="uploads-content" class="content-section">
+        <div class="row align-items-center">
+          <div class="col">
+            <h1 class="page-header-title">Your Uploads</h1>
+          </div>
+          <!-- End Col -->
+
+          <div class="col-auto">
+            <a class="btn btn-primary" href="javascript:;" id="uploadBtn">
+              <i class="bi-upload me-1"></i> Upload
+            </a>
+          </div>
+          <!-- End Col -->
+        </div>
+        
+        <div class="ui grid meme-grid" data-grid-type="default">
+          <!-- User uploads will be loaded here -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  
+  <!-- Login Modal -->
+  <div class="ui small modal" id="loginModal">
+    <div class="header">
+      <i class="bi-box-arrow-in-right me-2"></i>Login to ZedMemes
+    </div>
+    <div class="content">
+      <form class="ui form">
+        <div class="field">
+          <label>Email</label>
+          <div class="ui left icon input">
+            <i class="bi-envelope icon"></i>
+            <input type="email" name="email" placeholder="Enter your email">
+          </div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="ui left icon input">
+            <i class="bi-lock icon"></i>
+            <input type="password" name="password" placeholder="Enter your password">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui checkbox">
+            <input type="checkbox" name="remember">
+            <label>Remember me</label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">
+        Cancel
+      </div>
+      <div class="ui positive right labeled icon button">
+        Login
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sign Up Modal -->
+  <div class="ui small modal" id="signupModal">
+    <div class="header">
+      <i class="bi-person-plus me-2"></i>Join ZedMemes
+    </div>
+    <div class="content">
+      <form class="ui form">
+        <div class="field">
+          <label>Full Name</label>
+          <div class="ui left icon input">
+            <i class="bi-person icon"></i>
+            <input type="text" name="name" placeholder="Enter your full name">
+          </div>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <div class="ui left icon input">
+            <i class="bi-envelope icon"></i>
+            <input type="email" name="email" placeholder="Enter your email">
+          </div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="ui left icon input">
+            <i class="bi-lock icon"></i>
+            <input type="password" name="password" placeholder="Create a password">
+          </div>
+        </div>
+        <div class="field">
+          <label>Confirm Password</label>
+          <div class="ui left icon input">
+            <i class="bi-lock icon"></i>
+            <input type="password" name="confirm_password" placeholder="Confirm your password">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui checkbox">
+            <input type="checkbox" name="terms">
+            <label>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">
+        Cancel
+      </div>
+      <div class="ui positive right labeled icon button">
+        Sign Up
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Gallery Modal (commented out)
+  <div class="ui fullscreen modal" id="imageGalleryModal">
+    <div class="header">
+      <i class="bi-images me-2"></i>
+      <span id="galleryTitle">Image Gallery</span>
+      <div class="ui right floated basic buttons">
+        <button class="ui button" id="prevImageBtn" title="Previous">
+          <i class="bi-chevron-left"></i>
+        </button>
+        <button class="ui button" id="nextImageBtn" title="Next">
+          <i class="bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="ui center aligned segment" id="galleryContent">
+        <div class="ui active centered inline loader" id="galleryLoader"></div>
+        <div class="gallery-image-container" id="galleryImageContainer" style="display: none;">
+          <img id="galleryImage" class="ui fluid image" alt="Gallery Image">
+          <div class="gallery-info">
+            <h3 id="galleryImageTitle"></h3>
+            <div class="gallery-stats">
+              <span id="galleryImageStats"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="ui left floated basic button" id="downloadImageBtn">
+        <i class="bi-download me-1"></i>Download
+      </div>
+      <div class="ui right floated buttons">
+        <div class="ui button" id="shareImageBtn">
+          <i class="bi-share me-1"></i>Share
+        </div>
+        <div class="ui deny button">
+          Close
+        </div>
+      </div>
+    </div>
+  </div>
+  -->
+
+  <!-- JavaScript Modules -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+  <script src="./src/js/theme-manager.js"></script>
+  <script src="./src/js/navigation.js"></script>
+  <script src="./src/js/meme-manager.js"></script>
+  <script src="./src/js/app.js"></script>
+  
+  <!-- Login/Signup Modal Script -->
+  <script>
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if jQuery and Semantic UI are loaded
+      if (typeof $ !== 'undefined' && $.fn.modal) {
+        // Initialize modals
+        $('#loginModal').modal({
+          closable: true,
+          onDeny: function() {
+            return true;
+          },
+          onApprove: function() {
+            // Handle login logic here
+            console.log('Login submitted');
+            return false; // Prevent modal from closing for now
+          }
+        });
+
+        $('#signupModal').modal({
+          closable: true,
+          onDeny: function() {
+            return true;
+          },
+          onApprove: function() {
+            // Handle signup logic here
+            console.log('Sign up submitted');
+            return false; // Prevent modal from closing for now
+          }
+        });
+
+        // Initialize image gallery modal (commented out)
+        /*
+        $('#imageGalleryModal').modal({
+          closable: true,
+          transition: 'scale',
+          duration: 300,
+          onShow: function() {
+            $('body').addClass('gallery-modal-open');
+            $(document).on('keydown.gallery', function(e) {
+              if (e.key === 'ArrowLeft') {
+                $('#prevImageBtn').click();
+              } else if (e.key === 'ArrowRight') {
+                $('#nextImageBtn').click();
+              } else if (e.key === 'Escape') {
+                $('#imageGalleryModal').modal('hide');
+              }
+            });
+          },
+          onHide: function() {
+            $('body').removeClass('gallery-modal-open');
+            $(document).off('keydown.gallery');
+          }
+        });
+        */
+
+        // Initialize checkboxes
+        $('.ui.checkbox').checkbox();
+      }
+
+      // Login button click handler (desktop)
+      const loginBtn = document.getElementById('loginBtn');
+      if (loginBtn) {
+        loginBtn.addEventListener('click', function() {
+          console.log('Login button clicked');
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#imageGalleryModal').modal('hide');
+            $('#loginModal').modal('show');
+          }
+        });
+      }
+
+      // Sign up button click handler (desktop)
+      const signupBtn = document.getElementById('signupBtn');
+      if (signupBtn) {
+        signupBtn.addEventListener('click', function() {
+          console.log('Sign up button clicked');
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#imageGalleryModal').modal('hide');
+            $('#signupModal').modal('show');
+          }
+        });
+      }
+
+      // Mobile Login button click handler
+      const loginBtnMobile = document.getElementById('loginBtnMobile');
+      if (loginBtnMobile) {
+        loginBtnMobile.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          console.log('Mobile Login button clicked');
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#imageGalleryModal').modal('hide');
+            $('#loginModal').modal('show');
+          }
+        });
+      }
+
+      // Mobile Sign up button click handler
+      const signupBtnMobile = document.getElementById('signupBtnMobile');
+      if (signupBtnMobile) {
+        signupBtnMobile.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          console.log('Mobile Sign up button clicked');
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#imageGalleryModal').modal('hide');
+            $('#signupModal').modal('show');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

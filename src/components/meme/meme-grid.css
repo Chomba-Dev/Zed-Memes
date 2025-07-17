@@ -1,0 +1,310 @@
+/* Meme Grid Styles - Updated for Semantic UI Grid */
+
+.meme-grid {
+  margin-bottom: 0; /* Remove bottom margin */
+  margin-top: 0; /* Remove top margin */
+}
+
+/* Meme Grid Styles - Force 4 columns per row */
+
+.meme-grid {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.meme-grid.ui.grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.meme-grid.ui.grid > .four.wide.column {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
+/* Handle different grid types */
+.meme-grid[data-grid-type="large"].ui.grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+.meme-grid[data-grid-type="compact"].ui.grid {
+  grid-template-columns: repeat(5, 1fr) !important;
+}
+
+/* Ensure masonry layout overrides grid display */
+.meme-grid[data-grid-type="masonry"].ui.grid {
+  display: block !important;
+  columns: 280px;
+  column-gap: 1.5rem;
+  grid-template-columns: none !important;
+}
+
+.meme-grid[data-grid-type="masonry"].ui.grid > .four.wide.column {
+  display: inline-block !important;
+  break-inside: avoid;
+  margin-bottom: 1rem;
+  width: auto !important;
+}
+
+@media (min-width: 768px) {
+  .meme-grid[data-grid-type="masonry"].ui.grid {
+    columns: 250px;
+  }
+}
+
+@media (max-width: 767px) {
+  .meme-grid[data-grid-type="masonry"].ui.grid {
+    columns: 1;
+    column-gap: 0;
+  }
+}
+
+.meme-grid[data-grid-type="masonry"] {
+  columns: 280px;
+  column-gap: 1.5rem;
+  display: block !important;
+}
+
+.meme-grid[data-grid-type="masonry"] .meme-card {
+  break-inside: avoid;
+  margin-bottom: 1rem; /* Reduced from 1.5rem */
+}
+
+/* Loading State */
+.meme-grid.loading {
+  position: relative;
+  min-height: 300px;
+}
+
+.meme-grid.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Empty State */
+.meme-grid-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+}
+
+.meme-grid-empty i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.meme-grid-empty h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #343a40;
+}
+
+.meme-grid-empty p {
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Grid Controls */
+.meme-grid-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem; /* Reduced from 2rem */
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.grid-view-toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.grid-view-btn {
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6c757d;
+}
+
+.grid-view-btn:hover {
+  background: #e9ecef;
+  color: #343a40;
+}
+
+.grid-view-btn.active {
+  background: #6366f1;
+  color: white;
+  border-color: #6366f1;
+}
+
+.grid-sort-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: white;
+  color: #343a40;
+  cursor: pointer;
+}
+
+.grid-sort-select:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+/* Load More */
+.meme-grid-load-more {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.load-more-btn {
+  padding: 0.75rem 2rem;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.load-more-btn:hover {
+  background: #5856eb;
+}
+
+.load-more-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Infinite Scroll Indicator */
+.infinite-scroll-indicator {
+  text-align: center;
+  padding: 2rem 0;
+  color: #6c757d;
+}
+
+.infinite-scroll-indicator.loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 0.5rem;
+}
+
+/* Responsive Grid */
+@media (min-width: 1200px) {
+  .meme-grid.ui.grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+  
+  .meme-grid[data-grid-type="large"].ui.grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .meme-grid[data-grid-type="compact"].ui.grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .meme-grid.ui.grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .meme-grid[data-grid-type="large"].ui.grid,
+  .meme-grid[data-grid-type="compact"].ui.grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .meme-grid.ui.grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .meme-grid[data-grid-type="large"].ui.grid,
+  .meme-grid[data-grid-type="compact"].ui.grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .meme-grid.ui.grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  .meme-grid[data-grid-type="large"].ui.grid,
+  .meme-grid[data-grid-type="compact"].ui.grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+}
+
+/* Masonry layout handling */
+@media (min-width: 768px) {
+  .meme-grid[data-grid-type="masonry"] {
+    columns: 250px;
+  }
+}
+
+@media (max-width: 767px) {
+  .meme-grid[data-grid-type="masonry"] {
+    columns: 1;
+    column-gap: 0;
+  }
+}
+
+/* Grid controls responsive */
+@media (max-width: 767px) {
+  .meme-grid-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .grid-view-toggle {
+    justify-content: center;
+  }
+  
+  .meme-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Override any conflicting Semantic UI styles */
+.meme-grid.ui.grid > .four.wide.column {
+  position: relative !important;
+}
+
+.meme-grid.ui.grid > .four.wide.column .meme-card {
+  width: 100% !important;
+  height: auto !important;
+}

@@ -24,7 +24,6 @@ try {
     
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $action = $_GET['action'] ?? '';
-        echo "action $action";
         switch ($action) {
             case 'get_memes':
                 handleGetRelevant($db, $authHandler);

@@ -1,0 +1,78 @@
+<!-- Meme Card Component -->
+<div class="meme-card" data-meme-id="">
+  <div class="meme-image-container">
+    <div class="meme-placeholder">
+      <i class="bi-image"></i>
+      <p>Loading...</p>
+    </div>
+    <!-- For actual images -->
+    <!--
+    <img class="meme-image" src="" alt="" loading="lazy">
+    -->
+  </div>
+  
+  <div class="meme-content">
+    <div class="meme-title">
+      <h4>Meme Title</h4>
+      <span class="meme-category">Category</span>
+    </div>
+    
+    <!-- Reaction bar: shows all reactions and their counts -->
+    <div class="meme-reaction-bar">
+      <button class="reaction-btn" data-reaction="like"><span class="reaction-icon">👍</span> <span class="reaction-count">0</span></button>
+      <button class="reaction-btn" data-reaction="love"><span class="reaction-icon">❤️</span> <span class="reaction-count">0</span></button>
+      <button class="reaction-btn" data-reaction="haha"><span class="reaction-icon">😂</span> <span class="reaction-count">0</span></button>
+      <button class="reaction-btn" data-reaction="wow"><span class="reaction-icon">😮</span> <span class="reaction-count">0</span></button>
+      <button class="reaction-btn" data-reaction="sad"><span class="reaction-icon">😢</span> <span class="reaction-count">0</span></button>
+      <button class="reaction-btn" data-reaction="angry"><span class="reaction-icon">😡</span> <span class="reaction-count">0</span></button>
+    </div>
+
+    <div class="meme-actions">      
+      <button class="btn-action meme-upvote-btn" data-action="upvote" data-meme-id="">
+        <i class="bi-arrow-up"></i>
+        <span class="vote-count">0</span>
+      </button>
+      <button class="btn-action meme-downvote-btn" data-action="downvote" data-meme-id="">
+        <i class="bi-arrow-down"></i>
+        <span class="vote-count">0</span>
+      </button>
+      
+      <button class="btn-action meme-share-btn" data-action="share" data-meme-id="">
+        <i class="bi-share"></i>
+        Share
+      </button>
+      
+      <button class="btn-action meme-download-btn" data-action="download" data-meme-id="">
+        <i class="bi-download"></i>
+        Download
+      </button>
+      
+      <div class="meme-menu dropdown">
+        <button class="btn-action dropdown-toggle" data-action="menu">
+          <i class="bi-three-dots"></i>
+        </button>
+        
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" data-action="report">
+            <i class="bi-flag"></i> Report
+          </a>
+          <a class="dropdown-item" href="#" data-action="copy-link">
+            <i class="bi-link"></i> Copy Link
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reaction popup/modal (hidden by default) -->
+  <div class="reaction-popup" style="display:none;">
+    <div class="reaction-popup-content">
+      <button class="reaction-option" data-reaction="like"><span class="reaction-icon">👍</span></button>
+      <button class="reaction-option" data-reaction="love"><span class="reaction-icon">❤️</span></button>
+      <button class="reaction-option" data-reaction="haha"><span class="reaction-icon">😂</span></button>
+      <button class="reaction-option" data-reaction="wow"><span class="reaction-icon">😮</span></button>
+      <button class="reaction-option" data-reaction="sad"><span class="reaction-icon">😢</span></button>
+      <button class="reaction-option" data-reaction="angry"><span class="reaction-icon">😡</span></button>
+    </div>
+  </div>
+</div>
