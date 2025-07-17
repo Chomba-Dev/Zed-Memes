@@ -22,7 +22,7 @@ try {
     $authHandler = new AuthHandler();
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $action = $_REQUESTT['action'] ?? '';
+        $action = $_REQUEST['action'] ?? '';
         switch ($action) {
             case 'register':
                 handleRegister($authHandler);
@@ -123,7 +123,7 @@ function handleRegister($authHandler) {
  */
 function handleLogin($authHandler) {
     $json = json_decode(file_get_contents("php://input"), true);
-    $identifier = $json['identifier'] ?? '';
+    $identifier = $json['email'] ?? '';
     $password = $json['password'] ?? '';
     if (empty($identifier) || empty($password)) {
         sendResponse(false, 'Username/email and password are required');

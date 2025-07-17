@@ -183,7 +183,9 @@ class MemeManager {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const data = await response.json();
+      const text = await response.text();
+      const jsonText = text.substring(text.indexOf('{')); // Remove everything before first '{'
+      const data = JSON.parse(jsonText);
       
       if (data.success) {
         console.log('Home memes loaded:', data.data.length);
@@ -226,7 +228,9 @@ class MemeManager {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const data = await response.json();
+      const text = await response.text();
+      const jsonText = text.substring(text.indexOf('{'));
+      const data = JSON.parse(jsonText);
       
       if (data.success) {
         console.log('Trending memes loaded:', data.data.length);

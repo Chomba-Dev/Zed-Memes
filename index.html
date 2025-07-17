@@ -73,7 +73,7 @@
           <!-- Right Navigation -->
           <ul class="navbar-nav">
             <!-- Notifications Hidden for now -->
-            <li class="nav-item" style="display: none;">
+            <li class="nav-item" style="display: none;" id="notificationNavbarDropdown">
               <div class="dropdown">
                 <button type="button" class="btn-icon" title="Notifications" id="notificationBtn">
                   <i class="bi-bell"></i>
@@ -107,25 +107,25 @@
             </li>
 
             <!-- Login Button (desktop only) -->
-            <li class="nav-item auth-desktop">
+            <li class="nav-item auth-desktop" >
               <button type="button" class="btn btn-outline-primary me-2" id="loginBtn">
                 <i class="bi-box-arrow-in-right me-1"></i>Login
               </button>
             </li>
 
             <!-- Sign Up Button (desktop only) -->
-            <li class="nav-item auth-desktop">
+            <li class="nav-item auth-desktop" >
               <button type="button" class="btn btn-primary" id="signupBtn">
                 <i class="bi-person-plus me-1"></i>Sign Up
               </button>
             </li>
 
             <!-- User Profile (Hidden for now) -->
-            <li class="nav-item" style="display: none;">
+            <li class="nav-item" style="display: none;" id="accountNavbarDropdown">
               <div class="dropdown">
-                <button type="button" class="navbar-dropdown-account-wrapper" id="accountNavbarDropdown" title="Account">
+                <button type="button" class="navbar-dropdown-account-wrapper" id="accountNavbarDropdownBtn" title="Account">
                   <div class="avatar avatar-sm avatar-circle bg-grey-500">
-                    <span class="avatar-initials">A</span>
+                    <span class="avatar-initials" id="profileInitials">A</span>
                     <span class="avatar-status avatar-sm-status avatar-status-success"></span>
                   </div>
                 </button>
@@ -134,11 +134,11 @@
                   <div class="dropdown-item-text">
                     <div class="d-flex align-items-center">
                       <div class="avatar avatar-sm avatar-circle bg-grey-500">
-                        <span class="avatar-initials">A</span>
+                        <span class="avatar-initials" id="profileInitialsDropdown">A</span>
                       </div>
                       <div class="flex-grow-1 ms-3">
-                        <h5 class="mb-0">Admin User</h5>
-                        <p class="card-text text-body">amoskays@gmail.com</p>
+                        <h5 class="mb-0" id="profileName">Admin User</h5>
+                        <p class="card-text text-body" id="profileEmail">amoskays@gmail.com</p>
                       </div>
                     </div>
                   </div>
@@ -184,13 +184,13 @@
                 </a>
               </li>
               
-              <li class="nav-item">
+              <li class="nav-item" id="navLikes">
                 <a class="nav-link" href="javascript:;" data-content="likes">
                   <i class="bi-heart"></i>Your Likes
                 </a>
               </li>
               
-              <li class="nav-item">
+              <li class="nav-item" id="navUploads">
                 <a class="nav-link" href="javascript:;" data-content="uploads">
                   <i class="bi-upload"></i>Your Uploads
                 </a>
@@ -246,11 +246,114 @@
           <!-- End Col -->
 
           <div class="col-auto">
-            <a class="btn btn-primary" href="javascript:;" id="uploadBtn">
-              <i class="bi-upload me-1"></i> Upload
-            </a>
+            <button type="button" class="btn btn-primary" id="uploadBtn" style="font-size: 1.15rem; padding: 0.75rem 2rem; border-radius: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 0.5rem;">
+              <i class="bi-upload me-2" style="font-size: 1.5rem;"></i> <span style="font-weight: 600; letter-spacing: 0.5px;">Upload Meme</span>
+            </button>
           </div>
-          <!-- End Col -->
+
+          <!-- Meme Upload Modal -->
+          <div class="ui small modal" id="uploadModal">
+            <div class="header">
+              <i class="bi-upload me-2"></i>Upload Meme
+            </div>
+            <div class="content">
+              <form class="ui form" id="memeUploadForm" enctype="multipart/form-data">
+                <div class="field">
+                  <label>Caption</label>
+                  <input type="text" name="caption" placeholder="Enter meme caption" required>
+                </div>
+                <div class="field">
+                  <label>Image</label>
+                  <input type="file" name="image" id="uploadImageInput" accept="image/*" required>
+                </div>
+                <div class="field" id="imagePreviewContainer" style="display:none; text-align:center; margin-top: 1rem;">
+                  <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 100%; max-height: 220px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee;" />
+                </div>
+              </form>
+            </div>
+            <div class="actions">
+              <div class="ui black deny button">
+                Cancel
+              </div>
+              <button type="submit" class="ui positive right labeled icon button" form="memeUploadForm" id="uploadMemeBtn" style="font-size: 1.1rem; padding: 0.5rem 1.5rem; border-radius: 1.5rem;">
+                <i class="bi-cloud-arrow-up me-2" style="font-size: 1.3rem;"></i> Upload
+              </button>
+            </div>
+          </div>
+
+          <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Show upload modal on button click
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (uploadBtn) {
+              uploadBtn.addEventListener('click', function() {
+                if (typeof $ !== 'undefined' && $.fn.modal) {
+                  $('#uploadModal').modal({
+                    onHide: function() {
+                      // Reset preview and form on close
+                      document.getElementById('memeUploadForm').reset();
+                      document.getElementById('imagePreviewContainer').style.display = 'none';
+                      document.getElementById('imagePreview').src = '#';
+                    }
+                  }).modal('show');
+                }
+              });
+            }
+
+            // Image preview logic
+            const imageInput = document.getElementById('uploadImageInput');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImg = document.getElementById('imagePreview');
+            if (imageInput) {
+              imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = function(evt) {
+                    previewImg.src = evt.target.result;
+                    previewContainer.style.display = 'block';
+                  };
+                  reader.readAsDataURL(file);
+                } else {
+                  previewContainer.style.display = 'none';
+                  previewImg.src = '#';
+                }
+              });
+            }
+
+            // Handle meme upload form submission
+            const memeUploadForm = document.getElementById('memeUploadForm');
+            if (memeUploadForm) {
+              memeUploadForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(memeUploadForm);
+                const token = localStorage.getItem('zedmemes-token');
+                try {
+                  const response = await fetch('http://localhost/Zed-memes/backend/api/upload.php', {
+                    method: 'POST',
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+                    body: formData
+                  });
+                  const data = await response.json();
+                  if (data.success) {
+                    alert('Meme uploaded successfully!');
+                    if (typeof $ !== 'undefined' && $.fn.modal) {
+                      $('#uploadModal').modal('hide');
+                    }
+                    memeUploadForm.reset();
+                    previewContainer.style.display = 'none';
+                    previewImg.src = '#';
+                  } else {
+                    alert(data.message || 'Upload failed.');
+                  }
+                } catch (err) {
+                  alert('Upload error: ' + err.message);
+                }
+              });
+            }
+          });
+          </script>
+
         </div>
         
         <div class="ui grid meme-grid" data-grid-type="default">
@@ -418,12 +521,8 @@
           closable: true,
           onDeny: function() {
             return true;
-          },
-          onApprove: function() {
-            // Handle login logic here
-            console.log('Login submitted');
-            return false; // Prevent modal from closing for now
           }
+          // Removed onApprove to allow app.js to handle login
         });
 
         $('#signupModal').modal({
