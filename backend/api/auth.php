@@ -15,14 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-require_once '../config/database.php';
-require_once '../auth/AuthHandler.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../auth/AuthHandler.php';
 
 try {
     $authHandler = new AuthHandler();
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $action = $_REQUESTT['action'] ?? '';
+        $action = $_REQUEST['action'] ?? '';
         switch ($action) {
             case 'register':
                 handleRegister($authHandler);

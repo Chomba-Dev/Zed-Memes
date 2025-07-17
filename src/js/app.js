@@ -49,7 +49,7 @@ class ZedMemesApp {
       };
 
       try {
-        const response = await fetch('http://localhost/Zed-memes/backend/api/auth.php?action=login', {
+        const response = await fetch('http://localhost/Zed-Memes/backend/api/auth.php?action=login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -204,7 +204,7 @@ class ZedMemesApp {
       };
 
       try {
-        const response = await fetch('http://localhost/Zed-memes/backend/api/auth.php?action=register', {
+        const response = await fetch('http://localhost/Zed-Memes/backend/api/auth.php?action=register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -305,7 +305,7 @@ class ZedMemesApp {
 
     try {
       // Use the same base as login/register
-      const response = await fetch(`http://localhost/Zed-memes/backend/api/memes.php?action=search_memes&query=${encodeURIComponent(query)}`);
+      const response = await fetch(`http://localhost/Zed-Memes/backend/api/memes.php?action=search_memes&query=${encodeURIComponent(query)}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

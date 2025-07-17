@@ -4,7 +4,7 @@
  * Manages user registration, login, and token generation
  */
 
-require_once '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 class AuthHandler {
     private $db;
