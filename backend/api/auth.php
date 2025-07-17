@@ -22,7 +22,7 @@ try {
     $authHandler = new AuthHandler();
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $action = $_REQUESTT['action'] ?? '';
+        $action = $_REQUEST['action'] ?? '';
         switch ($action) {
             case 'register':
                 handleRegister($authHandler);
