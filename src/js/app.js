@@ -242,6 +242,16 @@ class ZedMemesApp {
     const form = loginModal.querySelector('form.ui.form');
     if (!form) return;
 
+    const self = this;
+
+    //Get All buttons
+    const loginButtonMobile = document.getElementById('loginBtnMobile');
+    const loginButtonDesktop = document.getElementById('loginBtn');
+    const signupButtonMobile = document.getElementById('signupBtnMobile');
+    const signupButtonDesktop = document.getElementById('signupBtn');
+    const accountButton = document.getElementById('accountNavbarDropdown');
+    const notificationButton = document.getElementById('notificationNavbarDropdown');
+
     // Ensure clicking the modal's Login button submits the form
     const loginBtn = loginModal.querySelector('.ui.positive.button');
     if (loginBtn) {
@@ -253,23 +263,23 @@ class ZedMemesApp {
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = form.querySelector('input[name="email"]').value.trim();
+      const identifier = form.querySelector('input[name="email"]').value.trim();
       const password = form.querySelector('input[name="password"]').value;
 
       // Basic validation
-      if (!email || !password) {
-        this.showToast('Please enter both email and password', 'error');
+      if (!identifier || !password) {
+        self.showToast('Please fill in all fields', 'error');
         return;
       }
 
       // Prepare request
       const payload = {
-        email: email,
+        identifier: identifier,
         password: password
       };
 
       try {
-        const response = await fetch('http://localhost/Zed-memes/backend/api/auth.php?action=login', {
+        const response = await fetch('http://localhost/Zed-Memes/backend/api/auth.php?action=login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -281,20 +291,34 @@ class ZedMemesApp {
           // Store session info
           localStorage.setItem('zedmemes-token', data.data.token);
           localStorage.setItem('zedmemes-user', JSON.stringify(data.data.user));
-          this.showToast('Login successful! Welcome, ' + data.data.user.username, 'success');
+          // Update UI elements
+          if (loginButtonMobile) loginButtonMobile.style.display = 'none';
+          if (loginButtonDesktop) loginButtonDesktop.style.display = 'none';
+          if (signupButtonMobile) signupButtonMobile.style.display = 'none';
+          if (signupButtonDesktop) signupButtonDesktop.style.display = 'none';
+          if (accountButton) accountButton.style.display = 'block';
+          if (notificationButton) notificationButton.style.display = 'block';
+          if (navLikes) navLikes.style.display = '';
+          if (navUploads) navUploads.style.display = '';
+          self.updateUserProfileUI(data.data.user);
+          // Re-initialize profile dropdown if needed (REMOVED to prevent multiple listeners)
+          // if (window.navigationInstance && typeof window.navigationInstance.initProfileDropdown === 'function') {
+          //   window.navigationInstance.initProfileDropdown();
+          // }
+          self.showToast('Login successful! Welcome, ' + data.data.user.username, 'success');
           // Optionally close modal (if using jQuery/Semantic UI)
           if (typeof $ !== 'undefined' && $.fn.modal) {
             $('#loginModal').modal('hide');
           }
-          // this.updateAuthUI();
         } else {
-          this.showToast(data.message || 'Login failed', 'error');
+          self.showToast(data.message || 'Login failed', 'error');
         }
       } catch (err) {
-        this.showToast('Login error: ' + err.message, 'error');
+        self.showToast('Login error: ' + err.message, 'error');
       }
     });
   }
+
 
   /**
    * Initialize core modules
