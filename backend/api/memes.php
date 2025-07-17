@@ -132,12 +132,10 @@ function handleSearchMemes($db, $authHandler) {
     
     if (empty($query)) {
         sendResponse(false, 'Search query is required');
-        return;
     }
     
     if (strlen($query) < 2) {
         sendResponse(false, 'Search query must be at least 2 characters');
-        return;
     }
     
     try {
@@ -146,51 +144,36 @@ function handleSearchMemes($db, $authHandler) {
         $sql = "
             SELECT 
                 m.meme_id,
-                m.user_id,
+                m.title,
+                m.description,
                 m.image_path,
-                m.caption,
-                m.uploaded_at,
+                m.category,
+                m.created_at,
                 u.username as author,
-                COALESCE(SUM(CASE WHEN umv.vote_type = 'upvote' THEN 1 ELSE 0 END), 0) as upvotes,
-                COALESCE(SUM(CASE WHEN umv.vote_type = 'downvote' THEN 1 ELSE 0 END), 0) as downvotes,
-                COUNT(DISTINCT umr.reaction_id) as reactions_count
+                u.user_id as user_id,
+                COUNT(DISTINCT r_like.reaction_id) as likes,
+                COUNT(DISTINCT r_dislike.reaction_id) as dislikes,
+                COUNT(DISTINCT c.comment_id) as comments_count
             FROM memes m
             LEFT JOIN users u ON m.user_id = u.user_id
-            LEFT JOIN user_meme_votes umv ON m.meme_id = umv.meme_id
-            LEFT JOIN user_meme_reaction umr ON m.meme_id = umr.meme_id
-            WHERE m.caption LIKE ? OR u.username LIKE ?
-            GROUP BY m.meme_id, m.user_id, m.image_path, m.caption, m.uploaded_at, u.username
-            ORDER BY m.uploaded_at DESC
+            LEFT JOIN reactions r_like ON m.meme_id = r_like.meme_id AND r_like.reaction_type = 'like'
+            LEFT JOIN reactions r_dislike ON m.meme_id = r_dislike.meme_id AND r_dislike.reaction_type = 'dislike'
+            LEFT JOIN comments c ON m.meme_id = c.meme_id
+            WHERE m.title LIKE ? OR m.description LIKE ? OR m.category LIKE ? OR u.username LIKE ?
+            GROUP BY m.meme_id
+            ORDER BY m.created_at DESC
             LIMIT 20
         ";
         
         $stmt = $db->prepare($sql);
-        $stmt->execute([$searchTerm, $searchTerm]);
+        $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
         $memes = $stmt->fetchAll();
         
-        // Transform the data to match expected format
-        $result = [];
-        foreach ($memes as $meme) {
-            $result[] = [
-                'meme_id' => $meme['meme_id'],
-                'user_id' => $meme['user_id'],
-                'image_path' => $meme['image_path'],
-                'caption' => $meme['caption'],
-                'uploaded_at' => $meme['uploaded_at'],
-                'author' => $meme['author'],
-                'upvotes' => (int)$meme['upvotes'],
-                'downvotes' => (int)$meme['downvotes'],
-                'reactions_count' => (int)$meme['reactions_count']
-            ];
-        }
-        
-        sendResponse(true, 'Search completed successfully', $result);
-        return;
+        sendResponse(true, 'Search completed successfully', $memes);
         
     } catch (Exception $e) {
         error_log("Search memes error: " . $e->getMessage());
-        sendResponse(false, 'Failed to search memes: ' . $e->getMessage());
-        return;
+        sendResponse(false, 'Failed to search memes');
     }
 }
 

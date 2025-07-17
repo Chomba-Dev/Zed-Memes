@@ -155,7 +155,7 @@ class ZedMemesApp {
       // Setup login handler
       this.setupLogin();
       // Update auth UI on init
-      this.updateAuthUI();
+      // this.updateAuthUI();
       
       console.log('ZedMemes App initialized successfully');
     } catch (error) {
@@ -223,7 +223,7 @@ class ZedMemesApp {
           if (typeof $ !== 'undefined' && $.fn.modal) {
             $('#signupModal').modal('hide');
           }
-          this.updateAuthUI();
+          // this.updateAuthUI();
         } else {
           this.showToast(data.message || 'Registration failed', 'error');
         }
@@ -286,7 +286,7 @@ class ZedMemesApp {
           if (typeof $ !== 'undefined' && $.fn.modal) {
             $('#loginModal').modal('hide');
           }
-          this.updateAuthUI();
+          // this.updateAuthUI();
         } else {
           this.showToast(data.message || 'Login failed', 'error');
         }
