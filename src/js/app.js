@@ -154,6 +154,8 @@ class ZedMemesApp {
       this.setupRegistration();
       // Setup login handler
       this.setupLogin();
+      // Update auth UI on init
+      // this.updateAuthUI();
       
       console.log('ZedMemes App initialized successfully');
     } catch (error) {
@@ -221,6 +223,7 @@ class ZedMemesApp {
           if (typeof $ !== 'undefined' && $.fn.modal) {
             $('#signupModal').modal('hide');
           }
+          // this.updateAuthUI();
         } else {
           this.showToast(data.message || 'Registration failed', 'error');
         }
@@ -229,6 +232,93 @@ class ZedMemesApp {
       }
     });
   }
+
+  /**
+   * Setup login form handler
+   */
+  setupLogin() {
+    const loginModal = document.getElementById('loginModal');
+    if (!loginModal) return;
+    const form = loginModal.querySelector('form.ui.form');
+    if (!form) return;
+
+    const self = this;
+
+    //Get All buttons
+    const loginButtonMobile = document.getElementById('loginBtnMobile');
+    const loginButtonDesktop = document.getElementById('loginBtn');
+    const signupButtonMobile = document.getElementById('signupBtnMobile');
+    const signupButtonDesktop = document.getElementById('signupBtn');
+    const accountButton = document.getElementById('accountNavbarDropdown');
+    const notificationButton = document.getElementById('notificationNavbarDropdown');
+
+    // Ensure clicking the modal's Login button submits the form
+    const loginBtn = loginModal.querySelector('.ui.positive.button');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        form.requestSubmit();
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const identifier = form.querySelector('input[name="email"]').value.trim();
+      const password = form.querySelector('input[name="password"]').value;
+
+      // Basic validation
+      if (!identifier || !password) {
+        self.showToast('Please fill in all fields', 'error');
+        return;
+      }
+
+      // Prepare request
+      const payload = {
+        identifier: identifier,
+        password: password
+      };
+
+      try {
+        const response = await fetch('http://localhost/Zed-Memes/backend/api/auth.php?action=login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (data.success) {
+          // Store session info
+          localStorage.setItem('zedmemes-token', data.data.token);
+          localStorage.setItem('zedmemes-user', JSON.stringify(data.data.user));
+          // Update UI elements
+          if (loginButtonMobile) loginButtonMobile.style.display = 'none';
+          if (loginButtonDesktop) loginButtonDesktop.style.display = 'none';
+          if (signupButtonMobile) signupButtonMobile.style.display = 'none';
+          if (signupButtonDesktop) signupButtonDesktop.style.display = 'none';
+          if (accountButton) accountButton.style.display = 'block';
+          if (notificationButton) notificationButton.style.display = 'block';
+          if (navLikes) navLikes.style.display = '';
+          if (navUploads) navUploads.style.display = '';
+          self.updateUserProfileUI(data.data.user);
+          // Re-initialize profile dropdown if needed (REMOVED to prevent multiple listeners)
+          // if (window.navigationInstance && typeof window.navigationInstance.initProfileDropdown === 'function') {
+          //   window.navigationInstance.initProfileDropdown();
+          // }
+          self.showToast('Login successful! Welcome, ' + data.data.user.username, 'success');
+          // Optionally close modal (if using jQuery/Semantic UI)
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#loginModal').modal('hide');
+          }
+        } else {
+          self.showToast(data.message || 'Login failed', 'error');
+        }
+      } catch (err) {
+        self.showToast('Login error: ' + err.message, 'error');
+      }
+    });
+  }
+
 
   /**
    * Initialize core modules
@@ -687,12 +777,6 @@ class ZedMemesApp {
    * @param {string} type - Toast type ('info', 'success', 'warning', 'error')
    */
   showToast(message, type = 'info', title = '', icon = '') {
-    // If memeManager has a toast, use it
-    if (this.memeManager && this.memeManager.showToast) {
-      this.memeManager.showToast(message, type, title, icon);
-      return;
-    }
-
     // Toast type to color/icon/title
     const typeMap = {
       info:    { color: '#2563eb', icon: 'ℹ️', title: 'Info' },

@@ -90,6 +90,13 @@ try {
     exit(1);
 }
 
+// Run the sample data generator before importing the schema
+exec('php backend/generate_sample_data.php', $output, $return_var);
+if ($return_var !== 0) {
+    echo "Failed to generate sample data.\n";
+    exit(1);
+}
+
 // Import schema
 echo "\n📋 Importing database schema...\n";
 $schema_file = 'database/schema/zed_memes.sql';

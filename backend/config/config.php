@@ -19,7 +19,7 @@ define("DB_CHARSET", "utf8mb4");
 define("DB_PORT", getenv("DB_PORT") ?: 3306);
 
 // JWT settings
-define("JWT_SECRET", getenv("JWT_SECRET") ?: "1c09d04fa167a1adeb0737fe9b6f7af2618f315965116a3ee43b2fee66be48e8");
+define("JWT_SECRET", getenv("JWT_SECRET") ?: "b63df8e2a5128de6b3cd669463b5832cddc950d28cef0dede085eedfc44da110");
 define("JWT_EXPIRY", 24 * 60 * 60); // 24 hours in seconds
 define("JWT_ALGORITHM", "HS256");
 
