@@ -789,8 +789,12 @@ class MemeManager {
   /**
    * Show toast/alert for errors
    */
-  showToast(msg) {
-    alert(msg); // Replace with custom toast if available
+  showToast(msg, type = 'info', title = '', icon = '') {
+    if (window.zedMemesApp && typeof window.zedMemesApp.showToast === 'function') {
+      window.zedMemesApp.showToast(msg, type, title, icon);
+    } else {
+      alert(msg);
+    }
   }
 
   /**
