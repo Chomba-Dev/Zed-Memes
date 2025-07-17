@@ -44,7 +44,7 @@ class ZedMemesApp {
 
       // Prepare request
       const payload = {
-        email: identifier,
+        identifier: identifier,
         password: password
       };
 
@@ -753,6 +753,12 @@ class ZedMemesApp {
    * @param {string} type - Toast type ('info', 'success', 'warning', 'error')
    */
   showToast(message, type = 'info', title = '', icon = '') {
+    // If memeManager has a toast, use it
+    if (this.memeManager && this.memeManager.showToast) {
+      this.memeManager.showToast(message, type, title, icon);
+      return;
+    }
+
     // Toast type to color/icon/title
     const typeMap = {
       info:    { color: '#2563eb', icon: 'ℹ️', title: 'Info' },
@@ -781,7 +787,6 @@ class ZedMemesApp {
       toastContainer.style.gap = '10px';
       document.body.appendChild(toastContainer);
     }
-
     // Create toast element
     const toast = document.createElement('div');
     toast.setAttribute('role', 'alert');
