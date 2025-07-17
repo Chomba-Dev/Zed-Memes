@@ -125,8 +125,6 @@ function handleLogin($authHandler) {
     $json = json_decode(file_get_contents("php://input"), true);
     $identifier = $json['email'] ?? '';
     $password = $json['password'] ?? '';
-    echo $identifier;
-    echo $password;
     if (empty($identifier) || empty($password)) {
         sendResponse(false, 'Username/email and password are required');
     }
