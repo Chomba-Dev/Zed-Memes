@@ -230,13 +230,6 @@
         </div>
       </section>
 
-      <!-- Your Likes Section -->
-      <section id="likes-content" class="content-section">
-        <div class="ui grid meme-grid" data-grid-type="default">
-          <!-- Liked memes will be loaded here -->
-        </div>
-      </section>
-
       <!-- Your Uploads Section -->
       <section id="uploads-content" class="content-section">
         <div class="row align-items-center">
@@ -285,12 +278,13 @@
           document.addEventListener('DOMContentLoaded', function() {
             // Show upload modal on button click
             const uploadBtn = document.getElementById('uploadBtn');
+            let uploadInProgress = false;
             if (uploadBtn) {
               uploadBtn.addEventListener('click', function() {
                 if (typeof $ !== 'undefined' && $.fn.modal) {
                   $('#uploadModal').modal({
                     onHide: function() {
-                      // Reset preview and form on close
+                      if (uploadInProgress) return false;
                       document.getElementById('memeUploadForm').reset();
                       document.getElementById('imagePreviewContainer').style.display = 'none';
                       document.getElementById('imagePreview').src = '#';
@@ -326,8 +320,15 @@
             if (memeUploadForm) {
               memeUploadForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                // Check if file is selected
+                const imageInput = document.getElementById('uploadImageInput');
+                if (!imageInput.files || !imageInput.files[0]) {
+                  alert('Please select an image to upload.');
+                  return;
+                }
                 const formData = new FormData(memeUploadForm);
                 const token = localStorage.getItem('zedmemes-token');
+                uploadInProgress = true;
                 try {
                   const response = await fetch('http://localhost/Zed-memes/backend/api/upload.php', {
                     method: 'POST',
@@ -340,6 +341,7 @@
                     if (typeof $ !== 'undefined' && $.fn.modal) {
                       $('#uploadModal').modal('hide');
                     }
+                    // Only reset after upload is successful
                     memeUploadForm.reset();
                     previewContainer.style.display = 'none';
                     previewImg.src = '#';
@@ -348,6 +350,8 @@
                   }
                 } catch (err) {
                   alert('Upload error: ' + err.message);
+                } finally {
+                  uploadInProgress = false;
                 }
               });
             }
