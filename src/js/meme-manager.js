@@ -56,19 +56,26 @@ class MemeManager {
    * Setup event listeners
    */
   setupEventListeners() {
-    // Listen for section changes
+    // Section changes
     document.addEventListener('sectionChange', (e) => {
       this.handleSectionChange(e.detail.section);
     });
 
-    // Listen for meme interactions
+    // Scroll for infinite loading
+    window.addEventListener('scroll', () => {
+      this.handleScroll();
+    });
+
+    // Meme interactions
     document.addEventListener('click', (e) => {
-      // Reaction popup logic
-      if (e.target.closest('.meme-like-btn')) {
+      // Reaction bar: open popup
+      if (e.target.closest('.reaction-btn')) {
         e.preventDefault();
-        this.showReactionPopup(e.target.closest('.meme-card'));
+        const card = e.target.closest('.meme-card');
+        this.showReactionPopup(card);
         return;
       }
+      // Reaction popup: select reaction
       if (e.target.closest('.reaction-option')) {
         e.preventDefault();
         const btn = e.target.closest('.reaction-option');
@@ -79,53 +86,65 @@ class MemeManager {
         return;
       }
       // Hide popup if click outside
-      if (!e.target.closest('.reaction-popup') && !e.target.closest('.meme-like-btn')) {
+      if (!e.target.closest('.reaction-popup') && !e.target.closest('.reaction-btn')) {
         this.hideAllReactionPopups();
-      }
-      // Like
-      if (e.target.closest('.meme-like-btn')) {
-        e.preventDefault();
-        this.handleLikeAPI(e.target.closest('.meme-like-btn'));
       }
       // Upvote
       if (e.target.closest('.meme-upvote-btn')) {
         e.preventDefault();
         this.handleVoteAPI(e.target.closest('.meme-upvote-btn'), 'upvote');
+        return;
       }
       // Downvote
       if (e.target.closest('.meme-downvote-btn')) {
         e.preventDefault();
         this.handleVoteAPI(e.target.closest('.meme-downvote-btn'), 'downvote');
+        return;
       }
       // Share
       if (e.target.closest('.meme-share-btn')) {
         e.preventDefault();
         this.handleShare(e.target.closest('.meme-share-btn'));
+        return;
       }
       // Download
       if (e.target.closest('.meme-download-btn')) {
         e.preventDefault();
         this.handleDownload(e.target.closest('.meme-download-btn'));
+        return;
       }
-      // Gallery navigation
-      if (e.target.closest('#prevImageBtn')) {
+      // Dropdown menu toggle
+      if (e.target.closest('.dropdown-toggle')) {
         e.preventDefault();
-        this.showPreviousImage();
+        const card = e.target.closest('.meme-card');
+        const menu = card.querySelector('.dropdown-menu');
+        if (menu) menu.classList.toggle('show');
+        return;
       }
-      
-      if (e.target.closest('#nextImageBtn')) {
+      // Dropdown menu actions (report/copy link)
+      if (e.target.closest('.dropdown-item')) {
         e.preventDefault();
-        this.showNextImage();
+        const action = e.target.closest('.dropdown-item').getAttribute('data-action');
+        const card = e.target.closest('.meme-card');
+        const memeId = card.getAttribute('data-meme-id');
+        if (action === 'copy-link') {
+          const url = `${window.location.origin}/meme/${memeId}`;
+          navigator.clipboard.writeText(url).then(() => {
+            this.showToast('Link copied to clipboard!');
+          });
+        } else if (action === 'report') {
+          this.showToast('Report submitted. Thank you!');
+        }
+        // Hide menu after action
+        const menu = card.querySelector('.dropdown-menu');
+        if (menu) menu.classList.remove('show');
+        return;
       }
-      
-      if (e.target.closest('#downloadImageBtn')) {
-        e.preventDefault();
-        this.downloadCurrentImage();
-      }
-      
-      if (e.target.closest('#shareImageBtn')) {
-        e.preventDefault();
-        this.shareCurrentImage();
+    });
+    // Hide all dropdown menus on document click (except when clicking toggle)
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.dropdown-toggle') && !e.target.closest('.dropdown-menu')) {
+        document.querySelectorAll('.dropdown-menu.show').forEach(menu => menu.classList.remove('show'));
       }
     });
   }
@@ -351,91 +370,52 @@ class MemeManager {
    * @returns {HTMLElement} Meme card element
    */
   createMemeCard(meme) {
-    const cardDiv = document.createElement('div');
-    cardDiv.className = 'four wide column';
-    
-    // Handle both backend and sample data formats
-    const memeId = meme.meme_id || meme.id;
-    const title = meme.caption || meme.title || 'Untitled Meme';
-    const imagePath = meme.image_path || meme.image;
-    const author = meme.user?.username || 'ZedMemes';
-    const upvotes = meme.votes?.find(v => v.vote_type === 'upvote')?.count || meme.upvotes || 0;
-    const downvotes = meme.votes?.find(v => v.vote_type === 'downvote')?.count || meme.downvotes || 0;
-    const likes = meme.reactions?.find(r => r.vote_type === 'like')?.count || meme.likes || 0;
-    const views = meme.views || '0';
-    
-    cardDiv.innerHTML = `
-      <div class="meme-thumbnail js-thumbnail meme-thumbnail-container">
-        <div class="js-thumbnail-base meme-thumbnail-base disabled-meme-section meme-card" data-meme-id="${memeId}">
-          <figure class="js-thumbnail-placeholder meme-thumbnail-placeholder">
-            <img src="${imagePath}" alt="${title}">
-          </figure>
-
-          <div class="meme-thumbnail-overlay">
-            <div class="meme-thumbnail-overlay-content">
-              <ul class="meme-actions-container">
-                <li class="meme-action">
-                  <a class="btn2 btn2--circle btn2--secondary-alt meme-view-btn" title="View" href="#" data-meme-id="${memeId}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
-                      <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
-                </li>
-                <li class="meme-action">
-                  <a class="btn2 btn2--circle btn2--secondary-alt meme-download-btn" title="Download" href="#" data-meme-id="${memeId}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
-                      <path d="M8 1v8m0 0L5 6m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M2 11v2a2 2 0 002 2h8a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
-                </li>
-                <li class="meme-action">
-                  <a class="btn2 btn2--secondary-alt btn2--circle meme-share-btn" title="Share" href="#" data-meme-id="${memeId}">
-                    <svg rpl="" aria-hidden="true" class="icon-share" fill="currentColor" height="16" icon-name="share-new-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2.239 18.723A1.235 1.235 0 0 1 1 17.488C1 11.5 4.821 6.91 10 6.505V3.616a1.646 1.646 0 0 1 2.812-1.16l6.9 6.952a.841.841 0 0 1 0 1.186l-6.9 6.852A1.645 1.645 0 0 1 10 16.284v-2.76c-2.573.243-3.961 1.738-5.547 3.445-.437.47-.881.949-1.356 1.407-.23.223-.538.348-.858.347ZM10.75 7.976c-4.509 0-7.954 3.762-8.228 8.855.285-.292.559-.59.832-.883C5.16 14 7.028 11.99 10.75 11.99h.75v4.294a.132.132 0 0 0 .09.134.136.136 0 0 0 .158-.032L18.186 10l-6.438-6.486a.135.135 0 0 0-.158-.032.134.134 0 0 0-.09.134v4.36h-.75Z"></path>
-                    </svg>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
+    const template = document.createElement('template');
+    template.innerHTML = `
+      <div class="meme-card" data-meme-id="${meme.meme_id || meme.id}">
+        <div class="meme-image-container">
+          <img class="meme-image" src="${meme.image_path || meme.image}" alt="${meme.caption || meme.title || ''}" loading="lazy">
         </div>
-
-        <div class="meme-details-container">
-          <div class="user-information">
-            <div class="photo">${author.charAt(0).toUpperCase()}</div>
-            <span class="display-name">${author}</span>
-            
-            <!-- Vote buttons -->
-            <div class="meme-vote-container">
-              <button class="btn-vote btn-upvote meme-upvote-btn" data-meme-id="${memeId}" data-action="upvote" title="Upvote">
-                <svg fill="currentColor" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 19c-.072 0-.145 0-.218-.006A4.1 4.1 0 0 1 6 14.816V11H2.862a1.751 1.751 0 0 1-1.234-2.993L9.41.28a.836.836 0 0 1 1.18 0l7.782 7.727A1.751 1.751 0 0 1 17.139 11H14v3.882a4.134 4.134 0 0 1-.854 2.592A3.99 3.99 0 0 1 10 19Zm0-17.193L2.685 9.071a.251.251 0 0 0 .177.429H7.5v5.316A2.63 2.63 0 0 0 9.864 17.5a2.441 2.441 0 0 0 1.856-.682A2.478 2.478 0 0 0 12.5 15V9.5h4.639a.25.25 0 0 0 .176-.429L10 1.807Z"></path>
-                </svg>
-                <span class="vote-count">${upvotes}</span>
-              </button>
-              
-              <button class="btn-vote btn-downvote meme-downvote-btn" data-meme-id="${memeId}" data-action="downvote" title="Downvote">
-                <svg fill="currentColor" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 1c.072 0 .145 0 .218.006A4.1 4.1 0 0 1 14 5.184V9h3.138a1.751 1.751 0 0 1 1.234 2.993L10.59 19.72a.836.836 0 0 1-1.18 0l-7.782-7.727A1.751 1.751 0 0 1 2.861 9H6V5.118a4.134 4.134 0 0 1 .854-2.592A3.99 3.99 0 0 1 10 1Zm0 17.193 7.315-7.264a.251.251 0 0 0-.177-.429H12.5V5.184A2.631 2.631 0 0 0 10.136 2.5a2.441 2.441 0 0 0-1.856.682A2.478 2.478 0 0 0 7.5 5v5.5H2.861a.251.251 0 0 0-.176.429L10 18.193Z"></path>
-                </svg>
-                <span class="vote-count">${downvotes}</span>
-              </button>
-            </div>
-            
-            <div class="meme-statistic">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" class="meme-tools-icon">
-                <path d="M10.7408 2C13.0889 2 14.6667 4.235 14.6667 6.32C14.6667 10.5425 8.11856 14 8.00004 14C7.88152 14 1.33337 10.5425 1.33337 6.32C1.33337 4.235 2.91115 2 5.2593 2C6.60745 2 7.48893 2.6825 8.00004 3.2825C8.51115 2.6825 9.39263 2 10.7408 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-              <span>${views}</span>
-            </div>
+        <div class="meme-content">
+          <div class="meme-title">
+            <h4>${meme.caption || meme.title || 'Untitled Meme'}</h4>
+          </div>
+          <div class="meme-actions">
+            <button class="reaction-option" data-reaction="like">
+              <span class="reaction-icon">👍</span>
+              <span class="like-count">${this.getReactionCount(meme, 'like')}</span>
+            </button>
+            <button class="btn-action meme-upvote-btn" data-action="upvote" data-meme-id="${meme.meme_id || meme.id}"><i class="bi-arrow-up"></i> <span class="vote-count">${this.getVoteCount(meme, 'upvote')}</span></button>
+            <button class="btn-action meme-downvote-btn" data-action="downvote" data-meme-id="${meme.meme_id || meme.id}"><i class="bi-arrow-down"></i> <span class="vote-count">${this.getVoteCount(meme, 'downvote')}</span></button>
+            <button class="btn-action meme-share-btn" data-action="share" data-meme-id="${meme.meme_id || meme.id}"><i class="bi-share"></i> Share</button>
+            <button class="btn-action meme-download-btn" data-action="download" data-meme-id="${meme.meme_id || meme.id}"><i class="bi-download"></i> Download</button>
           </div>
         </div>
       </div>
-    `;
-    
-    return cardDiv;
+    `.trim();
+    const card = template.content.firstElementChild;
+    const img = card.querySelector('.meme-image');
+    if (img) {
+      img.onerror = function() {
+        this.src = 'https://via.placeholder.com/400x220?text=No+Image';
+      };
+    }
+    return card;
+  }
+
+  getReactionCount(meme, type) {
+    if (meme.reactions && Array.isArray(meme.reactions)) {
+      return meme.reactions.length
+    }
+    return 0;
+  }
+
+  getVoteCount(meme, type) {
+    if (meme.votes && Array.isArray(meme.votes)) {
+      const found = meme.votes.find(v => v.vote_type === type);
+      return found ? found.count : 0;
+    }
+    return 0;
   }
 
   /**
@@ -505,57 +485,60 @@ class MemeManager {
    */
   async handleVoteAPI(button, type) {
     const memeId = button.getAttribute('data-meme-id');
+    const card = button.closest('.meme-card');
+    const upvoteBtn = card.querySelector('.meme-upvote-btn');
+    const downvoteBtn = card.querySelector('.meme-downvote-btn');
+    const upvoteCountSpan = upvoteBtn.querySelector('.vote-count');
+    const downvoteCountSpan = downvoteBtn.querySelector('.vote-count');
     const token = localStorage.getItem('zedmemes-token');
-    
-    if (!token) {
-      this.showToast('Please login to vote on memes');
-      return;
+    if (!token) { this.showToast('Please login to vote on memes'); return; }
+    // Mutually exclusive logic
+    if (type === 'upvote') {
+      const wasActive = upvoteBtn.classList.contains('active');
+      upvoteBtn.classList.toggle('active');
+      if (upvoteBtn.classList.contains('active')) {
+        upvoteCountSpan.textContent = parseInt(upvoteCountSpan.textContent) + 1;
+        if (downvoteBtn.classList.contains('active')) {
+          downvoteBtn.classList.remove('active');
+          downvoteCountSpan.textContent = Math.max(0, parseInt(downvoteCountSpan.textContent) - 1);
+        }
+      } else if (wasActive) {
+        upvoteCountSpan.textContent = Math.max(0, parseInt(upvoteCountSpan.textContent) - 1);
+      }
+    } else {
+      const wasActive = downvoteBtn.classList.contains('active');
+      downvoteBtn.classList.toggle('active');
+      if (downvoteBtn.classList.contains('active')) {
+        downvoteCountSpan.textContent = parseInt(downvoteCountSpan.textContent) + 1;
+        if (upvoteBtn.classList.contains('active')) {
+          upvoteBtn.classList.remove('active');
+          upvoteCountSpan.textContent = Math.max(0, parseInt(upvoteCountSpan.textContent) - 1);
+        }
+      } else if (wasActive) {
+        downvoteCountSpan.textContent = Math.max(0, parseInt(downvoteCountSpan.textContent) - 1);
+      }
     }
-    
-    const countSpan = button.querySelector('.vote-count');
-    let active = button.classList.contains('active');
-    
-    // Optimistic UI update
-    button.classList.toggle('active');
-    let count = parseInt(countSpan.textContent) || 0;
-    countSpan.textContent = active ? count - 1 : count + 1;
-    
+    // Backend
     try {
       const formData = new FormData();
       formData.append('action', 'add_vote');
       formData.append('meme_id', memeId);
       formData.append('vote_type', type);
-      
       const response = await fetch('http://localhost/Zed-memes/backend/api/upvote.php', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       const data = await response.json();
-      
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to vote');
-      }
-      
+      if (!data.success) throw new Error(data.message || 'Failed to vote');
       // Update UI with server response
       if (data.data) {
-        const voteCount = type === 'upvote' ? data.data.upvotes : data.data.downvotes;
-        countSpan.textContent = voteCount || 0;
+        upvoteCountSpan.textContent = data.data.upvotes || 0;
+        downvoteCountSpan.textContent = data.data.downvotes || 0;
       }
-      
     } catch (err) {
-      // Revert UI on error
-      button.classList.toggle('active');
-      countSpan.textContent = active ? count : count;
       this.showToast('Failed to update vote. Please try again.');
-      console.error('Vote error:', err);
     }
   }
 
@@ -597,16 +580,14 @@ class MemeManager {
    */
   handleShare(button) {
     const memeId = button.getAttribute('data-meme-id');
-    
+    const url = `${window.location.origin}/meme/${memeId}`;
     if (navigator.share) {
       navigator.share({
         title: 'Check out this meme!',
         text: 'Found this hilarious meme on ZedMemes',
-        url: `${window.location.origin}/meme/${memeId}`
+        url: url
       }).catch(console.error);
     } else {
-      // Fallback to clipboard
-      const url = `${window.location.origin}/meme/${memeId}`;
       navigator.clipboard.writeText(url).then(() => {
         this.showToast('Link copied to clipboard!');
       }).catch(() => {
@@ -621,15 +602,13 @@ class MemeManager {
    */
   handleDownload(button) {
     const memeId = button.getAttribute('data-meme-id');
-    const meme = this.memes.find(m => m.id === memeId);
-    if (!meme) {
-      this.showToast('Meme not found for download.');
-      return;
-    }
+    const card = button.closest('.meme-card');
+    const img = card.querySelector('.meme-image');
+    if (!img) return;
     try {
       const link = document.createElement('a');
-      link.href = meme.image;
-      link.download = `${meme.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.jpg`;
+      link.href = img.src;
+      link.download = `${memeId}.jpg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -698,11 +677,17 @@ class MemeManager {
     const img = new Image();
     img.onload = () => {
       image.src = currentMeme.image;
-      image.alt = currentMeme.title;
-      title.textContent = currentMeme.title;
+      image.alt = currentMeme.caption;
+      title.textContent = currentMeme.caption;
+      // Calculate likes from reactions
+      let likes = 0;
+      if (currentMeme.reactions && Array.isArray(currentMeme.reactions)) {
+        const likeObj = currentMeme.reactions.find(r => r.vote_type === 'like');
+        likes = likeObj ? likeObj.count : 0;
+      }
       stats.innerHTML = `
         <span class="gallery-stat">
-          <i class="bi-heart"></i> ${currentMeme.likes || 0}
+          <i class="bi-heart"></i> ${likes}
         </span>
         <span class="gallery-stat">
           <i class="bi-eye"></i> ${currentMeme.views || 0}
@@ -789,12 +774,8 @@ class MemeManager {
   /**
    * Show toast/alert for errors
    */
-  showToast(msg, type = 'info', title = '', icon = '') {
-    if (window.zedMemesApp && typeof window.zedMemesApp.showToast === 'function') {
-      window.zedMemesApp.showToast(msg, type, title, icon);
-    } else {
-      alert(msg);
-    }
+  showToast(msg) {
+    alert(msg); // Replace with custom toast if available
   }
 
   /**
