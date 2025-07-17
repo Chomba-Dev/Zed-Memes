@@ -44,7 +44,7 @@ class ZedMemesApp {
 
       // Prepare request
       const payload = {
-        email: identifier,
+        identifier: identifier,
         password: password
       };
 
