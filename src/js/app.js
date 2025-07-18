@@ -3,6 +3,91 @@
  * Main Application Entry Point
  */
 class ZedMemesApp {
+  /**
+   * Setup login form handler
+   */
+  setupLogin() {
+    const loginModal = document.getElementById('loginModal');
+    if (!loginModal) return;
+    const form = loginModal.querySelector('form.ui.form');
+    if (!form) return;
+
+    const self = this;
+
+    //Get All buttons
+    const loginButtonMobile = document.getElementById('loginBtnMobile');
+    const loginButtonDesktop = document.getElementById('loginBtn');
+    const signupButtonMobile = document.getElementById('signupBtnMobile');
+    const signupButtonDesktop = document.getElementById('signupBtn');
+    const accountButton = document.getElementById('accountNavbarDropdown');
+    const notificationButton = document.getElementById('notificationNavbarDropdown');
+
+    // Ensure clicking the modal's Login button submits the form
+    const loginBtn = loginModal.querySelector('.ui.positive.button');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        form.requestSubmit();
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const identifier = form.querySelector('input[name="email"]').value.trim();
+      const password = form.querySelector('input[name="password"]').value;
+
+      // Basic validation
+      if (!identifier || !password) {
+        self.showToast('Please fill in all fields', 'error');
+        return;
+      }
+
+      // Prepare request
+      const payload = {
+        identifier: identifier,
+        password: password
+      };
+
+      try {
+        const response = await fetch('http://localhost/Zed-Memes/backend/api/auth.php?action=login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (data.success) {
+          // Store session info
+          localStorage.setItem('zedmemes-token', data.data.token);
+          localStorage.setItem('zedmemes-user', JSON.stringify(data.data.user));
+          // Update UI elements
+          if (loginButtonMobile) loginButtonMobile.style.display = 'none';
+          if (loginButtonDesktop) loginButtonDesktop.style.display = 'none';
+          if (signupButtonMobile) signupButtonMobile.style.display = 'none';
+          if (signupButtonDesktop) signupButtonDesktop.style.display = 'none';
+          if (accountButton) accountButton.style.display = 'block';
+          if (notificationButton) notificationButton.style.display = 'block';
+          if (navLikes) navLikes.style.display = '';
+          if (navUploads) navUploads.style.display = '';
+          self.updateUserProfileUI(data.data.user);
+          // Re-initialize profile dropdown if needed (REMOVED to prevent multiple listeners)
+          // if (window.navigationInstance && typeof window.navigationInstance.initProfileDropdown === 'function') {
+          //   window.navigationInstance.initProfileDropdown();
+          // }
+          self.showToast('Login successful! Welcome, ' + data.data.user.username, 'success');
+          // Optionally close modal (if using jQuery/Semantic UI)
+          if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#loginModal').modal('hide');
+          }
+        } else {
+          self.showToast(data.message || 'Login failed', 'error');
+        }
+      } catch (err) {
+        self.showToast('Login error: ' + err.message, 'error');
+      }
+    });
+  }
   constructor() {
     this.navigation = null;
     this.themeManager = null;
@@ -23,8 +108,8 @@ class ZedMemesApp {
       }
 
       // Show/hide auth/profile UI based on login state
-      const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
-      const userStr = localStorage.getItem(APP_CONFIG.STORAGE.USER);
+      const token = localStorage.getItem('zedmemes-token');
+      const userStr = localStorage.getItem('zedmemes-user');
       const user = userStr ? JSON.parse(userStr) : null;
       const loginButtonMobile = document.getElementById('loginBtnMobile');
       const loginButtonDesktop = document.getElementById('loginBtn');
@@ -69,7 +154,6 @@ class ZedMemesApp {
       this.setupRegistration();
       // Setup login handler
       this.setupLogin();
-      this.setupUploadModal();
       // Update auth UI on init
       // this.updateAuthUI();
       
@@ -78,7 +162,6 @@ class ZedMemesApp {
       console.error('Failed to initialize ZedMemes App:', error);
     }
   }
-
   /**
    * Setup registration form handler
    */
@@ -123,7 +206,7 @@ class ZedMemesApp {
       };
 
       try {
-        const response = await fetch(getApiUrl(APP_CONFIG.API.AUTH.REGISTER), {
+        const response = await fetch('http://localhost/Zed-Memes/backend/api/auth.php?action=register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -133,8 +216,8 @@ class ZedMemesApp {
         const data = await response.json();
         if (data.success) {
           // Store session info
-          localStorage.setItem(APP_CONFIG.STORAGE.TOKEN, data.data.token);
-          localStorage.setItem(APP_CONFIG.STORAGE.USER, JSON.stringify(data.data.user));
+          localStorage.setItem('zedmemes-token', data.data.token);
+          localStorage.setItem('zedmemes-user', JSON.stringify(data.data.user));
           this.showToast('Registration successful! Welcome, ' + data.data.user.username, 'success');
           // Optionally close modal (if using jQuery/Semantic UI)
           if (typeof $ !== 'undefined' && $.fn.modal) {
@@ -155,15 +238,9 @@ class ZedMemesApp {
    */
   setupLogin() {
     const loginModal = document.getElementById('loginModal');
-    if (!loginModal) {
-      console.error('Login modal not found');
-      return;
-    }
+    if (!loginModal) return;
     const form = loginModal.querySelector('form.ui.form');
-    if (!form) {
-      console.error('Login form not found');
-      return;
-    }
+    if (!form) return;
 
     const self = this;
 
@@ -174,8 +251,6 @@ class ZedMemesApp {
     const signupButtonDesktop = document.getElementById('signupBtn');
     const accountButton = document.getElementById('accountNavbarDropdown');
     const notificationButton = document.getElementById('notificationNavbarDropdown');
-    const navLikes = document.getElementById('navLikes');
-    const navUploads = document.getElementById('navUploads');
 
     // Ensure clicking the modal's Login button submits the form
     const loginBtn = loginModal.querySelector('.ui.positive.button');
@@ -188,8 +263,6 @@ class ZedMemesApp {
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      console.log('Login form submitted');
-      
       const identifier = form.querySelector('input[name="email"]').value.trim();
       const password = form.querySelector('input[name="password"]').value;
 
@@ -198,8 +271,6 @@ class ZedMemesApp {
         self.showToast('Please fill in all fields', 'error');
         return;
       }
-      console.log("Your identifier is: ", identifier);
-      console.log("Your password is: ", password);
 
       // Prepare request
       const payload = {
@@ -208,31 +279,18 @@ class ZedMemesApp {
       };
 
       try {
-        console.log('Sending login request to:', getApiUrl(APP_CONFIG.API.AUTH.LOGIN));
-        console.log('Payload:', payload);
-        
-        const response = await fetch(getApiUrl(APP_CONFIG.API.AUTH.LOGIN), {
+        const response = await fetch('http://localhost/Zed-Memes/backend/api/auth.php?action=login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(payload)
         });
-        
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
         const data = await response.json();
-        console.log('Response data:', data);
-        
         if (data.success) {
           // Store session info
-          localStorage.setItem(APP_CONFIG.STORAGE.TOKEN, data.data.token);
-          localStorage.setItem(APP_CONFIG.STORAGE.USER, JSON.stringify(data.data.user));
+          localStorage.setItem('zedmemes-token', data.data.token);
+          localStorage.setItem('zedmemes-user', JSON.stringify(data.data.user));
           // Update UI elements
           if (loginButtonMobile) loginButtonMobile.style.display = 'none';
           if (loginButtonDesktop) loginButtonDesktop.style.display = 'none';
@@ -248,8 +306,6 @@ class ZedMemesApp {
           //   window.navigationInstance.initProfileDropdown();
           // }
           self.showToast('Login successful! Welcome, ' + data.data.user.username, 'success');
-          // Fire custom event for login success
-          document.dispatchEvent(new Event('zedmemes-login-success'));
           // Optionally close modal (if using jQuery/Semantic UI)
           if (typeof $ !== 'undefined' && $.fn.modal) {
             $('#loginModal').modal('hide');
@@ -258,124 +314,11 @@ class ZedMemesApp {
           self.showToast(data.message || 'Login failed', 'error');
         }
       } catch (err) {
-        console.error('Login error:', err);
         self.showToast('Login error: ' + err.message, 'error');
       }
     });
   }
 
-  setupUploadModal() {
-    const uploadBtn = document.getElementById('uploadBtn');
-    const uploadModal = document.getElementById('uploadModal');
-    const uploadForm = document.getElementById('uploadForm');
-    const self = this;
-
-    console.log('Setting up upload modal:', { uploadBtn, uploadModal, uploadForm });
-
-    if (!uploadBtn || !uploadModal || !uploadForm) {
-      console.error('Upload elements not found:', { uploadBtn: !!uploadBtn, uploadModal: !!uploadModal, uploadForm: !!uploadForm });
-      return;
-    }
-
-    uploadBtn.addEventListener('click', function () {
-      console.log('Upload button clicked');
-      const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
-      console.log('Token exists:', !!token);
-      
-      if (!token) {
-        // Not logged in, show login modal
-        console.log('No token, showing login modal');
-        if (typeof $ !== 'undefined' && $.fn.modal) {
-          $('#loginModal').modal('show');
-          // After successful login, show upload modal
-          document.addEventListener('zedmemes-login-success', function handler() {
-            console.log('Login success, showing upload modal');
-            $('#uploadModal').modal('show');
-            document.removeEventListener('zedmemes-login-success', handler);
-          });
-        }
-      } else {
-        // Already logged in, show upload modal
-        console.log('Token exists, showing upload modal directly');
-        if (typeof $ !== 'undefined' && $.fn.modal) {
-          $('#uploadModal').modal('show');
-        }
-      }
-    });
-
-    uploadForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      console.log('Upload form submitted');
-      
-      const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
-      if (!token) {
-        self.showToast('You must be logged in to upload.', 'error');
-        return;
-      }
-      
-      const formData = new FormData(uploadForm);
-      console.log('Form data:', {
-        caption: formData.get('caption'),
-        hasImage: formData.has('meme_image'),
-        imageName: formData.get('meme_image')?.name
-      });
-      
-      // Show loading state
-      const submitBtn = uploadForm.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = 'Uploading...';
-      submitBtn.disabled = true;
-      
-      try {
-        console.log('Sending upload request to:', getApiUrl(APP_CONFIG.API.UPLOAD.UPLOAD_MEME));
-        const response = await fetch(getApiUrl(APP_CONFIG.API.UPLOAD.UPLOAD_MEME), {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + token
-          },
-          body: formData
-        });
-        
-        console.log('Upload response status:', response.status);
-        
-        const data = await response.json();
-        console.log('Upload response data:', data);
-        
-        if (data.success) {
-          self.showToast('Meme uploaded successfully!', 'success');
-          
-          // Close modal and reset form
-          if (typeof $ !== 'undefined' && $.fn.modal) {
-            $('#uploadModal').modal('hide');
-          }
-          uploadForm.reset();
-          
-          // Refresh memes based on current section
-          const currentSection = self.navigation?.getCurrentSection() || 'home';
-          console.log('Current section:', currentSection);
-          if (self.memeManager) {
-            await self.memeManager.refreshMemes(currentSection);
-          }
-          
-          // If we're on uploads section, refresh that specifically
-          if (currentSection === 'uploads' && self.memeManager) {
-            console.log('Refreshing uploads section');
-            await self.memeManager.loadUserUploads();
-          }
-          
-        } else {
-          self.showToast(data.message || 'Upload failed', 'error');
-        }
-      } catch (err) {
-        console.error('Upload error:', err);
-        self.showToast('Upload error: ' + err.message, 'error');
-      } finally {
-        // Reset button state
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-      }
-    });
-  }
 
   /**
    * Initialize core modules
@@ -393,6 +336,7 @@ class ZedMemesApp {
     // Store instances globally for external access
     window.zedMemesApp = this;
     window.navigationInstance = this.navigation;
+    window.memeManager = this.memeManager;
   }
 
   /**
@@ -451,16 +395,17 @@ class ZedMemesApp {
     this.showSearchLoading();
 
     try {
-      // Use the same base as login/register
-      const response = await fetch(getApiUrl(APP_CONFIG.API.MEMES.SEARCH) + `&query=${encodeURIComponent(query)}`);
+      const response = await fetch(`http://localhost/Zed-Memes/backend/api/memes.php?action=search_memes&query=${encodeURIComponent(query)}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log('Search results:', data);
+      console.log('Search API response:', data);
       if (data.success) {
+        console.log('Search results count:', data.data.length);
         this.displaySearchResults(data.data, query);
       } else {
+        console.error('Search failed:', data.message);
         this.showSearchError(data.message || 'Search failed');
       }
     } catch (err) {
@@ -487,7 +432,7 @@ class ZedMemesApp {
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(10px);
       z-index: 1000;
       overflow-y: auto;
@@ -587,21 +532,44 @@ class ZedMemesApp {
    * @param {Array} searchResults - Raw search results from API
    * @returns {Array} Transformed results
    */
-  transformSearchResults(searchResults) {
-    return searchResults.map(result => ({
-      id: `search-${result.meme_id}`,
-      title: result.title || result.description || 'Meme',
-      likes: result.likes || 0,
-      views: this.formatNumber(Math.max(100, (result.likes || 0) * 15)),
-      upvotes: result.likes || 0,
-      downvotes: 0,
-      image: `/Zed-Memes/${result.image_path}`,
-      isLiked: false,
-      isSaved: false,
-      timestamp: new Date(result.created_at || Date.now()),
-      author: result.author || 'ZedMemes',
-      meme_id: result.meme_id
-    }));
+   transformSearchResults(searchResults) {
+    return searchResults.map(result => {
+      // Construct proper image path - handle both absolute and relative paths
+      let imagePath = result.image_path;
+      if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('/') && !imagePath.includes('assets/')) {
+        imagePath = 'assets/images/' + imagePath;
+      }
+      
+      return {
+        meme_id: result.meme_id,
+        id: `search-${result.meme_id}`,
+        caption: result.caption || 'Untitled Meme',
+        title: result.caption || 'Untitled Meme',
+        image_path: imagePath,
+        image: imagePath,
+        user: {
+          user_id: result.user_id,
+          username: result.author || 'ZedMemes'
+        },
+        // Transform votes to match expected structure
+        votes: [
+          { vote_type: 'upvote', count: result.upvotes || 0 },
+          { vote_type: 'downvote', count: result.downvotes || 0 }
+        ],
+        // Transform reactions to match expected structure  
+        reactions: [
+          { vote_type: 'like', count: result.reactions_count || 0 }
+        ],
+        upvotes: result.upvotes || 0,
+        downvotes: result.downvotes || 0,
+        likes: result.reactions_count || 0,
+        views: this.formatNumber(Math.max(100, (result.upvotes || 0) * 15)),
+        isLiked: false,
+        isSaved: false,
+        timestamp: new Date(result.uploaded_at || Date.now()),
+        uploaded_at: result.uploaded_at
+      };
+    });
   }
 
   /**
@@ -709,8 +677,8 @@ class ZedMemesApp {
    */
   logout() {
     // Clear session info
-    localStorage.removeItem(APP_CONFIG.STORAGE.TOKEN);
-    localStorage.removeItem(APP_CONFIG.STORAGE.USER);
+    localStorage.removeItem('zedmemes-token');
+    localStorage.removeItem('zedmemes-user');
 
     // Update UI elements
     const loginButtonMobile = document.getElementById('loginBtnMobile');
@@ -834,6 +802,12 @@ class ZedMemesApp {
    * @param {string} type - Toast type ('info', 'success', 'warning', 'error')
    */
   showToast(message, type = 'info', title = '', icon = '') {
+    // If memeManager has a toast, use it
+    if (this.memeManager && this.memeManager.showToast) {
+      this.memeManager.showToast(message, type, title, icon);
+      return;
+    }
+
     // Toast type to color/icon/title
     const typeMap = {
       info:    { color: '#2563eb', icon: 'ℹ️', title: 'Info' },
