@@ -390,50 +390,135 @@
     </div>
   </div>
 
-  <!-- Image Gallery Modal (commented out)
-  <div class="ui fullscreen modal" id="imageGalleryModal">
-    <div class="header">
-      <i class="bi-images me-2"></i>
-      <span id="galleryTitle">Image Gallery</span>
-      <div class="ui right floated basic buttons">
-        <button class="ui button" id="prevImageBtn" title="Previous">
-          <i class="bi-chevron-left"></i>
-        </button>
-        <button class="ui button" id="nextImageBtn" title="Next">
-          <i class="bi-chevron-right"></i>
-        </button>
+  <!-- Image Gallery Modal -->
+  <div class="gallery-modal-overlay" id="imageGalleryModal" style="display: none;">
+    <div class="gallery-modal-content gallery-horizontal">
+      <div class="gallery-modal-header">
+        <span id="galleryTitle">Image Gallery</span>
+        <button class="gallery-modal-close" id="closeGalleryBtn" title="Close">&times;</button>
       </div>
-    </div>
-    <div class="content">
-      <div class="ui center aligned segment" id="galleryContent">
+      <div class="gallery-modal-body-horizontal">
+        <button class="gallery-nav-btn left-arrow" id="prevImageBtn" title="Previous"><i class="bi bi-arrow-left"></i></button>
+        <div class="gallery-image-container-horizontal" id="galleryImageContainer" style="display: none;">
+          <img id="galleryImage" class="gallery-image-horizontal" alt="Gallery Image">
+        </div>
+        <div class="gallery-modal-actions-vertical">
+          <button class="gallery-action-btn" id="downloadImageBtn" title="Download"><i class="bi bi-download"></i></button>
+          <button class="gallery-action-btn" id="shareImageBtn" title="Share"><i class="bi bi-share"></i></button>
+        </div>
+        <button class="gallery-nav-btn right-arrow" id="nextImageBtn" title="Next"><i class="bi bi-arrow-right"></i></button>
         <div class="ui active centered inline loader" id="galleryLoader"></div>
-        <div class="gallery-image-container" id="galleryImageContainer" style="display: none;">
-          <img id="galleryImage" class="ui fluid image" alt="Gallery Image">
-          <div class="gallery-info">
-            <h3 id="galleryImageTitle"></h3>
-            <div class="gallery-stats">
-              <span id="galleryImageStats"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="actions">
-      <div class="ui left floated basic button" id="downloadImageBtn">
-        <i class="bi-download me-1"></i>Download
-      </div>
-      <div class="ui right floated buttons">
-        <div class="ui button" id="shareImageBtn">
-          <i class="bi-share me-1"></i>Share
-        </div>
-        <div class="ui deny button">
-          Close
-        </div>
       </div>
     </div>
   </div>
-  -->
 
+  <style>
+    .gallery-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.92);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+    }
+    .gallery-modal-content {
+      background: transparent;
+      width: 95vw;
+      max-width: 900px;
+      max-height: 95vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .gallery-modal-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+    .gallery-modal-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+    .gallery-modal-body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      flex: 1;
+    }
+    .gallery-image-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 700px;
+      max-height: 70vh;
+      margin: 0 20px;
+    }
+    .gallery-image {
+      max-width: 100%;
+      max-height: 60vh;
+      border-radius: 8px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+      background: #222;
+    }
+    .gallery-info {
+      color: #fff;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .gallery-modal-actions {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .gallery-action-btn {
+      background: #fff;
+      color: #222;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .gallery-action-btn:hover {
+      background: #222;
+      color: #fff;
+    }
+    .gallery-nav-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2.5rem;
+      cursor: pointer;
+      margin: 0 10px;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    .gallery-nav-btn:disabled {
+      color: #555;
+      cursor: not-allowed;
+    }
+    @media (max-width: 600px) {
+      .gallery-modal-content { max-width: 100vw; }
+      .gallery-image-container { max-width: 95vw; max-height: 50vh; }
+      .gallery-image { max-height: 40vh; }
+    }
+  </style>
 
 
   <!-- JavaScript Modules -->

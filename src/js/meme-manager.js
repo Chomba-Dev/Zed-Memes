@@ -23,6 +23,41 @@ class MemeManager {
     console.log('Initializing MemeManager...');
     this.loadSavedInteractions();
     this.setupEventListeners();
+    // Add close handler for gallery modal
+    const closeBtn = document.getElementById('closeGalleryBtn');
+    const modal = document.getElementById('imageGalleryModal');
+    if (closeBtn && modal) {
+      closeBtn.onclick = function() {
+        modal.style.display = 'none';
+      };
+      // Optional: Hide modal on background click
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+      // Optional: Hide modal on Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+          modal.style.display = 'none';
+        }
+      });
+    }
+    // Add event listeners for new icon-only gallery action buttons
+    const downloadBtn = document.getElementById('downloadImageBtn');
+    const shareBtn = document.getElementById('shareImageBtn');
+    if (downloadBtn) {
+      downloadBtn.onclick = (e) => {
+        e.preventDefault();
+        this.downloadCurrentImage();
+      };
+    }
+    if (shareBtn) {
+      shareBtn.onclick = (e) => {
+        e.preventDefault();
+        this.shareCurrentImage();
+      };
+    }
     console.log('About to load home memes...');
     this.loadHomeMemes(); // Load home memes on initialization
     console.log('MemeManager initialization complete');
@@ -97,6 +132,12 @@ class MemeManager {
       if (e.target.closest('.meme-download-btn')) {
         e.preventDefault();
         this.handleDownload(e.target.closest('.meme-download-btn'));
+      }
+      // View (gallery)
+      if (e.target.closest('.meme-view-btn')) {
+        e.preventDefault();
+        this.handleView(e.target.closest('.meme-view-btn'));
+        return;
       }
       // Gallery navigation
       if (e.target.closest('#prevImageBtn')) {
@@ -660,8 +701,8 @@ class MemeManager {
    */
   handleView(button) {
     const memeId = button.getAttribute('data-meme-id');
-    const meme = this.memes.find(m => m.id === memeId);
-    
+    // Support both id and meme_id for backend compatibility
+    const meme = this.memes.find(m => m.id == memeId || m.meme_id == memeId);
     if (meme) {
       this.openGallery(meme);
     }
@@ -674,11 +715,12 @@ class MemeManager {
   openGallery(meme) {
     // Set current gallery data
     this.galleryMemes = [...this.memes];
-    this.currentGalleryIndex = this.galleryMemes.findIndex(m => m.id === meme.id);
-    
-    // Show modal
-    if (typeof $ !== 'undefined' && $.fn.modal) {
-      $('#imageGalleryModal').modal('show');
+    // Support both id and meme_id for index lookup
+    this.currentGalleryIndex = this.galleryMemes.findIndex(m => (m.id == meme.id || m.meme_id == meme.meme_id));
+    // Show modal using new fullscreen modal logic
+    const modal = document.getElementById('imageGalleryModal');
+    if (modal) {
+      modal.style.display = 'flex';
       this.updateGalleryImage();
     }
   }
@@ -710,26 +752,33 @@ class MemeManager {
     // Update title
     galleryTitle.textContent = `${currentMeme.title} (${this.currentGalleryIndex + 1} of ${this.galleryMemes.length})`;
 
+    // Determine image path (support both image_path and image)
+    let imagePath = currentMeme.image_path || currentMeme.image;
+    if (imagePath && !imagePath.includes('/')) {
+      imagePath = 'assets/images/' + imagePath;
+    }
+    const fallbackPath = 'assets/images/placeholder.png';
+
     // Load image
     const img = new Image();
     img.onload = () => {
-      image.src = currentMeme.image;
+      image.src = imagePath || fallbackPath;
       image.alt = currentMeme.title;
-      title.textContent = currentMeme.title;
-      stats.innerHTML = `
-        <span class="gallery-stat">
-          <i class="bi-heart"></i> ${currentMeme.likes || 0}
-        </span>
-        <span class="gallery-stat">
-          <i class="bi-eye"></i> ${currentMeme.views || 0}
-        </span>
-        <span class="gallery-stat">
-          <i class="bi-arrow-up"></i> ${currentMeme.upvotes || 0}
-        </span>
-        <span class="gallery-stat">
-          <i class="bi-arrow-down"></i> ${currentMeme.downvotes || 0}
-        </span>
-      `;
+      // title.textContent = currentMeme.title; // Removed: no title element in modal
+      // stats.innerHTML = `
+      //   <span class="gallery-stat">
+      //     <i class="bi-heart"></i> ${currentMeme.likes || 0}
+      //   </span>
+      //   <span class="gallery-stat">
+      //     <i class="bi-eye"></i> ${currentMeme.views || 0}
+      //   </span>
+      //   <span class="gallery-stat">
+      //     <i class="bi-arrow-up"></i> ${currentMeme.upvotes || 0}
+      //   </span>
+      //   <span class="gallery-stat">
+      //     <i class="bi-arrow-down"></i> ${currentMeme.downvotes || 0}
+      //   </span>
+      // `; // Removed: no stats element in modal
 
       // Hide loader, show container
       loader.style.display = 'none';
@@ -739,11 +788,11 @@ class MemeManager {
     img.onerror = () => {
       loader.style.display = 'none';
       container.style.display = 'block';
-      image.src = 'src/images/placeholder.png';
+      image.src = fallbackPath;
       image.alt = 'Error loading image';
     };
 
-    img.src = currentMeme.image;
+    img.src = imagePath || fallbackPath;
   }
 
   /**
@@ -772,13 +821,21 @@ class MemeManager {
   downloadCurrentImage() {
     const currentMeme = this.galleryMemes[this.currentGalleryIndex];
     if (!currentMeme) return;
-
-    const link = document.createElement('a');
-    link.href = currentMeme.image;
-    link.download = `${currentMeme.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    let imagePath = currentMeme.image_path || currentMeme.image;
+    if (imagePath && !imagePath.includes('/')) {
+      imagePath = 'assets/images/' + imagePath;
+    }
+    const filename = (currentMeme.caption || currentMeme.title || 'meme').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.jpg';
+    try {
+      const link = document.createElement('a');
+      link.href = imagePath;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      this.showToast('Failed to download image.');
+    }
   }
 
   /**
@@ -787,17 +844,20 @@ class MemeManager {
   shareCurrentImage() {
     const currentMeme = this.galleryMemes[this.currentGalleryIndex];
     if (!currentMeme) return;
-
+    let imagePath = currentMeme.image_path || currentMeme.image;
+    if (imagePath && !imagePath.includes('/')) {
+      imagePath = 'assets/images/' + imagePath;
+    }
     if (navigator.share) {
       navigator.share({
-        title: currentMeme.title,
-        text: `Check out this meme: ${currentMeme.title}`,
-        url: currentMeme.image
+        title: currentMeme.title || 'Meme',
+        text: `Check out this meme: ${currentMeme.title || ''}`,
+        url: imagePath
       });
     } else {
       // Fallback - copy to clipboard
-      navigator.clipboard.writeText(currentMeme.image).then(() => {
-        alert('Image URL copied to clipboard!');
+      navigator.clipboard.writeText(imagePath).then(() => {
+        this.showToast('Image URL copied to clipboard!');
       });
     }
   }
