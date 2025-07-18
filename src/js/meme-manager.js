@@ -1202,7 +1202,7 @@ class MemeManager {
     nextBtn.disabled = this.currentGalleryIndex === this.galleryMemes.length - 1;
 
     // Update title
-    galleryTitle.textContent = `${currentMeme.title} (${this.currentGalleryIndex + 1} of ${this.galleryMemes.length})`;
+    galleryTitle.textContent = `(${this.currentGalleryIndex + 1} of ${this.galleryMemes.length})`;
 
     // Determine image path (support both image_path and image)
     let imagePath = currentMeme.image_path || currentMeme.image;
