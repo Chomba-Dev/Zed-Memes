@@ -701,22 +701,21 @@ class MemeManager {
    */
   handleView(button) {
     const memeId = button.getAttribute('data-meme-id');
-    // Support both id and meme_id for backend compatibility
-    const meme = this.memes.find(m => m.id == memeId || m.meme_id == memeId);
-    if (meme) {
-      this.openGallery(meme);
-    }
+    // Pass memeId directly to openGallery for accurate lookup
+    this.openGallery(memeId);
   }
 
   /**
    * Open gallery modal with specific meme
-   * @param {Object} meme - Meme object to display
+   * @param {string|number} memeId - Meme id to display
    */
-  openGallery(meme) {
+  openGallery(memeId) {
     // Set current gallery data
     this.galleryMemes = [...this.memes];
-    // Support both id and meme_id for index lookup
-    this.currentGalleryIndex = this.galleryMemes.findIndex(m => (m.id == meme.id || m.meme_id == meme.meme_id));
+    // Find the correct index for the clicked meme (support id and meme_id, string/number)
+    this.currentGalleryIndex = this.galleryMemes.findIndex(m => (
+      m.id == memeId || m.meme_id == memeId
+    ));
     // Show modal using new fullscreen modal logic
     const modal = document.getElementById('imageGalleryModal');
     if (modal) {
