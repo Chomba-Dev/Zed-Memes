@@ -63,12 +63,13 @@ class MemeManager {
 
     // Listen for meme interactions
     document.addEventListener('click', (e) => {
-      // Reaction popup logic
+      // Like (only handleLikeAPI, do not show reaction popup)
       if (e.target.closest('.meme-like-btn')) {
         e.preventDefault();
-        this.showReactionPopup(e.target.closest('.meme-card'));
+        this.handleLikeAPI(e.target.closest('.meme-like-btn'));
         return;
       }
+      // Reaction popup logic (for reaction bar only)
       if (e.target.closest('.reaction-option')) {
         e.preventDefault();
         const btn = e.target.closest('.reaction-option');
@@ -82,20 +83,10 @@ class MemeManager {
       if (!e.target.closest('.reaction-popup') && !e.target.closest('.meme-like-btn')) {
         this.hideAllReactionPopups();
       }
-      // Like
-      if (e.target.closest('.meme-like-btn')) {
-        e.preventDefault();
-        this.handleLikeAPI(e.target.closest('.meme-like-btn'));
-      }
       // Upvote
       if (e.target.closest('.meme-upvote-btn')) {
         e.preventDefault();
         this.handleVoteAPI(e.target.closest('.meme-upvote-btn'), 'upvote');
-      }
-      // Downvote
-      if (e.target.closest('.meme-downvote-btn')) {
-        e.preventDefault();
-        this.handleVoteAPI(e.target.closest('.meme-downvote-btn'), 'downvote');
       }
       // Share
       if (e.target.closest('.meme-share-btn')) {
@@ -112,17 +103,14 @@ class MemeManager {
         e.preventDefault();
         this.showPreviousImage();
       }
-      
       if (e.target.closest('#nextImageBtn')) {
         e.preventDefault();
         this.showNextImage();
       }
-      
       if (e.target.closest('#downloadImageBtn')) {
         e.preventDefault();
         this.downloadCurrentImage();
       }
-      
       if (e.target.closest('#shareImageBtn')) {
         e.preventDefault();
         this.shareCurrentImage();
@@ -423,12 +411,11 @@ class MemeManager {
                 </svg>
                 <span class="vote-count">${upvotes}</span>
               </button>
-              
-              <button class="btn-vote btn-downvote meme-downvote-btn" data-meme-id="${memeId}" data-action="downvote" title="Downvote">
-                <svg fill="currentColor" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 1c.072 0 .145 0 .218.006A4.1 4.1 0 0 1 14 5.184V9h3.138a1.751 1.751 0 0 1 1.234 2.993L10.59 19.72a.836.836 0 0 1-1.18 0l-7.782-7.727A1.751 1.751 0 0 1 2.861 9H6V5.118a4.134 4.134 0 0 1 .854-2.592A3.99 3.99 0 0 1 10 1Zm0 17.193 7.315-7.264a.251.251 0 0 0-.177-.429H12.5V5.184A2.631 2.631 0 0 0 10.136 2.5a2.441 2.441 0 0 0-1.856.682A2.478 2.478 0 0 0 7.5 5v5.5H2.861a.251.251 0 0 0-.176.429L10 18.193Z"></path>
+              <button class="btn-vote btn-like meme-like-btn" data-meme-id="${memeId}" data-action="like" title="Like">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" class="meme-tools-icon">
+                  <path d="M10.7408 2C13.0889 2 14.6667 4.235 14.6667 6.32C14.6667 10.5425 8.11856 14 8.00004 14C7.88152 14 1.33337 10.5425 1.33337 6.32C1.33337 4.235 2.91115 2 5.2593 2C6.60745 2 7.48893 2.6825 8.00004 3.2825C8.51115 2.6825 9.39263 2 10.7408 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
-                <span class="vote-count">${downvotes}</span>
+                <span class="like-count">${likes}</span>
               </button>
             </div>
             
