@@ -629,15 +629,23 @@ class MemeManager {
    */
   handleDownload(button) {
     const memeId = button.getAttribute('data-meme-id');
-    const meme = this.memes.find(m => m.id === memeId);
+    // Find meme by id or meme_id (backend compatibility)
+    const meme = this.memes.find(m => m.id == memeId || m.meme_id == memeId);
     if (!meme) {
       this.showToast('Meme not found for download.');
       return;
     }
+    // Use backend image path
+    let imagePath = meme.image_path || meme.image;
+    if (imagePath && !imagePath.includes('/')) {
+      imagePath = 'assets/images/' + imagePath;
+    }
+    // Use caption or title for filename
+    const filename = (meme.caption || meme.title || 'meme').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.jpg';
     try {
       const link = document.createElement('a');
-      link.href = meme.image;
-      link.download = `${meme.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.jpg`;
+      link.href = imagePath;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
