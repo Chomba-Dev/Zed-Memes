@@ -546,3 +546,118 @@
   width: 100%;
   box-sizing: border-box;
 }
+
+/* Masonry Meme Grid Layout */
+.meme-grid.ui.grid {
+  column-width: 280px;
+  column-gap: 1.5rem;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.meme-card-main {
+  display: inline-block;
+  width: 100%;
+  background: #fafbfc;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin: 0 0 1.5rem 0;
+  padding: 0;
+  vertical-align: top;
+  transition: box-shadow 0.2s, transform 0.2s;
+  overflow: hidden;
+}
+
+.meme-card-main:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  transform: translateY(-4px) scale(1.02);
+  border-color: #bdbdbd;
+}
+
+.meme-thumbnail,
+.meme-thumbnail-placeholder {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+  background: #eaeaea;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.meme-thumbnail-placeholder img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 0;
+}
+
+.meme-details-container {
+  width: 100%;
+  padding: 0;
+  background: none;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.meme-caption-box {
+  margin-top: 0;
+  font-size: 0.95rem;
+  color: #666;
+  background: #f0f1f3;
+  border-radius: 0 0 0 0;
+  padding: 0.4rem 0.75rem;
+  text-align: left;
+  word-break: break-word;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.user-information {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 0;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Subtle overlay for image consistency */
+.meme-thumbnail::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.04);
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .meme-grid.ui.grid {
+    column-width: 100vw;
+    column-gap: 0.5rem;
+  }
+  .meme-card-main {
+    border-radius: 10px;
+  }
+  .meme-thumbnail, .meme-thumbnail-placeholder {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  .meme-details-container {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+}
