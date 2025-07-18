@@ -419,50 +419,51 @@ class MemeManager {
     const downvotes = meme.votes?.find(v => v.vote_type === 'downvote')?.count || meme.downvotes || 0;
     const likes = meme.reactions?.find(r => r.vote_type === 'like')?.count || meme.likes || 0;
     const views = meme.views || '0';
-    
-    cardDiv.innerHTML = `
-      <div class="meme-thumbnail js-thumbnail meme-thumbnail-container">
-        <div class="js-thumbnail-base meme-thumbnail-base disabled-meme-section meme-card" data-meme-id="${memeId}">
-          <figure class="js-thumbnail-placeholder meme-thumbnail-placeholder">
-            <img src="${imagePath}" alt="${title}">
-          </figure>
 
-          <div class="meme-thumbnail-overlay">
-            <div class="meme-thumbnail-overlay-content">
-              <ul class="meme-actions-container">
-                <li class="meme-action">
-                  <a class="btn2 btn2--circle btn2--secondary-alt meme-view-btn" title="View" href="#" data-meme-id="${memeId}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
-                      <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
-                </li>
-                <li class="meme-action">
-                  <a class="btn2 btn2--circle btn2--secondary-alt meme-download-btn" title="Download" href="#" data-meme-id="${memeId}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
-                      <path d="M8 1v8m0 0L5 6m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M2 11v2a2 2 0 002 2h8a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
-                </li>
-                <li class="meme-action">
-                  <a class="btn2 btn2--secondary-alt btn2--circle meme-share-btn" title="Share" href="#" data-meme-id="${memeId}">
-                    <svg rpl="" aria-hidden="true" class="icon-share" fill="currentColor" height="16" icon-name="share-new-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2.239 18.723A1.235 1.235 0 0 1 1 17.488C1 11.5 4.821 6.91 10 6.505V3.616a1.646 1.646 0 0 1 2.812-1.16l6.9 6.952a.841.841 0 0 1 0 1.186l-6.9 6.852A1.645 1.645 0 0 1 10 16.284v-2.76c-2.573.243-3.961 1.738-5.547 3.445-.437.47-.881.949-1.356 1.407-.23.223-.538.348-.858.347ZM10.75 7.976c-4.509 0-7.954 3.762-8.228 8.855.285-.292.559-.59.832-.883C5.16 14 7.028 11.99 10.75 11.99h.75v4.294a.132.132 0 0 0 .09.134.136.136 0 0 0 .158-.032L18.186 10l-6.438-6.486a.135.135 0 0 0-.158-.032.134.134 0 0 0-.09.134v4.36h-.75Z"></path>
-                    </svg>
-                  </a>
-                </li>
-              </ul>
+    cardDiv.innerHTML = `
+      <div class="meme-card-main">
+        <div class="meme-thumbnail js-thumbnail meme-thumbnail-container">
+          <div class="js-thumbnail-base meme-thumbnail-base disabled-meme-section meme-card" data-meme-id="${memeId}">
+            <figure class="js-thumbnail-placeholder meme-thumbnail-placeholder">
+              <img src="${imagePath}" alt="${title}">
+            </figure>
+
+            <div class="meme-thumbnail-overlay">
+              <div class="meme-thumbnail-overlay-content">
+                <ul class="meme-actions-container">
+                  <li class="meme-action">
+                    <a class="btn2 btn2--circle btn2--secondary-alt meme-view-btn" title="View" href="#" data-meme-id="${memeId}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
+                        <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
+                  </li>
+                  <li class="meme-action">
+                    <a class="btn2 btn2--circle btn2--secondary-alt meme-download-btn" title="Download" href="#" data-meme-id="${memeId}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
+                        <path d="M8 1v8m0 0L5 6m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 11v2a2 2 0 002 2h8a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
+                  </li>
+                  <li class="meme-action">
+                    <a class="btn2 btn2--secondary-alt btn2--circle meme-share-btn" title="Share" href="#" data-meme-id="${memeId}">
+                      <svg rpl="" aria-hidden="true" class="icon-share" fill="currentColor" height="16" icon-name="share-new-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.239 18.723A1.235 1.235 0 0 1 1 17.488C1 11.5 4.821 6.91 10 6.505V3.616a1.646 1.646 0 0 1 2.812-1.16l6.9 6.952a.841.841 0 0 1 0 1.186l-6.9 6.852A1.645 1.645 0 0 1 10 16.284v-2.76c-2.573.243-3.961 1.738-5.547 3.445-.437.47-.881.949-1.356 1.407-.23.223-.538.348-.858.347ZM10.75 7.976c-4.509 0-7.954 3.762-8.228 8.855.285-.292.559-.59.832-.883C5.16 14 7.028 11.99 10.75 11.99h.75v4.294a.132.132 0 0 0 .09.134.136.136 0 0 0 .158-.032L18.186 10l-6.438-6.486a.135.135 0 0 0-.158-.032.134.134 0 0 0-.09.134v4.36h-.75Z"></path>
+                      </svg>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
-
         <div class="meme-details-container">
+          ${title ? `<div class='meme-caption-box'>${title}</div>` : ''}
           <div class="user-information">
             <div class="photo">${author.charAt(0).toUpperCase()}</div>
             <span class="display-name">${author}</span>
-            
             <!-- Vote buttons -->
             <div class="meme-vote-container">
               <button class="btn-vote btn-upvote meme-upvote-btn" data-meme-id="${memeId}" data-action="upvote" title="Upvote">
@@ -478,7 +479,6 @@ class MemeManager {
                 <span class="like-count">${likes}</span>
               </button>
             </div>
-            
           </div>
         </div>
       </div>

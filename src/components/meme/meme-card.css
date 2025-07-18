@@ -116,10 +116,56 @@
   justify-content: space-between;
 }
 
+/* Add a wrapper for image + user info grouping */
+.meme-card-main {
+  background: #fafbfc;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.meme-thumbnail,
+.meme-thumbnail-placeholder {
+  width: 100%;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.meme-thumbnail-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.meme-details-container {
+  width: 100%;
+  padding: 0;
+  background: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Remove border/background from user info, just spacing */
 .user-information {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  border: none;
+  border-radius: 0;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .user-information .photo {
@@ -487,4 +533,17 @@
   .btn-vote .vote-count {
     min-width: 16px;
   }
+}
+
+.meme-caption-box {
+  margin-top: 0;
+  font-size: 0.95rem;
+  color: #666;
+  background: #f0f1f3;
+  border-radius: 0 0 0 0;
+  padding: 0.4rem 0.75rem;
+  text-align: left;
+  word-break: break-word;
+  width: 100%;
+  box-sizing: border-box;
 }
