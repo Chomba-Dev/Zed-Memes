@@ -6,7 +6,7 @@
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 // Handle preflight requests
@@ -46,6 +46,44 @@ try {
             default:
                 sendResponse(false, 'Invalid action');
         }
+    } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+        // --- EDIT MEME CAPTION ---
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? '';
+        if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+            sendResponse(false, 'Authentication required');
+        }
+        $token = $matches[1];
+        $currentUser = $authHandler->getCurrentUser($token);
+        if (!$currentUser) {
+            sendResponse(false, 'Invalid or expired token');
+        }
+        $json = json_decode(file_get_contents('php://input'), true);
+        if (!$json || !isset($json['id']) || !isset($json['caption'])) {
+            sendResponse(false, 'Meme ID and caption required');
+        }
+        $memeId = intval($json['id']);
+        $caption = trim($json['caption']);
+        if ($memeId <= 0) {
+            sendResponse(false, 'Invalid meme ID');
+        }
+        if (strlen($caption) > 255) {
+            sendResponse(false, 'Caption must be less than 255 characters');
+        }
+        // Check ownership
+        $stmt = $db->prepare('SELECT user_id FROM memes WHERE meme_id = ?');
+        $stmt->execute([$memeId]);
+        $meme = $stmt->fetch();
+        if (!$meme) {
+            sendResponse(false, 'Meme not found');
+        }
+        if ($meme['user_id'] != $currentUser['user_id']) {
+            sendResponse(false, 'You do not have permission to edit this meme');
+        }
+        // Update caption
+        $stmt = $db->prepare('UPDATE memes SET caption = ? WHERE meme_id = ?');
+        $stmt->execute([$caption, $memeId]);
+        sendResponse(true, 'Meme updated successfully');
     } else {
         sendResponse(false, 'Method not allowed');
     }

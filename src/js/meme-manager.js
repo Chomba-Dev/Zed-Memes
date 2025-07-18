@@ -410,7 +410,6 @@ class MemeManager {
     const memeId = meme.meme_id || meme.id;
     const title = meme.caption || meme.title || 'Untitled Meme';
     let imagePath = meme.image_path || meme.image;
-    // If imagePath does not contain a slash, prepend assets/images/
     if (imagePath && !imagePath.includes('/')) {
       imagePath = 'assets/images/' + imagePath;
     }
@@ -420,6 +419,13 @@ class MemeManager {
     const likes = meme.reactions?.find(r => r.vote_type === 'like')?.count || meme.likes || 0;
     const views = meme.views || '0';
 
+    // Get current user
+    let currentUser = null;
+    try {
+      currentUser = JSON.parse(localStorage.getItem(APP_CONFIG.STORAGE.USER));
+    } catch (e) {}
+    const isOwner = currentUser && meme.user && meme.user.user_id == currentUser.user_id;
+
     cardDiv.innerHTML = `
       <div class="meme-card-main">
         <div class="meme-thumbnail js-thumbnail meme-thumbnail-container">
@@ -427,55 +433,59 @@ class MemeManager {
             <figure class="js-thumbnail-placeholder meme-thumbnail-placeholder">
               <img src="${imagePath}" alt="${title}">
             </figure>
-
             <div class="meme-thumbnail-overlay">
               <div class="meme-thumbnail-overlay-content">
                 <ul class="meme-actions-container">
                   <li class="meme-action">
                     <a class="btn2 btn2--circle btn2--secondary-alt meme-view-btn" title="View" href="#" data-meme-id="${memeId}">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
-                        <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
+                      <!-- SVG omitted for brevity -->
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </a>
                   </li>
                   <li class="meme-action">
                     <a class="btn2 btn2--circle btn2--secondary-alt meme-download-btn" title="Download" href="#" data-meme-id="${memeId}">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img">
-                        <path d="M8 1v8m0 0L5 6m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M2 11v2a2 2 0 002 2h8a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
+                      <!-- SVG omitted for brevity -->
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img"><path d="M8 1v8m0 0L5 6m3 3l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11v2a2 2 0 002 2h8a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </a>
                   </li>
                   <li class="meme-action">
                     <a class="btn2 btn2--secondary-alt btn2--circle meme-share-btn" title="Share" href="#" data-meme-id="${memeId}">
-                      <svg rpl="" aria-hidden="true" class="icon-share" fill="currentColor" height="16" icon-name="share-new-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2.239 18.723A1.235 1.235 0 0 1 1 17.488C1 11.5 4.821 6.91 10 6.505V3.616a1.646 1.646 0 0 1 2.812-1.16l6.9 6.952a.841.841 0 0 1 0 1.186l-6.9 6.852A1.645 1.645 0 0 1 10 16.284v-2.76c-2.573.243-3.961 1.738-5.547 3.445-.437.47-.881.949-1.356 1.407-.23.223-.538.348-.858.347ZM10.75 7.976c-4.509 0-7.954 3.762-8.228 8.855.285-.292.559-.59.832-.883C5.16 14 7.028 11.99 10.75 11.99h.75v4.294a.132.132 0 0 0 .09.134.136.136 0 0 0 .158-.032L18.186 10l-6.438-6.486a.135.135 0 0 0-.158-.032.134.134 0 0 0-.09.134v4.36h-.75Z"></path>
-                      </svg>
+                      <!-- SVG omitted for brevity -->
+                      <svg rpl="" aria-hidden="true" class="icon-share" fill="currentColor" height="16" icon-name="share-new-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M2.239 18.723A1.235 1.235 0 0 1 1 17.488C1 11.5 4.821 6.91 10 6.505V3.616a1.646 1.646 0 0 1 2.812-1.16l6.9 6.952a.841.841 0 0 1 0 1.186l-6.9 6.852A1.645 1.645 0 0 1 10 16.284v-2.76c-2.573.243-3.961 1.738-5.547 3.445-.437.47-.881.949-1.356 1.407-.23.223-.538.348-.858.347ZM10.75 7.976c-4.509 0-7.954 3.762-8.228 8.855.285-.292.559-.59.832-.883C5.16 14 7.028 11.99 10.75 11.99h.75v4.294a.132.132 0 0 0 .09.134.136.136 0 0 0 .158-.032L18.186 10l-6.438-6.486a.135.135 0 0 0-.158-.032.134.134 0 0 0-.09.134v4.36h-.75Z"></path></svg>
                     </a>
                   </li>
+                  ${isOwner ? `
+                  <li class="meme-action">
+                    <button class="btn2 btn2--circle btn2--secondary-alt meme-edit-btn" title="Edit" data-meme-id="${memeId}">
+                      ✏️
+                    </button>
+                  </li>
+                  <li class="meme-action">
+                    <button class="btn2 btn2--circle btn2--danger meme-delete-btn" title="Delete" data-meme-id="${memeId}">
+                      🗑️
+                    </button>
+                  </li>
+                  ` : ''}
                 </ul>
               </div>
             </div>
           </div>
         </div>
         <div class="meme-details-container">
-          ${title ? `<div class='meme-caption-box'>${title}</div>` : ''}
+          <div class='meme-caption-box' data-caption-id="${memeId}">${title}</div>
           <div class="user-information">
             <div class="photo">${author.charAt(0).toUpperCase()}</div>
             <span class="display-name">${author}</span>
             <!-- Vote buttons -->
             <div class="meme-vote-container">
               <button class="btn-vote btn-upvote meme-upvote-btn" data-meme-id="${memeId}" data-action="upvote" title="Upvote">
-                <svg fill="currentColor" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 19c-.072 0-.145 0-.218-.006A4.1 4.1 0 0 1 6 14.816V11H2.862a1.751 1.751 0 0 1-1.234-2.993L9.41.28a.836.836 0 0 1 1.18 0l7.782 7.727A1.751 1.751 0 0 1 17.139 11H14v3.882a4.134 4.134 0 0 1-.854 2.592A3.99 3.99 0 0 1 10 19Zm0-17.193L2.685 9.071a.251.251 0 0 0 .177.429H7.5v5.316A2.63 2.63 0 0 0 9.864 17.5a2.441 2.441 0 0 0 1.856-.682A2.478 2.478 0 0 0 12.5 15V9.5h4.639a.25.25 0 0 0 .176-.429L10 1.807Z"></path>
-                </svg>
+                <!-- SVG omitted for brevity -->
+                <svg fill="currentColor" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M10 19c-.072 0-.145 0-.218-.006A4.1 4.1 0 0 1 6 14.816V11H2.862a1.751 1.751 0 0 1-1.234-2.993L9.41.28a.836.836 0 0 1 1.18 0l7.782 7.727A1.751 1.751 0 0 1 17.139 11H14v3.882a4.134 4.134 0 0 1-.854 2.592A3.99 3.99 0 0 1 10 19Zm0-17.193L2.685 9.071a.251.251 0 0 0 .177.429H7.5v5.316A2.63 2.63 0 0 0 9.864 17.5a2.441 2.441 0 0 0 1.856-.682A2.478 2.478 0 0 0 12.5 15V9.5h4.639a.25.25 0 0 0 .176-.429L10 1.807Z"></path></svg>
                 <span class="vote-count">${upvotes}</span>
               </button>
               <button class="btn-vote btn-like meme-like-btn" data-meme-id="${memeId}" data-action="like" title="Like">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" class="meme-tools-icon">
-                  <path d="M10.7408 2C13.0889 2 14.6667 4.235 14.6667 6.32C14.6667 10.5425 8.11856 14 8.00004 14C7.88152 14 1.33337 10.5425 1.33337 6.32C1.33337 4.235 2.91115 2 5.2593 2C6.60745 2 7.48893 2.6825 8.00004 3.2825C8.51115 2.6825 9.39263 2 10.7408 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
+                <!-- SVG omitted for brevity -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" class="meme-tools-icon"><path d="M10.7408 2C13.0889 2 14.6667 4.235 14.6667 6.32C14.6667 10.5425 8.11856 14 8.00004 14C7.88152 14 1.33337 10.5425 1.33337 6.32C1.33337 4.235 2.91115 2 5.2593 2C6.60745 2 7.48893 2.6825 8.00004 3.2825C8.51115 2.6825 9.39263 2 10.7408 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                 <span class="like-count">${likes}</span>
               </button>
             </div>
@@ -483,8 +493,91 @@ class MemeManager {
         </div>
       </div>
     `;
-    
+
+    // Add edit/delete event listeners if owner
+    if (isOwner) {
+      // Edit
+      cardDiv.querySelector('.meme-edit-btn').onclick = (e) => {
+        e.preventDefault();
+        this.showEditCaptionInput(memeId, title, cardDiv);
+      };
+      // Delete
+      cardDiv.querySelector('.meme-delete-btn').onclick = async (e) => {
+        e.preventDefault();
+        if (confirm('Are you sure you want to delete this meme?')) {
+          await this.deleteMeme(memeId);
+        }
+      };
+    }
     return cardDiv;
+  }
+
+  // Show input for editing caption
+  showEditCaptionInput(memeId, currentCaption, cardDiv) {
+    const captionBox = cardDiv.querySelector(`[data-caption-id="${memeId}"]`);
+    if (!captionBox) return;
+    // Replace with input
+    captionBox.innerHTML = `<input type="text" value="${currentCaption.replace(/"/g, '&quot;')}" maxlength="255" style="width:80%"> <button class="btn2 btn2--primary meme-save-caption-btn">Save</button> <button class="btn2 meme-cancel-caption-btn">Cancel</button>`;
+    const input = captionBox.querySelector('input');
+    const saveBtn = captionBox.querySelector('.meme-save-caption-btn');
+    const cancelBtn = captionBox.querySelector('.meme-cancel-caption-btn');
+    saveBtn.onclick = async () => {
+      const newCaption = input.value.trim();
+      if (!newCaption) {
+        this.showToast('Caption cannot be empty', 'error');
+        return;
+      }
+      await this.editMemeCaption(memeId, newCaption, cardDiv);
+    };
+    cancelBtn.onclick = () => {
+      captionBox.textContent = currentCaption;
+    };
+  }
+
+  // Send PUT request to edit caption
+  async editMemeCaption(memeId, newCaption, cardDiv) {
+    const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
+    try {
+      const response = await fetch(getApiUrl('/backend/api/memes.php'), {
+        method: 'PUT',
+        headers: getAuthHeaders(token),
+        body: JSON.stringify({ id: memeId, caption: newCaption })
+      });
+      const data = await response.json();
+      if (data.success) {
+        this.showToast('Caption updated!', 'success');
+        // Refresh uploads grid
+        await this.loadUserUploads();
+      } else {
+        this.showToast(data.message || 'Failed to update caption', 'error');
+      }
+    } catch (err) {
+      this.showToast('Failed to update caption', 'error');
+    }
+  }
+
+  // Send request to delete meme
+  async deleteMeme(memeId) {
+    const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
+    try {
+      const formData = new FormData();
+      formData.append('action', 'delete_meme');
+      formData.append('meme_id', memeId);
+      const response = await fetch(getApiUrl(APP_CONFIG.API.UPLOAD.DELETE_MEME), {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const data = await response.json();
+      if (data.success) {
+        this.showToast('Meme deleted!', 'success');
+        await this.loadUserUploads();
+      } else {
+        this.showToast(data.message || 'Failed to delete meme', 'error');
+      }
+    } catch (err) {
+      this.showToast('Failed to delete meme', 'error');
+    }
   }
 
   /**
