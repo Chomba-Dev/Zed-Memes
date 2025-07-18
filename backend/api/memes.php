@@ -6,7 +6,7 @@
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 // Handle preflight requests
@@ -22,43 +22,68 @@ try {
     $db = getDB();
     $authHandler = new AuthHandler();
     
-    error_log("[DEBUG] Starting memes.php execution");
-    error_log("[DEBUG] Request method: " . $_SERVER['REQUEST_METHOD']);
-    error_log("[DEBUG] Full query string: " . ($_SERVER['QUERY_STRING'] ?? 'none'));
-    error_log("[DEBUG] All GET parameters: " . print_r($_GET, true));
-    
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $action = $_GET['action'] ?? '';
-        error_log("[DEBUG] Action received: '" . $action . "'");
         switch ($action) {
             case 'get_memes':
-                error_log("[DEBUG] Matched case 'get_memes' - calling handleGetRandom");
-                handleGetRandom($db);
-                break;
-            case 'get_random':
-                error_log("[DEBUG] Matched case 'get_random' - calling handleGetRandom");
-                handleGetRandom($db);
+                handleGetRelevant($db, $authHandler);
                 break;
             case 'get_trending':
-                error_log("[DEBUG] Matched case 'get_trending' - calling handleGetTrending");
                 handleGetTrending($db, $authHandler);
                 break;
             case 'get_relevant':
-                error_log("[DEBUG] Matched case 'get_relevant' - calling handleGetRelevant");
                 handleGetRelevant($db, $authHandler);
                 break;
             case 'get_user_uploads':
-                error_log("[DEBUG] Matched case 'get_user_uploads' - calling handleGetUserUploads");
                 handleGetUserUploads($db, $authHandler);
                 break;
             case 'search_memes':
-                error_log("[DEBUG] Matched case 'search_memes' - calling handleSearchMemes");
                 handleSearchMemes($db, $authHandler);
                 break;
+            case 'get_liked_memes':
+                handleGetLikedMemes($db, $authHandler);
+                break;
             default:
-                error_log("[DEBUG] No case matched, action was: '" . $action . "'");
                 sendResponse(false, 'Invalid action');
         }
+    } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+        // --- EDIT MEME CAPTION ---
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? '';
+        if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+            sendResponse(false, 'Authentication required');
+        }
+        $token = $matches[1];
+        $currentUser = $authHandler->getCurrentUser($token);
+        if (!$currentUser) {
+            sendResponse(false, 'Invalid or expired token');
+        }
+        $json = json_decode(file_get_contents('php://input'), true);
+        if (!$json || !isset($json['id']) || !isset($json['caption'])) {
+            sendResponse(false, 'Meme ID and caption required');
+        }
+        $memeId = intval($json['id']);
+        $caption = trim($json['caption']);
+        if ($memeId <= 0) {
+            sendResponse(false, 'Invalid meme ID');
+        }
+        if (strlen($caption) > 255) {
+            sendResponse(false, 'Caption must be less than 255 characters');
+        }
+        // Check ownership
+        $stmt = $db->prepare('SELECT user_id FROM memes WHERE meme_id = ?');
+        $stmt->execute([$memeId]);
+        $meme = $stmt->fetch();
+        if (!$meme) {
+            sendResponse(false, 'Meme not found');
+        }
+        if ($meme['user_id'] != $currentUser['user_id']) {
+            sendResponse(false, 'You do not have permission to edit this meme');
+        }
+        // Update caption
+        $stmt = $db->prepare('UPDATE memes SET caption = ? WHERE meme_id = ?');
+        $stmt->execute([$caption, $memeId]);
+        sendResponse(true, 'Meme updated successfully');
     } else {
         sendResponse(false, 'Method not allowed');
     }
@@ -104,60 +129,19 @@ function enrichMeme($db, $meme) {
 }
 
 function handleGetRandom($db) {
-    error_log("[DEBUG] handleGetRandom function called");
     $limit = min(20, max(1, intval($_GET['limit'] ?? 12)));
-    $page = max(1, intval($_GET['page'] ?? 1));
-    $offset = ($page - 1) * $limit;
-    error_log("[DEBUG] handleGetRandom called: page=$page, limit=$limit, offset=$offset");
-    
     try {
-        // Get total count for pagination info
-        $countStmt = $db->prepare("SELECT COUNT(*) as total FROM memes");
-        $countStmt->execute();
-        $countResult = $countStmt->fetch();
-        $totalMemes = $countResult ? $countResult['total'] : 0;
-        $totalPages = $totalMemes > 0 ? ceil($totalMemes / $limit) : 1;
-        error_log("[DEBUG] Total memes in DB: $totalMemes, totalPages: $totalPages");
-        
-        // If no memes exist, return empty result
-        if ($totalMemes == 0) {
-            error_log("[DEBUG] No memes found in database");
-            sendResponse(true, 'No memes available', [], [
-                'page' => $page,
-                'limit' => $limit,
-                'total' => 0,
-                'totalPages' => 1,
-                'hasNext' => false,
-                'hasPrev' => false
-            ]);
-            return;
-        }
-        
-        // Get memes with pagination
-        $stmt = $db->prepare("SELECT meme_id, user_id, image_path, caption, uploaded_at FROM memes ORDER BY uploaded_at DESC LIMIT ? OFFSET ?");
-        $stmt->execute([$limit, $offset]);
+        $stmt = $db->prepare("SELECT meme_id, user_id, image_path, caption, uploaded_at FROM memes ORDER BY RAND() LIMIT ?");
+        $stmt->execute([$limit]);
         $memes = $stmt->fetchAll();
-        error_log("[DEBUG] Memes returned for this page: " . count($memes));
-        
         $result = [];
         foreach ($memes as $meme) {
             $result[] = enrichMeme($db, $meme);
         }
-        
-        error_log("[DEBUG] Sending response: page=$page, hasNext=" . ($page < $totalPages ? 'true' : 'false'));
-        // Send response with pagination info
-        sendResponse(true, 'Memes retrieved successfully', $result, [
-            'page' => $page,
-            'limit' => $limit,
-            'total' => $totalMemes,
-            'totalPages' => $totalPages,
-            'hasNext' => $page < $totalPages,
-            'hasPrev' => $page > 1
-        ]);
+        sendResponse(true, 'Random memes retrieved successfully', $result);
     } catch (Exception $e) {
         error_log("Get random memes error: " . $e->getMessage());
-        error_log("Stack trace: " . $e->getTraceAsString());
-        sendResponse(false, 'Failed to retrieve memes');
+        sendResponse(false, 'Failed to retrieve random memes');
     }
 }
 /**
@@ -184,6 +168,96 @@ function handleGetTrending($db, $authHandler) {
 /**
  * Search memes by title or description
  */
+
+function handleGetRelevant($db, $authHandler) {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        handleGetRandom($db);
+    }
+    $token = $matches[1];
+    $currentUser = $authHandler->getCurrentUser($token);
+    if (!$currentUser) {
+        sendResponse(false, 'Invalid or expired token');
+    }
+    try {
+        $stmt = $db->prepare("CALL get_relevant_memes_for_user(?)");
+        $stmt->execute([$currentUser['user_id']]);
+        $memes = $stmt->fetchAll();
+        $stmt->closeCursor();
+        $result = [];
+        foreach ($memes as $meme) {
+            $result[] = enrichMeme($db, $meme);
+        }
+        sendResponse(true, 'Relevant memes retrieved successfully', $result);
+    } catch (Exception $e) {
+        error_log("Get relevant memes error: " . $e->getMessage());
+        sendResponse(false, 'Failed to retrieve relevant memes');
+    }
+}
+
+function handleGetUserUploads($db, $authHandler) {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        sendResponse(false, 'Authentication required');
+    }
+    $token = $matches[1];
+    $currentUser = $authHandler->getCurrentUser($token);
+    if (!$currentUser) {
+        sendResponse(false, 'Invalid or expired token');
+    }
+    try {
+        $stmt = $db->prepare("CALL get_user_uploaded_memes(?)");
+        $stmt->execute([$currentUser['user_id']]);
+        $memes = $stmt->fetchAll();
+        $stmt->closeCursor();
+        $result = [];
+        foreach ($memes as $meme) {
+            $result[] = enrichMeme($db, $meme);
+        }
+        sendResponse(true, 'User uploaded memes retrieved successfully', $result);
+    } catch (Exception $e) {
+        error_log("Get user uploads error: " . $e->getMessage());
+        sendResponse(false, 'Failed to retrieve user uploaded memes');
+    }
+}
+
+function handleGetLikedMemes($db, $authHandler) {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        sendResponse(false, 'Authentication required');
+    }
+    $token = $matches[1];
+    $currentUser = $authHandler->getCurrentUser($token);
+    if (!$currentUser) {
+        sendResponse(false, 'Invalid or expired token');
+    }
+    try {
+        // Get liked meme IDs for this user
+        $stmt = $db->prepare("SELECT meme_id FROM user_meme_reaction WHERE user_id = ? AND vote_type = 'like'");
+        $stmt->execute([$currentUser['user_id']]);
+        $likedIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        if (empty($likedIds)) {
+            sendResponse(true, 'No liked memes', []);
+        }
+        // Fetch meme objects for these IDs
+        $in = str_repeat('?,', count($likedIds) - 1) . '?';
+        $sql = "SELECT * FROM memes WHERE meme_id IN ($in)";
+        $stmt = $db->prepare($sql);
+        $stmt->execute($likedIds);
+        $memes = $stmt->fetchAll();
+        $result = [];
+        foreach ($memes as $meme) {
+            $result[] = enrichMeme($db, $meme);
+        }
+        sendResponse(true, 'Liked memes retrieved successfully', $result);
+    } catch (Exception $e) {
+        error_log("Get liked memes error: " . $e->getMessage());
+        sendResponse(false, 'Failed to retrieve liked memes');
+    }
+}
 function handleSearchMemes($db, $authHandler) {
     $query = trim($_GET['query'] ?? '');
     
@@ -251,65 +325,10 @@ function handleSearchMemes($db, $authHandler) {
     }
 }
 
-function handleGetRelevant($db, $authHandler) {
-    error_log("[DEBUG] ===== handleGetRelevant called =====");
-    $headers = getallheaders();
-    $authHeader = $headers['Authorization'] ?? '';
-    error_log("[DEBUG] Auth header: " . ($authHeader ? "present" : "not present"));
-    
-    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
-        error_log("[DEBUG] No valid auth token found, calling handleGetRandom instead");
-        handleGetRandom($db);
-        return;
-    }
-    
-    $token = $matches[1];
-    error_log("[DEBUG] Token found, checking with auth handler");
-    $currentUser = $authHandler->getCurrentUser($token);
-    
-    if (!$currentUser) {
-        error_log("[DEBUG] Invalid token, calling handleGetRandom instead");
-        handleGetRandom($db);
-        return;
-    }
-    
-    // For now, just call handleGetRandom since the stored procedure doesn't exist
-    // TODO: Implement proper personalized meme recommendation
-    error_log("[DEBUG] User authenticated, calling handleGetRandom for now");
-    handleGetRandom($db);
-}
-
-function handleGetUserUploads($db, $authHandler) {
-    $headers = getallheaders();
-    $authHeader = $headers['Authorization'] ?? '';
-    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
-        sendResponse(false, 'Authentication required');
-    }
-    $token = $matches[1];
-    $currentUser = $authHandler->getCurrentUser($token);
-    if (!$currentUser) {
-        sendResponse(false, 'Invalid or expired token');
-    }
-    try {
-        $stmt = $db->prepare("CALL get_user_uploaded_memes(?)");
-        $stmt->execute([$currentUser['user_id']]);
-        $memes = $stmt->fetchAll();
-        $stmt->closeCursor();
-        $result = [];
-        foreach ($memes as $meme) {
-            $result[] = enrichMeme($db, $meme);
-        }
-        sendResponse(true, 'User uploaded memes retrieved successfully', $result);
-    } catch (Exception $e) {
-        error_log("Get user uploads error: " . $e->getMessage());
-        sendResponse(false, 'Failed to retrieve user uploaded memes');
-    }
-}
-
 /**
  * Send JSON response
  */
-function sendResponse($success, $message, $data = null, $pagination = null) {
+function sendResponse($success, $message, $data = null) {
     $response = [
         'success' => $success,
         'message' => $message
@@ -317,10 +336,6 @@ function sendResponse($success, $message, $data = null, $pagination = null) {
     
     if ($data !== null) {
         $response['data'] = $data;
-    }
-    
-    if ($pagination !== null) {
-        $response['pagination'] = $pagination;
     }
     
     echo json_encode($response);
