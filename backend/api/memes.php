@@ -40,6 +40,9 @@ try {
             case 'search_memes':
                 handleSearchMemes($db, $authHandler);
                 break;
+            case 'get_liked_memes':
+                handleGetLikedMemes($db, $authHandler);
+                break;
             default:
                 sendResponse(false, 'Invalid action');
         }
@@ -228,6 +231,42 @@ function handleGetUserUploads($db, $authHandler) {
     } catch (Exception $e) {
         error_log("Get user uploads error: " . $e->getMessage());
         sendResponse(false, 'Failed to retrieve user uploaded memes');
+    }
+}
+
+function handleGetLikedMemes($db, $authHandler) {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        sendResponse(false, 'Authentication required');
+    }
+    $token = $matches[1];
+    $currentUser = $authHandler->getCurrentUser($token);
+    if (!$currentUser) {
+        sendResponse(false, 'Invalid or expired token');
+    }
+    try {
+        // Get liked meme IDs for this user
+        $stmt = $db->prepare("SELECT meme_id FROM user_meme_reaction WHERE user_id = ? AND vote_type = 'like'");
+        $stmt->execute([$currentUser['user_id']]);
+        $likedIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        if (empty($likedIds)) {
+            sendResponse(true, 'No liked memes', []);
+        }
+        // Fetch meme objects for these IDs
+        $in = str_repeat('?,', count($likedIds) - 1) . '?';
+        $sql = "SELECT * FROM memes WHERE meme_id IN ($in)";
+        $stmt = $db->prepare($sql);
+        $stmt->execute($likedIds);
+        $memes = $stmt->fetchAll();
+        $result = [];
+        foreach ($memes as $meme) {
+            $result[] = enrichMeme($db, $meme);
+        }
+        sendResponse(true, 'Liked memes retrieved successfully', $result);
+    } catch (Exception $e) {
+        error_log("Get liked memes error: " . $e->getMessage());
+        sendResponse(false, 'Failed to retrieve liked memes');
     }
 }
 

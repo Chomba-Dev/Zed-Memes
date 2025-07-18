@@ -16,7 +16,8 @@ const APP_CONFIG = {
       GET_RELEVANT: '/backend/api/memes.php?action=get_relevant',
       GET_TRENDING: '/backend/api/memes.php?action=get_trending',
       GET_USER_UPLOADS: '/backend/api/memes.php?action=get_user_uploads',
-      SEARCH: '/backend/api/memes.php?action=search_memes'
+      SEARCH: '/backend/api/memes.php?action=search_memes',
+      GET_LIKED_MEMES: '/backend/api/memes.php?action=get_liked_memes'
     },
     
     UPLOAD: {
@@ -28,7 +29,8 @@ const APP_CONFIG = {
     
     REACTIONS: {
       ADD_REACTION: '/backend/api/reactions.php',
-      GET_REACTIONS: '/backend/api/reactions.php?action=get_reactions'
+      GET_REACTIONS: '/backend/api/reactions.php?action=get_reactions',
+      GET_USER_LIKES: '/backend/api/reactions.php?action=get_user_likes'
     },
     
     VOTES: {

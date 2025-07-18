@@ -35,6 +35,15 @@ try {
             default:
                 sendResponse(false, 'Invalid action');
         }
+    } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $action = $_GET['action'] ?? '';
+        switch ($action) {
+            case 'get_user_likes':
+                handleGetUserLikes($db, $authHandler);
+                break;
+            default:
+                sendResponse(false, 'Invalid action');
+        }
     } else {
         sendResponse(false, 'Method not allowed');
     }
@@ -191,6 +200,38 @@ function handleRemoveReaction($db, $authHandler) {
     } catch (Exception $e) {
         error_log("Remove reaction error: " . $e->getMessage());
         sendResponse(false, 'Failed to remove reaction');
+    }
+}
+
+/**
+ * Handle getting all meme_ids liked by the current user
+ */
+function handleGetUserLikes($db, $authHandler) {
+    // Check authentication
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+    
+    if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        sendResponse(false, 'Authentication required');
+    }
+    
+    $token = $matches[1];
+    $currentUser = $authHandler->getCurrentUser($token);
+    
+    if (!$currentUser) {
+        sendResponse(false, 'Invalid or expired token');
+    }
+    
+    try {
+        $stmt = $db->prepare("SELECT meme_id FROM user_meme_reaction WHERE user_id = ? AND vote_type = 'like'");
+        $stmt->execute([$currentUser['user_id']]);
+        $likedMemes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        sendResponse(true, 'User liked memes fetched successfully', [
+            'liked_meme_ids' => $likedMemes
+        ]);
+    } catch (Exception $e) {
+        error_log("Get user likes error: " . $e->getMessage());
+        sendResponse(false, 'Failed to fetch liked memes');
     }
 }
 

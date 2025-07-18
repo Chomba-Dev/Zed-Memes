@@ -236,15 +236,34 @@ class MemeManager {
   }
 
   /**
-   * Load liked memes
+   * Load liked memes for the current user
    */
-  loadLikedMemes() {
+  async loadLikedMemes() {
     const grid = document.querySelector('#likes-content .meme-grid');
     if (!grid) return;
-    
-    // Show the same grid for likes section
     this.currentFilter = 'liked';
-    this.renderMemeGrid(grid, []);
+    const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
+    if (!token) {
+      this.showToast('Please login to view your liked memes');
+      this.renderMemeGrid(grid, []);
+      return;
+    }
+    try {
+      // Fetch liked meme objects directly from backend
+      const res = await fetch(getApiUrl(APP_CONFIG.API.MEMES.GET_LIKED_MEMES), {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!data.success || !Array.isArray(data.data)) {
+        this.renderMemeGrid(grid, []);
+        return;
+      }
+      this.renderMemeGrid(grid, data.data);
+    } catch (err) {
+      console.error('Error loading liked memes:', err);
+      this.renderMemeGrid(grid, []);
+    }
   }
 
   /**
