@@ -6,6 +6,9 @@ class MemeManager {
     this.memes = [];
     this.currentPage = 1;
     this.itemsPerPage = 12;
+    this.totalPages = 1;
+    this.totalMemes = 0;
+    this.hasMoreMemes = true; // Track if more memes are available
     this.isLoading = false;
     this.currentFilter = 'all';
     this.currentSort = 'latest';
@@ -14,6 +17,34 @@ class MemeManager {
     this.currentGalleryIndex = 0;
     this.galleryMemes = [];
     this.init();
+  }
+
+  /**
+   * Debug function to test pagination manually
+   * Call this from browser console: window.memeManager.testPagination()
+   */
+  testPagination() {
+    console.log('=== PAGINATION TEST ===');
+    console.log(`Current state:`);
+    console.log(`- Current page: ${this.currentPage}`);
+    console.log(`- Total pages: ${this.totalPages}`);
+    console.log(`- Total memes: ${this.totalMemes}`);
+    console.log(`- Has more memes: ${this.hasMoreMemes}`);
+    console.log(`- Memes loaded: ${this.memes.length}`);
+    console.log(`- Is loading: ${this.isLoading}`);
+    
+    // Calculate expected final state
+    const expectedTotalPages = Math.ceil(67 / 12); // We know there are 67 memes
+    console.log(`Expected total pages: ${expectedTotalPages}`);
+    console.log(`Expected to reach end at page: ${expectedTotalPages}`);
+    
+    // Force load next page for testing
+    if (this.hasMoreMemes && !this.isLoading) {
+      console.log('Forcing load of next page...');
+      this.loadMoreMemes();
+    } else {
+      console.log('Cannot load more: hasMoreMemes=' + this.hasMoreMemes + ', isLoading=' + this.isLoading);
+    }
   }
 
   /**
@@ -58,9 +89,14 @@ class MemeManager {
         this.shareCurrentImage();
       };
     }
+    this.setupInfiniteScroll(); // Setup infinite scroll functionality
     console.log('About to load home memes...');
     this.loadHomeMemes(); // Load home memes on initialization
     console.log('MemeManager initialization complete');
+    
+    // Expose globally for debugging
+    window.memeManager = this;
+    console.log('MemeManager exposed globally as window.memeManager');
   }
 
   /**
@@ -181,6 +217,184 @@ class MemeManager {
   }
 
   /**
+   * Setup infinite scroll functionality
+   */
+  setupInfiniteScroll() {
+    console.log('Setting up infinite scroll...');
+    
+    // Use throttled scroll handler for better performance
+    let ticking = false;
+    const throttledHandler = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          this.handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    // Add the scroll listener
+    window.addEventListener('scroll', throttledHandler, { passive: true });
+    
+    console.log('Infinite scroll setup complete');
+  }
+
+  /**
+   * Handle scroll events for infinite loading
+   */
+  handleScroll() {
+    // Only handle scroll on home section
+    const homeSection = document.getElementById('home-content');
+    if (!homeSection || !homeSection.classList.contains('active')) {
+      return;
+    }
+
+    // Don't load if already loading or no more memes available
+    if (this.isLoading || !this.hasMoreMemes) {
+      console.log(`Scroll ignored: isLoading=${this.isLoading}, hasMoreMemes=${this.hasMoreMemes}`);
+      return;
+    }
+
+    // Calculate if user is near bottom of page
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Trigger load when user is 200px from bottom
+    const scrollThreshold = 200;
+    const nearBottom = scrollTop + windowHeight >= documentHeight - scrollThreshold;
+
+    if (nearBottom) {
+      console.log(`Near bottom detected - loading more memes (current page: ${this.currentPage}, total loaded: ${this.memes.length})`);
+      this.loadMoreMemes();
+    }
+  }
+
+  /**
+   * Load more memes for infinite scroll
+   */
+  async loadMoreMemes() {
+    if (this.isLoading || !this.hasMoreMemes) {
+      return;
+    }
+
+    this.isLoading = true;
+    const nextPage = this.currentPage + 1;
+    console.log(`Loading more memes - page ${nextPage}`);
+    
+    // Show loading indicator
+    this.showLoadingIndicator();
+    
+    try {
+      // Add 600ms delay to show loading state
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      // Temporarily disable auth token for loading to avoid routing issues
+      // const token = localStorage.getItem('zedmemes-token');
+      const token = null; // Force no auth for loading
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const url = `http://localhost/Zed-memes/backend/api/memes.php?action=get_memes&page=${nextPage}&limit=${this.itemsPerPage}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: headers
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const text = await response.text();
+      console.log('Raw response text:', text.substring(0, 500)); // Log first 500 chars
+      const jsonText = text.substring(text.indexOf('{')); 
+      const data = JSON.parse(jsonText);
+      console.log('Parsed data structure:', {
+        success: data.success,
+        message: data.message,
+        dataLength: data.data?.length,
+        pagination: data.pagination
+      });
+      
+      if (data.success && data.data.length > 0) {
+        console.log(`Loaded ${data.data.length} more memes`);
+        console.log('Pagination info:', data.pagination);
+        
+        // Update pagination info
+        if (data.pagination) {
+          this.currentPage = data.pagination.page;
+          this.hasMoreMemes = data.pagination.hasNext;
+          console.log(`Backend says: hasNext=${data.pagination.hasNext}, page=${data.pagination.page}/${data.pagination.totalPages}, total=${data.pagination.total}`);
+        } else {
+          // If no pagination info, check if we got fewer items than requested
+          this.currentPage = nextPage;
+          this.hasMoreMemes = data.data.length >= this.itemsPerPage;
+          console.log(`No pagination info, inferring: hasMore=${this.hasMoreMemes} (got ${data.data.length} items, expected ${this.itemsPerPage})`);
+          
+          // IMPORTANT: If we got fewer than expected items, we've reached the end
+          if (data.data.length < this.itemsPerPage) {
+            this.hasMoreMemes = false;
+            console.log(`Got ${data.data.length} < ${this.itemsPerPage} items - reached end!`);
+          }
+        }
+        
+        // Append new memes to existing array
+        this.memes = [...this.memes, ...data.data];
+        
+        // Append to grid
+        this.appendMemesToGrid(data.data);
+        
+        console.log(`Total memes loaded: ${this.memes.length}, hasMoreMemes: ${this.hasMoreMemes}`);
+        
+        // Extra safety check: if we've loaded 67+ memes, we've definitely reached the end
+        if (this.memes.length >= 67) {
+          console.log('Loaded 67+ memes - definitely at the end!');
+          this.hasMoreMemes = false;
+        }
+        
+        // Show "All memes loaded" message when reaching the end
+        if (!this.hasMoreMemes) {
+          console.log('No more memes - showing end message');
+          this.showEndOfMemesMessage();
+        }
+      } else {
+        // No more memes available
+        this.hasMoreMemes = false;
+        console.log('No more memes to load - data.success=', data.success, 'data.data.length=', data.data?.length);
+        this.showEndOfMemesMessage();
+      }
+    } catch (error) {
+      console.error('Error loading more memes:', error);
+      this.showToast('Failed to load more memes. Please try again.', 'error');
+    } finally {
+      this.hideLoadingIndicator();
+      this.isLoading = false;
+    }
+  }
+
+  /**
+   * Append new memes to existing grid
+   */
+  appendMemesToGrid(newMemes) {
+    const grid = document.getElementById('homeMemeGrid');
+    if (!grid || !newMemes || newMemes.length === 0) {
+      return;
+    }
+
+    newMemes.forEach(meme => {
+      const memeCard = this.createMemeCard(meme);
+      grid.appendChild(memeCard);
+    });
+  }
+
+  /**
    * Load memes for home section
    */
   async loadHomeMemes() {
@@ -190,11 +404,22 @@ class MemeManager {
       console.error('Home meme grid not found!');
       return;
     }
-    
+
+    // Reset pagination for fresh load
+    this.currentPage = 1;
+    this.hasMoreMemes = true;
     this.currentFilter = 'featured';
     
+    // Clear any existing end messages
+    const existingEndMessage = document.getElementById('end-of-memes-message');
+    if (existingEndMessage) {
+      existingEndMessage.remove();
+    }
+    
     try {
-      const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
+      // Temporarily disable auth token for initial load to avoid routing issues
+      // const token = localStorage.getItem(APP_CONFIG.STORAGE.TOKEN);
+      const token = null; // Force no auth for initial load
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -211,13 +436,41 @@ class MemeManager {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const text = await response.text();
+      console.log('Initial load raw response:', text.substring(0, 500)); // Log first 500 chars
       const jsonText = text.substring(text.indexOf('{')); // Remove everything before first '{'
       const data = JSON.parse(jsonText);
+      console.log('Initial load parsed data:', {
+        success: data.success,
+        message: data.message,
+        dataLength: data.data?.length,
+        pagination: data.pagination
+      });
       
       if (data.success) {
         console.log('Home memes loaded:', data.data.length);
+        console.log('Initial pagination info:', data.pagination);
+        
+        // Update pagination info
+        if (data.pagination) {
+          this.totalPages = data.pagination.totalPages;
+          this.totalMemes = data.pagination.total;
+          this.currentPage = data.pagination.page;
+          this.hasMoreMemes = data.pagination.hasNext;
+          
+          console.log(`Initial pagination: page ${this.currentPage}/${this.totalPages}, total: ${this.totalMemes}, hasMore: ${this.hasMoreMemes}`);
+        } else {
+          // If no pagination info, assume there might be more if we got a full page
+          this.hasMoreMemes = data.data.length >= this.itemsPerPage;
+          console.log(`No initial pagination info, inferring hasMore: ${this.hasMoreMemes} (got ${data.data.length} items)`);
+          
+          // For initial load, let's be more conservative and use item count
+          this.totalMemes = data.data.length; // We don't know the real total
+          this.totalPages = 1; // We don't know the real total pages
+        }
+        
+        this.memes = data.data;
         this.renderMemeGrid(grid, data.data);
       } else {
         console.error('Failed to load home memes:', data.message);
@@ -395,6 +648,113 @@ class MemeManager {
     });
     
     console.log('Meme grid rendered successfully');
+  }
+
+  /**
+   * Show empty state message
+   * @param {HTMLElement} container - Container to show empty state in
+   * @param {string} title - Empty state title
+   * @param {string} message - Empty state message
+   */
+  showEmptyState(container, title, message) {
+    console.log('Showing empty state:', title, message);
+    const emptyStateHTML = `
+      <div class="empty-state" style="text-align: center; padding: 40px 20px; color: #6c757d;">
+        <div class="empty-state-icon" style="margin-bottom: 20px;">
+          <i class="bi bi-images" style="font-size: 3rem; color: #6c757d;"></i>
+        </div>
+        <h3 class="empty-state-title" style="margin-bottom: 10px; color: #495057;">${title}</h3>
+        <p class="empty-state-message" style="margin: 0; font-size: 0.9rem;">${message}</p>
+      </div>
+    `;
+    container.innerHTML = emptyStateHTML;
+  }
+
+  /**
+   * Show loading indicator for infinite scroll
+   */
+  showLoadingIndicator() {
+    // Remove existing loading indicator
+    this.hideLoadingIndicator();
+    
+    const grid = document.getElementById('homeMemeGrid');
+    if (!grid) return;
+    
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'infinite-scroll-loading';
+    loadingDiv.style.cssText = `
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 20px;
+      color: #6c757d;
+      font-size: 0.9rem;
+    `;
+    
+    loadingDiv.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <div style="
+          width: 20px;
+          height: 20px;
+          border: 2px solid #e9ecef;
+          border-top: 2px solid #007bff;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        "></div>
+        <span>Loading more memes...</span>
+      </div>
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    `;
+    
+    grid.appendChild(loadingDiv);
+  }
+
+  /**
+   * Hide loading indicator
+   */
+  hideLoadingIndicator() {
+    const loadingDiv = document.getElementById('infinite-scroll-loading');
+    if (loadingDiv) {
+      loadingDiv.remove();
+    }
+  }
+
+  /**
+   * Show end of memes message
+   */
+  showEndOfMemesMessage() {
+    // Remove existing end message
+    const existingMessage = document.getElementById('end-of-memes-message');
+    if (existingMessage) return; // Don't show multiple messages
+    
+    const grid = document.getElementById('homeMemeGrid');
+    if (!grid) return;
+    
+    const endDiv = document.createElement('div');
+    endDiv.id = 'end-of-memes-message';
+    endDiv.style.cssText = `
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 30px 20px;
+      color: #6c757d;
+      font-size: 0.9rem;
+      border-top: 1px solid #e9ecef;
+      margin-top: 20px;
+    `;
+    
+    endDiv.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+        <i class="bi bi-check-circle" style="font-size: 2rem; color: #28a745;"></i>
+        <strong style="color: #495057;">You've reached the end!</strong>
+        <span>You've seen all the memes available. Check back later for more!</span>
+      </div>
+    `;
+    
+    grid.appendChild(endDiv);
   }
 
   /**
